@@ -28,7 +28,7 @@ export function commerceRouter(db: Database, secret: string) {
       const c=object(body.recipient);
       const recipient={name:text(c.name,'tên người nhận',100),phone:text(c.phone,'số điện thoại',20),address:text(c.address,'địa chỉ',300),note:text(c.note,'ghi chú',500,false)};
       if(!/^(?:\+84|0)[0-9]{9}$/.test(recipient.phone.replace(/[\s.-]/g,'')))throw new InputError('Nhập số điện thoại Việt Nam hợp lệ.');
-      const items=[];
+      const items: Array<{ productId: string; quantity: number; design: any }> = [];
       for(const raw of body.items){
         const item=object(raw), d=object(item.design);
         if(!Number.isInteger(item.quantity)||Number(item.quantity)<1||Number(item.quantity)>10)throw new InputError('Số lượng mỗi thiết kế từ 1 đến 10.');
