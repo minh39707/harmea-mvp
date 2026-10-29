@@ -21,7 +21,8 @@
     "build": "npm run build --workspaces",
     "start:api": "node --env-file-if-exists=.env apps/api/dist/server.js",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:smoke": "node tests/smoke.mjs"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",

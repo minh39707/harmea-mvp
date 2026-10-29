@@ -1,4 +1,4 @@
-// Run from repository root: node scripts/qa-smoke.mjs
+// npm run test:smoke [-- --out <file>]
 // Uses an isolated temporary PGlite database; never reads customer data or secrets.
 import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -188,22 +188,27 @@ try {
   await stop();
   await db.close();
 }
-await writeFile(
-  'docs/qa-evidence-2026-10-29.json',
-  JSON.stringify(
-    {
-      date: '2026-10-29',
-      environment: {
-        node: process.version,
-        database: 'isolated disk PGlite',
-        source: 'working tree, including pre-existing commerce.ts edit'
+const args = process.argv.slice(2);
+if (args.length && (args.length !== 2 || args[0] !== '--out')) {
+  throw new Error('Usage: npm run test:smoke [-- --out <file>]');
+}
+if (args[0] === '--out')
+  await writeFile(
+    args[1],
+    JSON.stringify(
+      {
+        date: '2026-10-29',
+        environment: {
+          node: process.version,
+          database: 'isolated disk PGlite',
+          source: 'working tree, including pre-existing commerce.ts edit'
+        },
+        checks: evidence
       },
-      checks: evidence
-    },
-    null,
-    2
-  ) + '\n'
-);
+      null,
+      2
+    ) + '\n'
+  );
 console.log(JSON.stringify(evidence, null, 2));
 console.log(
   `Checks: ${evidence.length}; matched expectations: ${evidence.filter(e => e.pass).length}; mismatches: ${evidence.filter(e => !e.pass).length}`

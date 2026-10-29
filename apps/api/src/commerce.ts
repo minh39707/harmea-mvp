@@ -224,14 +224,12 @@ export function commerceRouter(db: Database, secret: string) {
   router.post('/demo-tracking', async (req, res) => {
     const token = req.body?.token;
     if (typeof token !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(token)) {
-      res
-        .status(404)
-        .json({
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Không tìm thấy đơn thử. Kiểm tra liên kết theo dõi.'
-          }
-        });
+      res.status(404).json({
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Không tìm thấy đơn thử. Kiểm tra liên kết theo dõi.'
+        }
+      });
       return;
     }
     const { rows } = await db.query(
@@ -239,14 +237,12 @@ export function commerceRouter(db: Database, secret: string) {
       [hash(token)]
     );
     if (!rows[0]) {
-      res
-        .status(404)
-        .json({
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Không tìm thấy đơn thử. Kiểm tra liên kết theo dõi.'
-          }
-        });
+      res.status(404).json({
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Không tìm thấy đơn thử. Kiểm tra liên kết theo dõi.'
+        }
+      });
       return;
     }
     res.json(receipt(rows[0]));

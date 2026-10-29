@@ -77,7 +77,7 @@ npm.cmd run contract:check
 npm.cmd run db:check
 ```
 
-Kết quả đã kiểm tra trong lần bàn giao: xem [VERIFICATION.md](VERIFICATION.md). Docker cần kiểm tra trên máy có Docker engine; không suy ra đã chạy từ việc có Compose.
+Kết quả đã kiểm tra trong lần bàn giao: xem [ki?m tra starter](docs/qa/2026-10-27-starter-verification.md). Docker cần kiểm tra trên máy có Docker engine; không suy ra đã chạy từ việc có Compose.
 
 ## Cách đưa cho coding agent hoặc tự triển khai
 
