@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Shop } from '../../app/useShop';
 import Card from './CardPreview';
 
@@ -6,6 +7,7 @@ export default function ProductGallery({
   setGallery,
   draft
 }: Pick<Shop, 'gallery' | 'setGallery' | 'draft'>) {
+  const [guides, setGuides] = useState(false);
   return (
     <div className="gallery">
       <div className={`hero-image ${gallery === 'preview' ? 'preview-stage' : ''}`}>
@@ -18,7 +20,7 @@ export default function ProductGallery({
             alt="Ảnh thẻ NFC mẫu được nhóm cung cấp trong tài liệu Harméa"
           />
         ) : (
-          <Card design={draft} />
+          <Card design={draft} guides={guides} />
         )}
         <span className="image-caption">
           {gallery === 'sample'
@@ -26,6 +28,18 @@ export default function ProductGallery({
             : 'Bản xem trước, chưa phải file in chuẩn'}
         </span>
       </div>
+      {gallery === 'preview' && (
+        <div className="artwork-info">
+          <label>
+            <input type="checkbox" checked={guides} onChange={e => setGuides(e.target.checked)} />
+            Hiện đường cắt và vùng an toàn (chỉ để đối chiếu)
+          </label>
+          <p>
+            Thẻ 54 × 86 mm · artwork 57 × 90 mm · vùng an toàn 49 × 82 mm. PNG minh họa, chưa phải
+            file in chuẩn.
+          </p>
+        </div>
+      )}
       <div className="gallery-controls">
         <button
           className={gallery === 'sample' ? 'selected' : ''}

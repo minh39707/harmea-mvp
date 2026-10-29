@@ -23,7 +23,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:smoke": "node tests/smoke.mjs",
-    "test:api": "node --test tests/api-integration.mjs"
+    "test:api": "node --test tests/api-integration.mjs",
+    "test:editor": "node --test tests/editor.mjs"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",

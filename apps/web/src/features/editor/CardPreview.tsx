@@ -1,41 +1,26 @@
+import { useMemo } from 'react';
 import type { Design } from '../../shared/types';
+import { cardSvg } from './card-svg';
+
 export default function CardPreview({
   design,
-  small = false
+  small = false,
+  guides = false
 }: {
   design: Design;
   small?: boolean;
+  guides?: boolean;
 }) {
+  const src = useMemo(
+    () => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(cardSvg(design, guides))}`,
+    [design, guides]
+  );
   return (
-    <div className={`music-card ${design.color} ${small ? 'small' : ''}`}>
-      <div className="card-top">
-        HARMÉA <span>MEMORY PASS / 001</span>
-      </div>
-      <div className="card-body">
-        <div className="portrait">
-          {design.photo ? (
-            <img src={design.photo} alt="Ảnh cá nhân hóa" />
-          ) : (
-            <span>
-              h<span className="note">♪</span>
-            </span>
-          )}
-        </div>
-        <div className="card-copy">
-          <small>THIS SONG BELONGS TO</small>
-          <strong>{design.fullName || 'Your favorite person'}</strong>
-          <div className="card-rule" />
-          <small>A PLACE TO REMEMBER</small>
-          <p>{design.place || 'Somewhere with you'}</p>
-          <small>A MOMENT TO KEEP</small>
-          <p>{design.commemorativeDate || 'A memory, forever.'}</p>
-          <i>{design.signatureText || 'with love'}</i>
-        </div>
-      </div>
-      <div className="card-bottom">
-        <span>♫ TAP INTO A MEMORY</span>
-        <span>PERSONAL MUSIC CARD ↗</span>
-      </div>
+    <div className={`music-card ${small ? 'small' : ''}`}>
+      <img
+        src={src}
+        alt={`Thiết kế thẻ ${design.fullName || 'Harméa'}${design.dateOfBirth ? `, ngày sinh ${design.dateOfBirth}` : ''}`}
+      />
     </div>
   );
 }

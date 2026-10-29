@@ -1,6 +1,8 @@
 # B — Cá nhân hóa và bản xem trước
 
-**Trạng thái:** công việc cần triển khai. **Dự kiến:** 2 giờ. Đầu ra phục vụ checkout ở task C.
+**Trạng thái:** đã triển khai editor/crop/PNG và đầu ra ảnh gốc; còn nghiệm thu tương tác trên trình duyệt. **Ước lượng ban đầu:** 2 giờ. Đầu ra phục vụ checkout ở task C.
+
+**Cập nhật 29/10/2026:** renderer SVG dùng chung cho preview và PNG, QA-06 đã có trong mẫu, ảnh gốc/PNG lưu riêng bằng IndexedDB theo từng snapshot giỏ. Đã chạy 8 tests editor, 25 tests API và kiểm tra trực quan PNG raster mẫu; browser host chưa khả dụng nên chưa đánh dấu thao tác upload/download/IndexedDB/responsive là PASS. Xem [báo cáo B](../docs/qa/2026-10-29-task-b.md).
 
 ## Phạm vi và phụ thuộc
 

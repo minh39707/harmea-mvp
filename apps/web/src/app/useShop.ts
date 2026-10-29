@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Design, Item, Product, Receipt, View } from '../shared/types';
 import { blankDesign as blank } from '../shared/types';
 import { api } from '../shared/api';
 import { loadCart, saveCart } from '../features/cart/cart-storage';
+import { removeAssets } from '../features/editor/asset-store';
 import { useEditor } from '../features/editor/useEditor';
 import { useCheckout } from '../features/checkout/useCheckout';
 import { useTracking } from '../features/tracking/useTracking';
@@ -30,10 +31,18 @@ export function useShop() {
       .then(setProduct)
       .catch(e => setLoadError(e.message));
   };
+  const previousCart = useRef(cart);
   useEffect(fetchProduct, []);
   useEffect(() => {
     try {
       saveCart(cart);
+      const retained = new Set(cart.map(i => i.assetKey));
+      for (const item of previousCart.current)
+        if (item.assetKey && !retained.has(item.assetKey))
+          void removeAssets(item.assetKey).catch(() =>
+            setError('Không xóa được ảnh khỏi bộ nhớ thiết bị.')
+          );
+      previousCart.current = cart;
     } catch {
       setError('Bộ nhớ trình duyệt đầy. Giảm ảnh trong giỏ để lưu khi tải lại.');
     }
@@ -50,7 +59,8 @@ export function useShop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (location.pathname === '/track' && next !== 'tracking') history.replaceState(null, '', '/');
   }
-  const { update, photo, add, edit } = useEditor({
+  const { update, updateCrop, photo, add, edit, exportPreview, editorBusy } = useEditor({
+    view,
     product,
     cart,
     draft,
@@ -115,6 +125,9 @@ export function useShop() {
     fetchProduct,
     go,
     update,
+    updateCrop,
+    exportPreview,
+    editorBusy,
     photo,
     add,
     edit,

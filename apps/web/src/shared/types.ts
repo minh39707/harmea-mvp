@@ -1,3 +1,4 @@
+export type Crop = { x: number; y: number; width: number; height: number };
 export type Design = {
   fullName: string;
   signatureText: string;
@@ -7,14 +8,30 @@ export type Design = {
   commemorativeDate: string;
   color: string;
   photo: string;
+  photoWidth: number;
+  photoHeight: number;
+  crop: Crop;
 };
-export type Item = { id: string; productId: string; quantity: number; design: Design };
+export type EditorAssets = { photo: Blob; preview: Blob };
+export type Item = {
+  id: string;
+  productId: string;
+  templateVersion?: string;
+  assetKey?: string;
+  quantity: number;
+  design: Design;
+};
 export type Product = {
   id: string;
   name: string;
   unitPriceVnd: number;
   isDemoPrice: boolean;
   image: string;
+  templateVersion: string;
+  isDemo: boolean;
+  physicalSizeMm: { width: number; height: number };
+  artworkSizeMm: { width: number; height: number };
+  safeAreaMm: { width: number; height: number };
 };
 export type Receipt = {
   orderNumber: string;
@@ -32,7 +49,10 @@ export const blankDesign: Design = {
   dateOfBirth: '',
   commemorativeDate: '',
   color: 'cream',
-  photo: ''
+  photo: '',
+  photoWidth: 0,
+  photoHeight: 0,
+  crop: { x: 0, y: 0, width: 1, height: 1 }
 };
 
 export type Recipient = { name: string; phone: string; address: string; note: string };

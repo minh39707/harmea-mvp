@@ -17,6 +17,9 @@ export default function ProductPage(
     | 'editing'
     | 'gallery'
     | 'setGallery'
+    | 'editorBusy'
+    | 'updateCrop'
+    | 'exportPreview'
   >
 ) {
   const { product } = props;

@@ -4,6 +4,8 @@
 
 **Hợp đồng cập nhật sau A:** dùng `contracts/openapi.json` 0.2.0. Public tracking chỉ trả tiến độ/lịch sử, không có subtotal; success dùng OrderCreated để hiển thị tiền. Product dùng `isDemo` và các kích thước canonical; alias `isDemoPrice`/`image`/`cardSizeMm` chỉ giữ tạm cho client cũ. Sau khi nối xong, xử lý rõ các draft/đơn legacy, không tự đưa chúng vào luồng admin mới.
 
+**Đầu ra B:** dùng `preparedItem(item)` từ `features/editor/prepared-item.ts`: trả `{ payload, photo, preview }`, trong đó payload có productId/templateVersion/quantity/design đúng contract và hai Blob lấy từ IndexedDB bằng assetKey. Không gửi local `design.photo`, photoWidth/photoHeight hoặc assetKey vào JSON. Giữ key metadata `harmea.cart.v2`; giỏ cũ vẫn đọc được nhưng không có ảnh gốc phải mở sửa/chọn lại ảnh, không dùng thumbnail thay ảnh gốc. C cần kiểm tra lại luồng IndexedDB thực trên trình duyệt khi công cụ khả dụng.
+
 ## Phạm vi và quyền sửa
 
 Đọc `docs/01-requirements.md`, `docs/02-architecture.md`, `docs/03-data-api.md`, `docs/04-acceptance-demo.md` và `contracts/openapi.json`.

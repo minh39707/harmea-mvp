@@ -8,10 +8,10 @@ Bản demo local và tài liệu triển khai cho **một người**; mốc demo
 |---|---|
 | UI sản phẩm, cá nhân hóa, giỏ hàng, checkout, success và tracking | Kiểm tra thao tác trình duyệt, desktop và mobile |
 | Hợp đồng 0.2.0 giữ giỏ: `/api/orders` multipart, `/api/tracking/lookup` | C chuyển frontend khỏi `/api/demo-*`; đơn legacy không tự vào admin mới |
-| Backend kiểm tra ảnh/crop/URL, giữ ảnh gốc/preview từng dòng, tính giá và lưu snapshot | B dựng preview PNG và crop/giữ ảnh gốc từ editor |
+| Editor có crop/PNG, ngày sinh, lưu ảnh gốc theo dòng; backend giữ file/snapshot | C nối đầu ra B với multipart canonical; kiểm tra IndexedDB/Canvas thực trên trình duyệt |
 | Auth cookie, API admin list/detail/assets và status/version/history | D làm UI admin và nghiệm thu qua trình duyệt |
 | Migration checksum 001–004, PGlite integration tests, adapter PostgreSQL và Compose | Áp 004 vào DB local sau khi dừng API; kiểm tra PostgreSQL thực tế |
-| E Giai đoạn 1 và API task A đã triển khai | B → C → D, rồi E Giai đoạn 2 (redesign) |
+| E Giai đoạn 1, API A và phần code editor B đã triển khai | Nghiệm thu UI B, rồi C → D → E Giai đoạn 2 (redesign) |
 
 Giá seed **50.000 VND là số giả cho demo**. Không có thanh toán hoặc tự động sản xuất/giao hàng. API canonical đã qua **25 tests Node (23 trường hợp con, một test cha và một test nâng migration)** trên PGlite. Bộ smoke legacy lịch sử hiện **30 phép / 25 khớp / 5 không khớp**, không phải bộ nghiệm thu contract mới. Xem [báo cáo task A](docs/qa/2026-10-29-task-a.md). Chưa nghiệm thu toàn MVP hoặc PostgreSQL thực tế.
 
@@ -31,13 +31,15 @@ docs/qa/                báo cáo và bằng chứng kiểm tra
 
 CSS của từng feature nằm cạnh component; `styles/index.css` nhập tập trung theo thứ tự cũ để giữ nguyên cascade trong Giai đoạn 1. API admin/orders đã có; các màn hình và dữ liệu frontend mới chưa nối.
 
+Editor B dùng cùng một SVG cho xem trước và xuất PNG 570×900 (artwork 57×90, thẻ 54×86, safe area 49×82). Đây là proof minh họa, chưa phải file in chuẩn. Metadata/thumbnail giữ trong `harmea.cart.v2`; Blob ảnh gốc và PNG nằm trong IndexedDB `harmea.editor.v1`. Không đưa Blob vào localStorage. Giỏ cũ thiếu ảnh gốc cần chọn lại ảnh khi sửa. Xem [báo cáo B](docs/qa/2026-10-29-task-b.md); phần upload/download/IndexedDB trên trình duyệt chưa được xác nhận.
+
 ## Đọc theo thứ tự
 
 1. [Requirement và phạm vi](docs/01-requirements.md).
 2. [Kiến trúc và quyết định kỹ thuật](docs/02-architecture.md).
 3. [Dữ liệu, API và quy tắc tích hợp](docs/03-data-api.md); hợp đồng máy đọc được: [OpenAPI](contracts/openapi.json).
 4. [Kế hoạch 8–10 giờ dự kiến cho một người](docs/05-solo-plan.md).
-5. [Task E](tasks/E-clean-layout.md): Giai đoạn 1 đã tách code; [task A](tasks/A-api-data.md) đã triển khai API; tiếp theo B → C → D → E Giai đoạn 2. Xem [báo cáo E1](docs/qa/2026-10-29-clean-layout.md) và [báo cáo A](docs/qa/2026-10-29-task-a.md).
+5. E Giai đoạn 1, API A và code editor B đã triển khai; nghiệm thu UI B khi browser khả dụng, rồi C → D → E Giai đoạn 2. Xem [báo cáo E1](docs/qa/2026-10-29-clean-layout.md), [báo cáo A](docs/qa/2026-10-29-task-a.md) và [báo cáo B](docs/qa/2026-10-29-task-b.md).
 6. Dùng [checklist demo](docs/04-acceptance-demo.md) để nghiệm thu.
 
 ## Chạy trên Windows / PowerShell
@@ -94,6 +96,7 @@ npm.cmd run typecheck
 npm.cmd run build
 npm.cmd run contract:check
 npm.cmd run test:api
+npm.cmd run test:editor
 npm.cmd run test:smoke
 npm.cmd run db:check
 ```

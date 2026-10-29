@@ -59,7 +59,7 @@ storage/               dữ liệu local, ignored, không đưa vào ZIP
 
 Router/controller parse HTTP, nhận session và trả response. Service kiểm tra quyền, giá, trạng thái và nghiệp vụ. Repository chỉ thực thi SQL có tham số. Validation và upload middleware áp giới hạn trước service. Không cần tạo lớp trừu tượng chỉ để lặp lại một hàm SQL.
 
-Frontend giữ draft đang sửa trong bộ nhớ, còn giỏ đã thêm lưu ở key `harmea.cart.v2`. B giữ ảnh gốc/crop/preview cho từng dòng và C nối multipart mới. Crop là hình chữ nhật chuẩn hóa trong ảnh gốc. Một mẫu cố định có thể crop giữa mặc định, chưa cần drag/zoom. Chữ ký dùng text, chưa vẽ tay.
+Frontend giữ draft đang sửa trong bộ nhớ. Giỏ lưu metadata/thumbnail tại `harmea.cart.v2`; B lưu Blob ảnh gốc/preview PNG riêng trong IndexedDB `harmea.editor.v1`, tham chiếu bằng assetKey mỗi snapshot. Không đưa Blob vào JSON/localStorage. Crop chuẩn hóa trong ảnh gốc theo chiều hiển thị; B có căn giữa/phóng/vị trí và renderer SVG chung cho preview/PNG. C nối multipart mới, D đối chiếu preview với dữ liệu trước sản xuất. Chữ ký dùng text; PNG chỉ là proof, không cam kết DPI/màu/bleed in thực tế.
 
 Node 24 chạy trực tiếp TypeScript backend/scripts bằng type stripping; tsc vẫn kiểm tra riêng và build JS. Dùng `import type` cho type-only imports và extension `.ts` cho import tương đối trong source; tsc rewrite thành `.js` khi build. Không dùng enum/parameter properties/decorator cần transform ở backend. Frontend TSX do Vite xử lý. Xem [Node TypeScript](https://nodejs.org/api/typescript.html).
 
