@@ -1,7 +1,14 @@
 {
-  "name": "harmea-mvp", "version": "0.1.0", "private": true, "type": "module",
-  "workspaces": ["apps/*"],
-  "engines": { "node": ">=24 <25" },
+  "name": "harmea-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "setup": "node scripts/setup.mjs",
     "dev": "concurrently -k -n api,web \"npm run dev:api\" \"npm run dev:web\"",
@@ -12,7 +19,15 @@
     "contract:check": "node scripts/check-contract.mjs",
     "typecheck": "tsc -p tsconfig.tools.json && npm run typecheck --workspaces",
     "build": "npm run build --workspaces",
-    "start:api": "node --env-file-if-exists=.env apps/api/dist/server.js"
+    "start:api": "node --env-file-if-exists=.env apps/api/dist/server.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
-  "devDependencies": { "concurrently": "10.0.6", "typescript": "7.0.2", "@types/node": "^24.0.0", "@apidevtools/swagger-parser": "^12.1.0" }
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "^12.1.0",
+    "@types/node": "^24.0.0",
+    "concurrently": "10.0.6",
+    "prettier": "3.9.10",
+    "typescript": "7.0.2"
+  }
 }
