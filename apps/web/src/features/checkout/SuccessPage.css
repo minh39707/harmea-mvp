@@ -1,49 +1,26 @@
-.success {
-  max-width: 720px;
-  margin: auto;
-  text-align: center;
-  padding: 65px 0 80px;
-}
-.success-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  background: #e9eddf;
-  border-radius: 50%;
-  color: #697c4c;
-  font-size: 25px;
-}
-.success > .eyebrow {
-  margin: 25px 0 20px;
-}
-.success > p:not(.eyebrow) {
-  font-size: 13px;
-  color: #72796a;
-  line-height: 1.9;
-}
-.success > h1 {
-  font-size: 42px;
-}
-.receipt-box {
-  max-width: 490px;
-  margin: 30px auto;
-  text-align: left;
-  border: 1px solid var(--line);
-  padding: 25px;
-  border-radius: 4px;
+.success,
+.tracking {
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: var(--border) solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  min-height: 0;
+  overflow-wrap: anywhere;
 }
 .receipt-box > div {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  margin: 15px 0;
-  gap: 15px;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
 }
 .receipt-box > label {
-  margin: 25px 0 15px;
+  margin: var(--space-3) 0 var(--space-2);
 }
 .receipt-box > .button {
-  width: 100%;
-  margin: 12px 0;
+  margin-top: var(--space-2);
+}
+.success > .text-button {
+  margin-top: var(--space-2);
 }

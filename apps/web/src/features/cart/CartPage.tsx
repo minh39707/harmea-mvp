@@ -1,6 +1,5 @@
 import type { Shop } from '../../app/useShop';
 import Card from '../editor/CardPreview';
-import Bag from '../../shared/ui/BagIcon';
 import Quantity from '../../shared/ui/Quantity';
 import { blankDesign as blank } from '../../shared/types';
 import { money, colorLabel } from '../../shared/format';
@@ -31,14 +30,9 @@ export default function CartPage({
 >) {
   return (
     <section className="page-section">
-      <p className="eyebrow">NHỮNG KỶ NIỆM BẠN ĐÃ CHỌN</p>
-      <h1>
-        Giỏ hàng <em>của bạn.</em>
-      </h1>
+      <h1>Giỏ hàng</h1>
       {!cart.length ? (
         <div className="empty">
-          <Bag />
-          <h2>Một kỷ niệm đang đợi bạn.</h2>
           <p>Giỏ hàng chưa có thẻ nào. Hãy bắt đầu bằng một bài hát.</p>
           <button className="button primary" onClick={() => go('product')}>
             Khám phá thẻ Harméa ↗
@@ -53,7 +47,6 @@ export default function CartPage({
                   <Card design={item.design} small />
                 </div>
                 <div className="cart-copy">
-                  <span className="eyebrow">NFC MUSIC CARD</span>
                   <h3>{item.design.fullName}</h3>
                   <p>{colorLabel(item.design.color)} · Cá nhân hóa</p>
                   <div className="cart-actions">
@@ -85,7 +78,7 @@ export default function CartPage({
             >
               ← Thêm một thiết kế khác
             </button>
-            <p className="fineprint">
+            <p className="note">
               Thiết kế được lưu trên trình duyệt này. Xóa khỏi giỏ để xóa bản lưu trên thiết bị.
             </p>
           </div>
@@ -108,12 +101,10 @@ export default function CartPage({
               <span>Tạm tính</span>
               <strong>{money(subtotal)}</strong>
             </div>
-            <p className="fineprint">
-              Giá demo, chưa được nhóm xác nhận. Không thu tiền trong bản thử.
-            </p>
             <button className="button primary" disabled={!product} onClick={() => go('checkout')}>
               Tiếp tục đặt thử →
             </button>
+            <p className="note">Demo, không thu tiền. Phí giao hàng chưa bao gồm.</p>
           </aside>
         </div>
       )}

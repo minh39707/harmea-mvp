@@ -1,77 +1,69 @@
-.announcement {
-  padding: 10px max(5vw, 20px);
-  display: flex;
-  justify-content: space-between;
-  background: #ece9dd;
-  color: #4e5149;
-  font-size: 11px;
-  letter-spacing: 0.5px;
-}
-.demo-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1.2px;
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: var(--space-5) var(--space-3) var(--space-8);
 }
 header {
-  max-width: 1440px;
-  margin: auto;
-  height: 100px;
-  padding: 0 5vw;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--line);
-  gap: 20px;
+  gap: var(--space-3);
+  border-bottom: var(--border) solid var(--line);
+  padding: 0 var(--space-3);
+}
+.store-header {
+  min-height: 64px;
+  max-width: 1200px;
+  margin: auto;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 .wordmark {
-  border: 0;
-  background: none;
-  font-family: var(--serif);
-  font-size: 39px;
-  letter-spacing: -2px;
+  font: 32px/1 var(--serif);
+  letter-spacing: -1px;
   padding: 0;
+  border: 0;
+  background: var(--transparent);
+  text-decoration: none;
+  white-space: nowrap;
 }
 .wordmark span {
-  display: inline-block;
-  font-size: 27px;
-  color: var(--gold);
-  margin-left: 7px;
-  transform: rotate(-12deg);
+  color: var(--accent-text);
+  margin-left: var(--space-1);
+}
+.demo-badge {
+  font-size: var(--font-sm);
+  background: var(--soft);
+  border-radius: var(--radius);
+  padding: 0 var(--space-1);
 }
 nav {
   display: flex;
-  gap: 36px;
+  gap: var(--space-3);
 }
 nav button {
+  background: var(--transparent);
   border: 0;
-  background: none;
-  font-size: 13px;
-  color: #77796f;
-  padding: 15px 0;
+  padding: var(--space-1) 0;
+  color: var(--muted);
 }
 nav button.active {
-  color: var(--ink);
-  border-bottom: 1px solid var(--ink);
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 8px;
 }
 .bag-button {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: none;
+  justify-content: center;
+  gap: var(--space-1);
   border: 0;
-  font-size: 13px;
+  background: var(--transparent);
+  padding: var(--space-1);
 }
 .bag-button b {
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  height: 24px;
-  min-width: 24px;
-  font-size: 11px;
-}
-main {
-  max-width: 1440px;
-  margin: auto;
-  padding: 0 5vw;
+  font-size: var(--font-sm);
 }

@@ -64,7 +64,7 @@ export default function OrderItem({
             URL nhạc để đối chiếu/ghi NFC
             <input readOnly value={d.musicUrl} onFocus={e => e.target.select()} />
           </label>
-          <p className="fineprint">
+          <p className="note">
             Đối chiếu PNG với ảnh gốc/crop và các trường chữ trước khi sản xuất. Preview chưa phải
             file in đã kiểm chứng.
           </p>

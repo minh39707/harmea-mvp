@@ -60,7 +60,10 @@ export function useShop() {
     setView(next);
     setError('');
     setNotice('');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({
+      top: 0,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    });
     if (next === 'tracking' && location.pathname !== '/track')
       history.replaceState(null, '', '/track');
     if (location.pathname === '/track' && next !== 'tracking') history.replaceState(null, '', '/');

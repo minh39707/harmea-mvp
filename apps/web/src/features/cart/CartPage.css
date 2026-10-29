@@ -1,56 +1,78 @@
 .cart-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) auto;
+  gap: var(--space-3);
   align-items: center;
-  gap: 22px;
-  padding: 25px 0;
-  border-bottom: 1px solid var(--line);
+  padding-block: var(--space-3);
+  border-bottom: var(--border) solid var(--line);
 }
 .cart-item:first-child {
   padding-top: 0;
 }
 .cart-thumb {
-  width: 160px;
-  flex-shrink: 0;
+  width: 88px;
 }
 .cart-copy {
-  flex: 1;
   min-width: 0;
 }
 .cart-copy h3 {
   overflow-wrap: anywhere;
-  margin: 8px 0;
-  font-family: var(--serif);
-  font-size: 22px;
-  overflow-wrap: anywhere;
+  margin: 0 0 var(--space-1);
 }
 .cart-copy p {
-  font-size: 11px;
+  font-size: var(--font-sm);
   color: var(--muted);
+  margin: 0;
 }
 .cart-actions {
   display: flex;
-  gap: 16px;
+  gap: var(--space-2);
+  flex-wrap: wrap;
 }
-.cart-actions button,
-.text-button {
-  background: none;
-  border: 0;
-  padding: 0;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  font-size: 11px;
-  color: #666d5d;
-}
-.cart-layout .text-button {
-  margin-top: 22px;
+.cart-actions button {
+  font-size: var(--font-sm);
 }
 .cart-quantity {
   display: flex;
   flex-direction: column;
   align-items: end;
-  gap: 15px;
+  gap: var(--space-2);
 }
-.cart-quantity strong {
-  font-size: 14px;
-  font-weight: 500;
+.cart-layout .text-button {
+  margin-top: var(--space-2);
+}
+.order-summary {
+  position: sticky;
+  top: var(--space-3);
+  border: var(--border) solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  background: var(--surface);
+  min-width: 0;
+}
+.order-summary > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
+.order-summary > div > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.order-summary b,
+.order-summary strong {
+  white-space: nowrap;
+}
+.order-summary hr {
+  border: 0;
+  border-top: var(--border) solid var(--line);
+  margin: var(--space-3) 0;
+}
+.order-summary .sum {
+  font-size: var(--font-title);
+}
+.order-summary > .button {
+  width: 100%;
+  margin-top: var(--space-3);
 }

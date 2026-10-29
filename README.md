@@ -6,20 +6,20 @@ Bản demo local và tài liệu triển khai cho **một người**; mốc demo
 
 | Đã triển khai / chuẩn bị | Cần làm tiếp |
 |---|---|
-| UI sản phẩm, cá nhân hóa, giỏ hàng, checkout, success và tracking | Kiểm tra thao tác trình duyệt, desktop và mobile |
+| UI tối giản E2: sản phẩm, cá nhân hóa, giỏ hàng, checkout, success và tracking | Kiểm tra thao tác trình duyệt tại 375/768/1440 px |
 | Frontend C dùng `/api/orders` multipart và `/api/tracking/lookup` | Đơn legacy không tự vào admin mới; các route demo còn giữ để tương thích/lịch sử |
 | Editor B và checkout C giữ ảnh gốc/PNG/crop từng dòng; backend lưu snapshot | Kiểm tra upload/IndexedDB/Canvas/clipboard thực trên trình duyệt |
 | Auth cookie, UI admin list/detail/assets và status/version/history | Nghiệm thu admin qua trình duyệt, gồm hai tab xung đột |
 | Migration checksum 001–004, PGlite integration tests, adapter PostgreSQL và Compose | Áp 004 vào DB local sau khi dừng API; kiểm tra PostgreSQL thực tế |
-| E Giai đoạn 1, API A và code B–D đã triển khai | Nghiệm thu UI B/C/D; E Giai đoạn 2 (redesign) còn lại |
+| Code E cả hai giai đoạn, API A và code B–D đã triển khai | Nghiệm thu trực quan B/C/D/E2 và diễn tập toàn luồng |
 
-Giá seed **50.000 VND là số giả cho demo**. Không có thanh toán hoặc tự động sản xuất/giao hàng. API canonical đã qua **25 tests Node (23 trường hợp con, một test cha và một test nâng migration)** trên PGlite. Bộ smoke legacy lịch sử hiện **30 phép / 25 khớp / 5 không khớp**, không phải bộ nghiệm thu contract mới. Xem [báo cáo task A](docs/qa/2026-10-29-task-a.md). Chưa nghiệm thu toàn MVP hoặc PostgreSQL thực tế.
+Giá seed **50.000 VND là số giả cho demo**. Không có thanh toán hoặc tự động sản xuất/giao hàng. Các bộ A/B/C/D hiện qua **56 tests Node** trên PGlite/HTTP/tệp thật. Bộ smoke legacy lịch sử hiện **30 phép / 26 khớp / 4 không khớp**, không phải bộ nghiệm thu contract mới. Xem [báo cáo task A](docs/qa/2026-10-29-task-a.md) và [báo cáo E2](docs/qa/2026-10-29-clean-layout-phase2.md). Chưa nghiệm thu toàn MVP hoặc PostgreSQL thực tế.
 
 ## Cấu trúc hiện tại
 
 ```text
 apps/web/src/app/        shell, điều hướng và state chung
-apps/web/src/features/   editor, cart, checkout, tracking
+apps/web/src/features/   editor, cart, checkout, tracking, admin
 apps/web/src/shared/     types, API client, format và UI dùng chung
 apps/web/src/styles/     CSS chung, tokens và responsive
 apps/api/src/middleware/ headers, Origin và rate limit
@@ -29,7 +29,7 @@ tests/                  integration API canonical và smoke legacy, DB thử ri�
 docs/qa/                báo cáo và bằng chứng kiểm tra
 ```
 
-CSS của từng feature nằm cạnh component; `styles/index.css` nhập tập trung theo thứ tự cũ để giữ nguyên cascade trong Giai đoạn 1. Frontend checkout, tracking và admin đã nối API canonical.
+CSS của từng feature nằm cạnh component; `styles/index.css` nhập tập trung. E2 dùng tokens cho màu/chữ/khoảng cách, `styles/responsive.css` thay bốn file responsive cũ. Header 64px, ba màu thẻ riêng trong CardPreview.css; form ảnh/crop luôn hiển thị, thông tin tùy chọn nằm trong details. Frontend checkout, tracking và admin đã nối API canonical. Xem [báo cáo E2](docs/qa/2026-10-29-clean-layout-phase2.md); chưa có ảnh chụp hoặc nghiệm thu trực quan.
 
 Editor B dùng cùng một SVG cho xem trước và xuất PNG 570×900 (artwork 57×90, thẻ 54×86, safe area 49×82). Đây là proof minh họa, chưa phải file in chuẩn. Metadata/thumbnail giữ trong `harmea.cart.v2`; Blob ảnh gốc và PNG nằm trong IndexedDB `harmea.editor.v1`. Không đưa Blob vào localStorage. Giỏ cũ thiếu ảnh gốc cần chọn lại ảnh khi sửa. Xem [báo cáo B](docs/qa/2026-10-29-task-b.md); phần upload/download/IndexedDB trên trình duyệt chưa được xác nhận.
 
@@ -43,7 +43,7 @@ Admin D tại `/admin/login` dùng cookie HttpOnly, không lưu session/mật kh
 2. [Kiến trúc và quyết định kỹ thuật](docs/02-architecture.md).
 3. [Dữ liệu, API và quy tắc tích hợp](docs/03-data-api.md); hợp đồng máy đọc được: [OpenAPI](contracts/openapi.json).
 4. [Kế hoạch 8–10 giờ dự kiến cho một người](docs/05-solo-plan.md).
-5. E Giai đoạn 1, API A và code B–D đã triển khai; nghiệm thu UI khi browser khả dụng. Phần triển khai kế tiếp là E Giai đoạn 2. Xem các báo cáo [E1](docs/qa/2026-10-29-clean-layout.md), [A](docs/qa/2026-10-29-task-a.md), [B](docs/qa/2026-10-29-task-b.md), [C](docs/qa/2026-10-29-task-c.md), [D](docs/qa/2026-10-29-task-d.md).
+5. Code E cả hai giai đoạn và A–D đã triển khai; phần tiếp theo là nghiệm thu UI và diễn tập khi browser khả dụng. Xem các báo cáo [E1](docs/qa/2026-10-29-clean-layout.md), [A](docs/qa/2026-10-29-task-a.md), [B](docs/qa/2026-10-29-task-b.md), [C](docs/qa/2026-10-29-task-c.md), [D](docs/qa/2026-10-29-task-d.md), [E2](docs/qa/2026-10-29-clean-layout-phase2.md).
 6. Dùng [checklist demo](docs/04-acceptance-demo.md) để nghiệm thu.
 
 ## Chạy trên Windows / PowerShell

@@ -9,7 +9,6 @@ export default function DesignForm({
   draft,
   update,
   photo,
-  error,
   quantity,
   setQuantity,
   product,
@@ -35,10 +34,6 @@ export default function DesignForm({
   return (
     <form id="personalize" onSubmit={add} aria-busy={editorBusy}>
       <fieldset className="editor-fields" disabled={editorBusy}>
-        <div className="form-heading">
-          <span>01 / TẠO DẤU ẤN RIÊNG</span>
-          <small>Một thiết kế cho mỗi dòng giỏ</small>
-        </div>
         <div className="color-row">
           <span>Màu thiết kế</span>
           {[
@@ -60,7 +55,7 @@ export default function DesignForm({
         </div>
         <div className="two-fields">
           <label>
-            Tên trên thẻ <span>*</span>
+            <span>Tên trên thẻ *</span>
             <input
               required
               maxLength={80}
@@ -70,7 +65,7 @@ export default function DesignForm({
             />
           </label>
           <label>
-            Link bài hát / playlist <span>*</span>
+            <span>Link bài hát / playlist *</span>
             <input
               required
               type="url"
@@ -82,11 +77,6 @@ export default function DesignForm({
           </label>
         </div>
         <OptionalFields draft={draft} update={update} photo={photo} updateCrop={updateCrop} />
-        {error && (
-          <p className="error" role="alert">
-            {error}
-          </p>
-        )}
         <div className="add-row">
           <Quantity value={quantity} onChange={setQuantity} />
           <button className="button primary" disabled={!product} type="submit">
@@ -95,16 +85,12 @@ export default function DesignForm({
             <span>↗</span>
           </button>
         </div>
+        <p className="note">Demo, không thu tiền. Phí giao hàng chưa bao gồm.</p>
         <button type="button" className="button secondary" onClick={() => void exportPreview()}>
           Tải preview PNG
         </button>
         {editorBusy && <p role="status">Đang đọc ảnh hoặc tạo preview PNG…</p>}
       </fieldset>
-      <p className="fineprint">
-        Chưa thu tiền khi đặt thử. Phí giao hàng chưa bao gồm.
-        <br />
-        Màu và bố cục xem trước là phương án minh họa, cần xác nhận trước khi in.
-      </p>
     </form>
   );
 }

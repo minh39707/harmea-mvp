@@ -8,7 +8,6 @@ export default function CheckoutPage({
   setRecipient,
   confirmed,
   setConfirmed,
-  error,
   cart,
   product,
   subtotal,
@@ -36,14 +35,11 @@ export default function CheckoutPage({
       <button className="text-button" disabled={busy} onClick={() => go('cart')}>
         ← Quay lại giỏ hàng
       </button>
-      <p className="eyebrow">CHECKOUT THỬ · KHÔNG THANH TOÁN</p>
-      <h1>
-        Gửi một điều <em>đặc biệt.</em>
-      </h1>
+      <h1>Thông tin đặt đơn</h1>
       <form className="checkout-layout" onSubmit={checkout} aria-busy={busy}>
         <fieldset className="checkout-fields" disabled={busy}>
           <h3>Thông tin người nhận</h3>
-          <p className="muted">Hãy dùng thông tin giả khi thử quy trình này.</p>
+          <p className="note">Hãy dùng thông tin giả khi thử quy trình này.</p>
           <div className="two-fields">
             <label>
               Họ tên *
@@ -99,22 +95,16 @@ export default function CheckoutPage({
               onChange={e => setConfirmed(e.target.checked)}
             />
             <span>
-              Tôi đã kiểm tra thiết kế và hiểu đây là{' '}
-              <strong>đơn thử, không thu tiền, không giao hàng tự động</strong>.
+              Tôi đã kiểm tra thiết kế và thông tin người nhận; đồng ý gửi đơn theo nội dung này.
             </span>
           </label>
           {pendingRequestKey && (
-            <div className="test-note">
+            <div className="note">
               Có yêu cầu chưa xác nhận kết quả. Giữ nguyên nội dung khi thử lại hoặc cung cấp mã này
               cho cửa hàng:
               <br />
               <code className="request-reference">{pendingRequestKey}</code>
             </div>
-          )}
-          {error && (
-            <p className="error" role="alert">
-              {error}
-            </p>
           )}
         </fieldset>
         <aside className="order-summary">
@@ -132,10 +122,9 @@ export default function CheckoutPage({
             <span>Tiền sản phẩm</span>
             <strong>{money(subtotal)}</strong>
           </div>
-          <p className="fineprint">
+          <p className="note">
             Chưa bao gồm phí giao hàng. Máy chủ sẽ kiểm tra lại giá khi tạo đơn.
           </p>
-          <div className="test-note">Không yêu cầu thông tin ngân hàng hoặc thẻ thanh toán.</div>
           <button
             className="button primary"
             type="submit"
@@ -149,6 +138,7 @@ export default function CheckoutPage({
                   ? 'Thử gửi lại cùng nội dung →'
                   : 'Xác nhận đặt thử →'}
           </button>
+          <p className="note">Demo, không thu tiền và không giao hàng tự động.</p>
         </aside>
       </form>
     </section>

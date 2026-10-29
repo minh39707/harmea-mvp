@@ -8,23 +8,15 @@ export default function SuccessPage({
   trackLink,
   setNotice,
   setError,
-  error,
   setDraft,
   go
 }: Pick<Shop, 'receipt' | 'trackLink' | 'setNotice' | 'setError' | 'error' | 'setDraft' | 'go'>) {
   if (!receipt) return null;
   return (
     <section className="success">
-      <span className="success-mark">✓</span>
-      <p className="eyebrow">ĐÃ LƯU VÀO HỆ THỐNG</p>
-      <h1>
-        Kỷ niệm của bạn
-        <br />
-        <em>đã có một nơi để đến.</em>
-      </h1>
+      <h1>Đã nhận đơn</h1>
       <p>
-        Đã nhận đơn thử <strong>{receipt.orderNumber}</strong>.<br />
-        Không có khoản tiền nào được thu.
+        <strong>{receipt.orderNumber}</strong>
       </p>
       <div className="receipt-box">
         <div>
@@ -59,11 +51,10 @@ export default function SuccessPage({
         <a className="button primary" href={trackLink}>
           Xem đơn thử →
         </a>
-        <p className="fineprint">
-          Lưu liên kết trước khi đóng trang. Người có liên kết có thể xem tiến độ; thông tin người
-          nhận và thiết kế không được hiển thị công khai.
+        <p className="note">
+          Demo, không thu tiền. Lưu liên kết trước khi đóng trang. Người có liên kết có thể xem tiến
+          độ; thông tin người nhận và thiết kế không được hiển thị công khai.
         </p>
-        {error && <p className="error">{error}</p>}
       </div>
       <button
         className="text-button"
@@ -72,7 +63,7 @@ export default function SuccessPage({
           go('product');
         }}
       >
-        ← Trở lại bộ sưu tập
+        ← Về sản phẩm
       </button>
     </section>
   );

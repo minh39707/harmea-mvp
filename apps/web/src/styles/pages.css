@@ -1,34 +1,24 @@
 .page-section {
-  padding: 42px 0 80px;
-  min-height: 65vh;
+  min-height: 60vh;
 }
 .page-section > h1 {
-  margin: 14px 0 35px;
+  margin-bottom: var(--space-4);
 }
 .page-section > .text-button {
-  margin-bottom: 25px;
+  margin-bottom: var(--space-2);
 }
 .empty {
+  padding: var(--space-6) 0;
   text-align: center;
-  padding: 55px 20px;
-}
-.empty > svg {
-  width: 40px;
-  height: 40px;
-  color: var(--gold);
-  margin: 15px;
-}
-.empty p {
-  color: var(--muted);
-  font-size: 13px;
 }
 .empty > .button {
-  max-width: 280px;
-  margin: 28px auto;
+  width: fit-content;
+  margin: var(--space-3) auto;
 }
 .cart-layout,
 .checkout-layout {
   display: grid;
-  grid-template-columns: 1.65fr 1fr;
-  gap: 55px;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
 }

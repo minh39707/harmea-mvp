@@ -1,52 +1,33 @@
 .how {
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  padding: 45px 0;
+  margin-top: var(--space-8);
+  padding-block: var(--space-5);
+  border-block: var(--border) solid var(--line);
+}
+.how-steps {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
-  gap: 35px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-3);
 }
-.how .eyebrow {
-  font-size: 9px;
-  margin: 0 0 12px;
-}
-.how h2 {
-  font-size: 29px;
-}
-.how article > span {
-  display: block;
-  font: italic 24px var(--serif);
-  color: #a69b7b;
-  margin-bottom: 18px;
-}
-.how h3 {
-  font-size: 13px;
-}
-.how p:not(.eyebrow) {
-  font-size: 11px;
-  line-height: 1.8;
+.how article p,
+.faq p {
   color: var(--muted);
-  margin: 0;
+  margin-bottom: 0;
+}
+.how article span {
+  color: var(--accent-text);
+  font-size: var(--font-sm);
 }
 .faq {
   display: grid;
-  grid-template-columns: 1fr 1.7fr;
-  gap: 70px;
-  padding: 55px 0 75px;
-}
-.faq h2 {
-  font-size: 32px;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
 }
 .faq details {
-  padding: 18px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  padding-block: var(--space-2);
+  border-bottom: var(--border) solid var(--line);
 }
-.faq p:not(.eyebrow) {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.8;
-}
-.faq summary {
-  font-size: 13px;
+.faq details:first-child {
+  padding-top: 0;
 }

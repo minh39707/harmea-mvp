@@ -12,14 +12,18 @@ export default function Storefront() {
   return (
     <>
       <Header {...shop} />
-      {shop.notice && <Toast {...shop} />}
+      {shop.notice && !shop.error && !shop.loadError && <Toast {...shop} />}
+      {(shop.loadError || shop.error) && (
+        <div className="toast error" role="alert">
+          {shop.loadError || shop.error}
+          {shop.loadError ? (
+            <button onClick={shop.fetchProduct}>Thử tải lại</button>
+          ) : (
+            <button onClick={() => shop.setError('')}>Đóng thông báo</button>
+          )}
+        </div>
+      )}
       <main>
-        {shop.loadError && (
-          <div className="error" role="alert">
-            {shop.loadError}
-            <button onClick={shop.fetchProduct}>Thử lại</button>
-          </div>
-        )}
         {shop.view === 'product' && <ProductPage {...shop} />}
         {shop.view === 'cart' && <CartPage {...shop} />}
         {shop.view === 'checkout' && <CheckoutPage {...shop} />}

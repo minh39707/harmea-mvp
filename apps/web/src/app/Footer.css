@@ -1,26 +1,25 @@
 footer {
-  background: #eeeee6;
-  padding: 35px 5vw;
+  max-width: 1200px;
+  margin: auto;
+  padding: var(--space-3);
+  border-top: var(--border) solid var(--line);
   display: flex;
+  gap: var(--space-3);
   align-items: center;
-  justify-content: space-between;
-  gap: 25px;
+  flex-wrap: wrap;
 }
 footer .wordmark {
-  font-size: 32px;
+  font-size: var(--font-title);
 }
 footer p {
-  font-size: 10px;
-  color: #777e6e;
-  line-height: 1.8;
-  margin: 6px 0;
-}
-footer > span {
-  font-size: 9px;
-  letter-spacing: 1.3px;
-  line-height: 2;
-}
-footer small {
-  letter-spacing: 0;
   color: var(--muted);
+  font-size: var(--font-sm);
+  margin: 0;
+  flex: 1;
+}
+footer a {
+  font-size: var(--font-sm);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }

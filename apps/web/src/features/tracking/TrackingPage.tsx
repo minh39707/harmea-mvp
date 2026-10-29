@@ -7,15 +7,11 @@ export default function TrackingPage({
   trackInput,
   setTrackInput,
   trackingBusy,
-  error,
   tracking
 }: Pick<Shop, 'lookup' | 'trackInput' | 'setTrackInput' | 'trackingBusy' | 'error' | 'tracking'>) {
   return (
     <section className="tracking page-section">
-      <p className="eyebrow">HÀNH TRÌNH CỦA MỘT KỶ NIỆM</p>
-      <h1>
-        Theo dõi <em>đơn của bạn.</em>
-      </h1>
+      <h1>Tra cứu đơn</h1>
       <form
         onSubmit={e => {
           e.preventDefault();
@@ -38,11 +34,6 @@ export default function TrackingPage({
           {trackingBusy ? 'Đang tra cứu…' : 'Tra cứu đơn →'}
         </button>
       </form>
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
       {tracking && (
         <div className="tracking-result" aria-live="polite">
           <span className="status">● {statusLabels[tracking.status]}</span>
@@ -72,7 +63,7 @@ export default function TrackingPage({
           >
             Làm mới tiến độ
           </button>
-          <p className="fineprint">
+          <p className="note">
             Chỉ hiển thị tiến độ do cửa hàng ghi nhận; thông tin người nhận, ảnh và thiết kế được
             giữ riêng tư.
           </p>

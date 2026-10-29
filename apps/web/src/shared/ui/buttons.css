@@ -1,34 +1,34 @@
-.add-row {
-  display: flex;
-  gap: 12px;
-}
 .button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 15px 21px;
-  border-radius: 3px;
-  border: 1px solid transparent;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius);
+  border: var(--border) solid var(--transparent);
   text-decoration: none;
-  font-size: 12px;
+  font-size: var(--font-body);
   min-height: 48px;
   font-weight: 500;
-  transition: background 0.18s;
+  text-align: center;
 }
 .primary {
-  color: #faf9f1;
-  background: #33392e;
+  color: var(--surface);
+  background: var(--text);
 }
 .primary:hover:not(:disabled) {
-  background: #4d5742;
+  background: var(--success);
 }
 .secondary {
-  border-color: #c9ccbf;
-  background: transparent;
+  border-color: var(--line);
+  background: var(--surface);
 }
-.secondary:hover {
-  background: #eeeee4;
+.secondary:hover:not(:disabled) {
+  background: var(--soft);
+}
+.add-row {
+  display: flex;
+  gap: var(--space-2);
 }
 .add-row > .button {
   flex: 1;
@@ -36,9 +36,14 @@
 .add-row > .button > span {
   margin-left: auto;
 }
-.fineprint {
-  font-size: 10px;
-  line-height: 1.7;
-  color: #898b80;
-  margin: 13px 0 0;
+.text-button,
+.cart-actions button {
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  background: var(--transparent);
+  padding: var(--space-1) 0;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }

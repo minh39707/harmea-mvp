@@ -1,20 +1,20 @@
 .quantity {
   display: flex;
-  border: 1px solid #d2d5c7;
   align-items: center;
   height: 48px;
-  border-radius: 3px;
+  border: var(--border) solid var(--line);
+  border-radius: var(--radius);
   flex-shrink: 0;
+  width: fit-content;
 }
 .quantity button {
   border: 0;
-  background: none;
-  width: 34px;
+  background: var(--transparent);
+  width: 44px;
   height: 44px;
-  font-size: 18px;
+  font-size: var(--font-title);
 }
 .quantity output {
-  font-size: 12px;
-  min-width: 25px;
+  min-width: 24px;
   text-align: center;
 }

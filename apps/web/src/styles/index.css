@@ -1,4 +1,3 @@
-/* Preserve the original cascade order during phase 1. */
 @import 'base.css';
 @import 'tokens.css';
 @import 'base-controls.css';
@@ -15,10 +14,7 @@
 @import '../features/checkout/CheckoutPage.css';
 @import '../features/checkout/SuccessPage.css';
 @import '../features/tracking/TrackingPage.css';
-@import 'wide.css';
-@import 'tablet.css';
-@import 'mobile-1.css';
-@import 'mobile-2.css';
 @import 'motion.css';
 @import '../features/editor/CardPreview.css';
 @import '../features/admin/Admin.css';
+@import 'responsive.css';
