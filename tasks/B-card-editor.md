@@ -11,6 +11,7 @@ Các đường dẫn dự kiến phụ trách: `apps/web/src/features/designer/`
 ## Kết quả phải có
 
 - Một mẫu thẻ cố định với ảnh, tên, ngày sinh, địa điểm, ngày kỷ niệm, chữ ký nhập bằng chữ và URL nhạc.
+- **QA-06 (chuyển từ task E):** hiển thị `dateOfBirth` trên `CardPreview` khi có nhập, đồng nhất với preview PNG. Kiểm tra đổi ngày sinh làm thay đổi cả hai bản xem trước; E chỉ kiểm tra hồi quy.
 - Xem trước ngay khi thay dữ liệu; chọn ảnh và lưu các thông số crop theo hợp đồng. Dùng một cách crop đơn giản đủ kiểm soát ảnh trong khung, không xây trình kéo thả nhiều lớp.
 - Phân biệt kích thước thẻ 54 × 86 mm, artwork 57 × 90 mm và safe area 49 × 82 mm. Không tự khẳng định PNG là file in đạt chuẩn khi chưa kiểm tra với quy trình in.
 - Xuất preview PNG thể hiện cùng cấu hình đang thấy. Chờ ảnh và font tải xong trước khi xuất; giữ nguyên ảnh gốc cho gửi đơn.

@@ -13,6 +13,7 @@ Các đường dẫn dự kiến phụ trách: `apps/web/src/features/checkout/`
 - Khách xác nhận thiết kế, chọn 1–10 bản, nhập người nhận/điện thoại/địa chỉ và ghi chú tùy chọn.
 - Hiển thị tiền hàng theo giá sản phẩm; ghi rõ phí giao hàng chưa bao gồm và không có thanh toán trên website.
 - Gửi một multipart request đúng hợp đồng gồm payload, ảnh gốc và preview. Giữ `requestKey` cho cùng một lần gửi; khóa nút khi đang gửi.
+- **QA-07 (chuyển từ task E):** sau khi checkout thành công, reset `requestKey` và `signature` để lần đặt mới có khóa mới. Kiểm tra đặt hai lần có nội dung giống hệt tạo hai đơn khác nhau, còn retry lần gửi chưa rõ kết quả vẫn giữ khóa và không tạo thêm đơn; E chỉ kiểm tra hồi quy.
 - Màn hình thành công hiển thị mã đơn và liên kết theo dõi `/track#token`, có thao tác sao chép. Không đặt token trong query string hoặc log.
 - Trang theo dõi đọc fragment và gửi token trong body tới API; chỉ hiển thị trường công khai và có nút làm mới.
 - Xử lý validation, lỗi mạng, token sai và request trùng. Không tự gửi đơn lần hai với khóa mới khi kết quả lần đầu chưa rõ. Nếu mất response đầu và nhận 409, hướng dẫn liên hệ cửa hàng theo giới hạn MVP; không giả định có API khôi phục token.
