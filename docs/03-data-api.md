@@ -31,7 +31,7 @@ Migration 004 thêm order_items, nới quantity header đến 100 và backfill �
 | GET `/api/admin/orders/{id}/items/{itemId}/assets/{kind}` | Admin | Đã có photo/preview từng dòng |
 | POST `/api/demo-checkouts`, `/api/demo-tracking` | Legacy public | Tạm giữ cho frontend trước C; không thuộc luồng admin mới |
 
-Code UI checkout/tracking đã nối API canonical ở C; UI admin còn D. API/controller frontend đã kiểm tra bằng Express/PGlite/file thật; chưa nghiệm thu thao tác trình duyệt, IndexedDB/Canvas/clipboard hoặc PostgreSQL. Frontend không còn gọi route demo; route legacy vẫn giữ riêng, không tự promote đơn cũ.
+Code UI checkout/tracking/admin đã nối API canonical ở C–D. API/client frontend đã kiểm tra bằng Express/PGlite/file thật; chưa nghiệm thu thao tác trình duyệt, IndexedDB/Canvas/clipboard hoặc PostgreSQL. Frontend không còn gọi route demo; route legacy vẫn giữ riêng, không tự promote đơn cũ. D có `npm run test:admin` và `npm run demo:seed`; xem báo cáo `docs/qa/2026-10-29-task-d.md`.
 
 ## 3. Multipart tạo đơn
 
@@ -91,4 +91,4 @@ Error envelope `{ "error": { "code": "...", "message": "..." } }`. Thiếu phiê
 
 Dừng API trước khi migrate PGlite; không mở hai process cùng DATA_DIR. Migration 004 không tự áp vào database đang chạy; dữ liệu local hiện có chưa được thay đổi trong phiên phát triển A. Sau khi dừng API, chạy `npm.cmd run db:migrate`, `db:check`, rồi khởi động lại.
 
-DB và filesystem không cùng transaction. Nhánh lỗi dọn file vừa ghi; process chết giữa ghi file và commit có thể để tệp mồ côi, chưa có job quét. Chưa nghiệm thu PostgreSQL server, tải public lớn hoặc khôi phục power loss. Route demo legacy giữ hành vi cũ (ảnh nén trong JSON, replay token), sẽ chuyển client ở C; không dùng kết quả legacy để tuyên bố API canonical đã được nghiệm thu qua UI.
+DB và filesystem không cùng transaction. Nhánh lỗi dọn file vừa ghi; process chết giữa ghi file và commit có thể để tệp mồ côi, chưa có job quét. Chưa nghiệm thu PostgreSQL server, tải public lớn hoặc khôi phục power loss. Route demo legacy giữ hành vi cũ (ảnh nén trong JSON, replay token), client đã chuyển ở C; không dùng kết quả legacy để tuyên bố API canonical đã được nghiệm thu qua UI.

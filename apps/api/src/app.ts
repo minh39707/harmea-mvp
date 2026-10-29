@@ -18,6 +18,10 @@ export function createApp(db?: Database, secret = '') {
   if (db && secret) app.use('/api', apiRouter(db, secret));
   app.use(express.static(resolve('apps/web/dist')));
   app.get('/track', (_req, res) => res.sendFile(resolve('apps/web/dist/index.html')));
+  // Public HTML shell only; every admin data/asset API is authenticated separately.
+  app.get(['/admin', '/admin/login', '/admin/orders', '/admin/orders/:id'], (_req, res) =>
+    res.sendFile(resolve('apps/web/dist/index.html'))
+  );
   app.use((_request, response) => {
     response.status(404).json({
       error: { code: 'NOT_FOUND', message: 'Endpoint chưa được triển khai trong starter.' }

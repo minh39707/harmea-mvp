@@ -14,6 +14,7 @@ export default function Footer({ go }: Pick<Shop, 'go'>) {
         <br />
         Không liên kết chính thức với các nền tảng âm nhạc.
       </p>
+      <a href="/admin/login">Quản trị</a>
       <span>
         NFC MUSIC CARD
         <br />

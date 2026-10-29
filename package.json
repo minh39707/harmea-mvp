@@ -25,7 +25,9 @@
     "test:smoke": "node tests/smoke.mjs",
     "test:api": "node --test tests/api-integration.mjs",
     "test:editor": "node --test tests/editor.mjs",
-    "test:checkout": "node --test tests/checkout.mjs"
+    "test:checkout": "node --test tests/checkout.mjs",
+    "test:admin": "node --test tests/admin.mjs",
+    "demo:seed": "node --env-file-if-exists=.env scripts/seed-demo.mjs"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",

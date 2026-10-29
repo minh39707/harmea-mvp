@@ -19,7 +19,7 @@ flowchart LR
     AD --> F
 ```
 
-Task A đã triển khai API catalog/orders/tracking/admin với kiểm thử PGlite. UI admin và việc nối frontend vào API mới còn ở B–D. Frontend trước C vẫn gọi route demo legacy; không tự chuyển đơn legacy thành orders.
+Task A đã triển khai API catalog/orders/tracking/admin với kiểm thử PGlite; B–D đã nối editor, checkout, tracking và admin vào API canonical. Nghiệm thu thao tác trình duyệt còn chờ; không tự chuyển đơn legacy thành orders.
 
 ## 2. Stack và lựa chọn vận hành
 
@@ -41,7 +41,7 @@ Nguồn kỹ thuật đã đối chiếu: [Vite](https://vite.dev/guide/), [Expr
 
 ```text
 apps/
-  web/src/features/     editor, cart, checkout, tracking; admin còn task D
+  web/src/features/     editor, cart, checkout, tracking, admin
   api/src/
     app.ts             HTTP app, middleware và routes
     server.ts          bootstrap/listen
@@ -80,7 +80,7 @@ Preview client gửi chỉ là proof trực quan; admin phải đối chiếu v�
 
 ## 5. Auth, tracking và trạng thái
 
-- Admin password trong `.env` là scrypt salt/hash; dùng timingSafeEqual khi so sánh. Setup sinh mật khẩu local trong `.local-admin.txt`; module login đã có ở A, UI quản trị còn ở D. Hash sai/chưa cấu hình trả 503, không có mật khẩu mặc định.
+- Admin password trong `.env` là scrypt salt/hash; dùng timingSafeEqual khi so sánh. Setup sinh mật khẩu local trong `.local-admin.txt`; module login có ở A, UI quản trị D tại `/admin/login`. Hash sai/chưa cấu hình trả 503, không có mật khẩu mặc định.
 - Login tạo session random, lưu SHA-256; expiry 8 giờ. Cookie `harmea_admin`: HttpOnly, SameSite=Lax; Secure khi HTTPS. Logout xóa DB session và cookie. Không session trong localStorage.
 - Kiểm tra Origin với APP_ORIGIN cho request browser làm thay đổi dữ liệu; kết hợp session và rate limit cho admin. Không bật CORS `*` kèm credentials. Vite proxy giữ API cùng origin ở browser.
 - Tracking token trong fragment không đi vào HTTP request trang; frontend POST body tới lookup. Không ghi token/body trong access log; Referrer-Policy no-referrer. API công khai chỉ chọn các trường cho phép, không spread bản ghi DB.

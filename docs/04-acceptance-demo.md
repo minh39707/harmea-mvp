@@ -6,6 +6,8 @@ Cập nhật 29/10/2026: API task A đã có integration tests riêng; xem docs/
 
 Chức năng nghiệp vụ phải được triển khai trước khi chạy checklist. Khung dự án chỉ khởi động/build được không đồng nghĩa với MVP đã hoàn thành.
 
+Cập nhật D 29/10/2026: có UI admin và lệnh `npm run demo:seed` (dừng API, migrate trước; hướng dẫn trong README). [Báo cáo D](qa/2026-10-29-task-d.md) ghi kiểm thử HTTP/client/DB/tệp cho quyền, snapshots, trạng thái, version và restart. Các bằng chứng tự động này chưa xác nhận thao tác UI trong bảng dưới; giữ trạng thái “Chưa chạy” cho nghiệm thu trình duyệt và buổi diễn tập.
+
 ## 1. Dữ liệu và chuẩn bị
 
 - Dùng ảnh và thông tin giả có quyền sử dụng; không lấy dữ liệu khách thật để demo.
