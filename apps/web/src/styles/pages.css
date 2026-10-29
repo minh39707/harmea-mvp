@@ -1,0 +1,34 @@
+.page-section {
+  padding: 42px 0 80px;
+  min-height: 65vh;
+}
+.page-section > h1 {
+  margin: 14px 0 35px;
+}
+.page-section > .text-button {
+  margin-bottom: 25px;
+}
+.empty {
+  text-align: center;
+  padding: 55px 20px;
+}
+.empty > svg {
+  width: 40px;
+  height: 40px;
+  color: var(--gold);
+  margin: 15px;
+}
+.empty p {
+  color: var(--muted);
+  font-size: 13px;
+}
+.empty > .button {
+  max-width: 280px;
+  margin: 28px auto;
+}
+.cart-layout,
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1.65fr 1fr;
+  gap: 55px;
+}

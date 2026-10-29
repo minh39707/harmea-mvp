@@ -1,0 +1,20 @@
+.quantity {
+  display: flex;
+  border: 1px solid #d2d5c7;
+  align-items: center;
+  height: 48px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.quantity button {
+  border: 0;
+  background: none;
+  width: 34px;
+  height: 44px;
+  font-size: 18px;
+}
+.quantity output {
+  font-size: 12px;
+  min-width: 25px;
+  text-align: center;
+}

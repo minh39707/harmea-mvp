@@ -1,0 +1,26 @@
+footer {
+  background: #eeeee6;
+  padding: 35px 5vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+}
+footer .wordmark {
+  font-size: 32px;
+}
+footer p {
+  font-size: 10px;
+  color: #777e6e;
+  line-height: 1.8;
+  margin: 6px 0;
+}
+footer > span {
+  font-size: 9px;
+  letter-spacing: 1.3px;
+  line-height: 2;
+}
+footer small {
+  letter-spacing: 0;
+  color: var(--muted);
+}

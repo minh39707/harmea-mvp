@@ -1,0 +1,13 @@
+@media (min-width: 1500px) {
+  header,
+  main {
+    padding-left: 70px;
+    padding-right: 70px;
+  }
+  .product-layout {
+    gap: 80px;
+  }
+  .hero-image {
+    height: 620px;
+  }
+}

@@ -1,0 +1,44 @@
+.add-row {
+  display: flex;
+  gap: 12px;
+}
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 15px 21px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  font-size: 12px;
+  min-height: 48px;
+  font-weight: 500;
+  transition: background 0.18s;
+}
+.primary {
+  color: #faf9f1;
+  background: #33392e;
+}
+.primary:hover:not(:disabled) {
+  background: #4d5742;
+}
+.secondary {
+  border-color: #c9ccbf;
+  background: transparent;
+}
+.secondary:hover {
+  background: #eeeee4;
+}
+.add-row > .button {
+  flex: 1;
+}
+.add-row > .button > span {
+  margin-left: auto;
+}
+.fineprint {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #898b80;
+  margin: 13px 0 0;
+}

@@ -8,6 +8,11 @@ import sharp from 'sharp';
 import { openDatabase } from '../apps/api/src/db.ts';
 import { createApp } from '../apps/api/src/app.ts';
 
+const args = process.argv.slice(2);
+if (args.length && (args.length !== 2 || args[0] !== '--out')) {
+  throw new Error('Usage: npm run test:smoke [-- --out <file>]');
+}
+
 process.env.DB_DRIVER = 'pglite';
 process.env.DATA_DIR = await mkdtemp(join(tmpdir(), 'harmea-qa-'));
 let db = await openDatabase();
@@ -187,10 +192,6 @@ try {
 } finally {
   await stop();
   await db.close();
-}
-const args = process.argv.slice(2);
-if (args.length && (args.length !== 2 || args[0] !== '--out')) {
-  throw new Error('Usage: npm run test:smoke [-- --out <file>]');
 }
 if (args[0] === '--out')
   await writeFile(

@@ -1,0 +1,11 @@
+:root {
+  font-family: 'DM Sans', Arial, sans-serif;
+  color: #292c27;
+  background: #faf9f5;
+  font-synthesis: none;
+  --gold: #a58143;
+  --ink: #292c27;
+  --muted: #777a70;
+  --line: #deded3;
+  --serif: 'Playfair Display', Georgia, serif;
+}

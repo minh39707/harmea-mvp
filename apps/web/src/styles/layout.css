@@ -1,0 +1,77 @@
+.announcement {
+  padding: 10px max(5vw, 20px);
+  display: flex;
+  justify-content: space-between;
+  background: #ece9dd;
+  color: #4e5149;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+.demo-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+}
+header {
+  max-width: 1440px;
+  margin: auto;
+  height: 100px;
+  padding: 0 5vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  gap: 20px;
+}
+.wordmark {
+  border: 0;
+  background: none;
+  font-family: var(--serif);
+  font-size: 39px;
+  letter-spacing: -2px;
+  padding: 0;
+}
+.wordmark span {
+  display: inline-block;
+  font-size: 27px;
+  color: var(--gold);
+  margin-left: 7px;
+  transform: rotate(-12deg);
+}
+nav {
+  display: flex;
+  gap: 36px;
+}
+nav button {
+  border: 0;
+  background: none;
+  font-size: 13px;
+  color: #77796f;
+  padding: 15px 0;
+}
+nav button.active {
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.bag-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: 0;
+  font-size: 13px;
+}
+.bag-button b {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  height: 24px;
+  min-width: 24px;
+  font-size: 11px;
+}
+main {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 5vw;
+}

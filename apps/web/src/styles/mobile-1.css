@@ -1,0 +1,159 @@
+@media (max-width: 760px) {
+  .announcement {
+    font-size: 9px;
+    padding: 9px 20px;
+  }
+  .announcement > span:first-child {
+    max-width: 55%;
+  }
+  .demo-label {
+    font-size: 8px;
+    max-width: 40%;
+    text-align: right;
+  }
+  header {
+    height: 78px;
+    padding: 0 20px;
+  }
+  .wordmark {
+    font-size: 33px;
+  }
+  nav {
+    display: none;
+  }
+  .bag-button {
+    font-size: 11px;
+  }
+  main {
+    padding: 0 20px;
+  }
+  .breadcrumb {
+    font-size: 9px;
+    margin: 22px 0;
+    gap: 8px;
+  }
+  .product-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding-bottom: 40px;
+  }
+  .hero-image {
+    height: 420px;
+  }
+  .hero-image > img {
+    object-position: center 66%;
+  }
+  .gallery-controls {
+    margin-top: 10px;
+  }
+  .gallery-controls button {
+    font-size: 10px;
+  }
+  .product-info > .eyebrow {
+    font-size: 9px;
+  }
+  h1 {
+    font-size: 40px;
+  }
+  .intro {
+    font-size: 13px;
+  }
+  .product-name {
+    font-size: 13px;
+  }
+  .price-row strong {
+    font-size: 26px;
+  }
+  .product-info {
+    padding: 0 2px;
+  }
+  input,
+  textarea {
+    font-size: 16px;
+    padding: 12px;
+  }
+  label {
+    font-size: 12px;
+  }
+  .form-heading {
+    font-size: 9px;
+  }
+  .color-row {
+    font-size: 12px;
+  }
+  .personal-details summary {
+    font-size: 12px;
+  }
+  .button {
+    font-size: 13px;
+  }
+  .fineprint {
+    font-size: 11px;
+  }
+  .how {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding: 30px 0;
+  }
+  .how article {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0 12px;
+  }
+  .how article > span {
+    grid-row: 1/3;
+  }
+  .how article h3 {
+    font-size: 15px;
+  }
+  .how article p {
+    font-size: 12px !important;
+  }
+  .how > div {
+    margin-bottom: 10px;
+  }
+  .faq {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 35px 0 45px;
+  }
+  .faq h2 {
+    font-size: 29px;
+  }
+  .faq h2 br {
+    display: none;
+  }
+  footer {
+    padding: 30px 20px;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  footer > span {
+    display: none;
+  }
+  footer > p {
+    max-width: 180px;
+    font-size: 9px;
+  }
+  .page-section {
+    padding: 30px 0 50px;
+  }
+  .page-section > h1 {
+    font-size: 36px;
+    margin-bottom: 28px;
+  }
+  .cart-layout,
+  .checkout-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .cart-thumb {
+    width: 100px;
+  }
+  .cart-item {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+}
