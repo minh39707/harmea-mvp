@@ -1,0 +1,10 @@
+node_modules/
+.npm-cache/
+dist/
+.env
+.env.*
+!.env.example
+.local-admin.txt
+storage/
+*.log
+coverage/

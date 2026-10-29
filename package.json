@@ -1,0 +1,18 @@
+{
+  "name": "harmea-mvp", "version": "0.1.0", "private": true, "type": "module",
+  "workspaces": ["apps/*"],
+  "engines": { "node": ">=24 <25" },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "concurrently -k -n api,web \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "node --env-file-if-exists=.env --watch apps/api/src/server.ts",
+    "dev:web": "npm run dev --workspace @harmea/web",
+    "db:migrate": "node --env-file-if-exists=.env scripts/migrate.ts",
+    "db:check": "node --env-file-if-exists=.env scripts/check-db.ts",
+    "contract:check": "node scripts/check-contract.mjs",
+    "typecheck": "tsc -p tsconfig.tools.json && npm run typecheck --workspaces",
+    "build": "npm run build --workspaces",
+    "start:api": "node --env-file-if-exists=.env apps/api/dist/server.js"
+  },
+  "devDependencies": { "concurrently": "10.0.6", "typescript": "7.0.2", "@types/node": "^24.0.0", "@apidevtools/swagger-parser": "^12.1.0" }
+}
