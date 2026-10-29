@@ -1,0 +1,33 @@
+.how {
+  margin-top: var(--space-8);
+  padding-block: var(--space-5);
+  border-block: var(--border) solid var(--line);
+}
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+.how article p,
+.faq p {
+  color: var(--muted);
+  margin-bottom: 0;
+}
+.how article span {
+  color: var(--accent-text);
+  font-size: var(--font-sm);
+}
+.faq {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
+}
+.faq details {
+  padding-block: var(--space-2);
+  border-bottom: var(--border) solid var(--line);
+}
+.faq details:first-child {
+  padding-top: 0;
+}

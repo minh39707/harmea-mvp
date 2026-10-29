@@ -1,0 +1,9 @@
+{
+  "method": "Sharp rasterization of the same self-contained SVG used by browser preview/export; not browser Canvas testing",
+  "fixtures": [
+    "C:\\Users\\LEGION\\AppData\\Local\\Temp\\harmea-editor-b-d0Nsrc\\portrait-vietnamese.png",
+    "C:\\Users\\LEGION\\AppData\\Local\\Temp\\harmea-editor-b-d0Nsrc\\landscape-vietnamese.png",
+    "C:\\Users\\LEGION\\AppData\\Local\\Temp\\harmea-editor-b-d0Nsrc\\long-fields.png"
+  ],
+  "inspection": "Viewed all 3 generated PNGs: Vietnamese/DOB/date/signature present; long fields remain within allocated regions. These are Sharp rasterizations, not browser screenshots."
+}

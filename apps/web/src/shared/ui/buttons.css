@@ -1,0 +1,49 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius);
+  border: var(--border) solid var(--transparent);
+  text-decoration: none;
+  font-size: var(--font-body);
+  min-height: 48px;
+  font-weight: 500;
+  text-align: center;
+}
+.primary {
+  color: var(--surface);
+  background: var(--text);
+}
+.primary:hover:not(:disabled) {
+  background: var(--success);
+}
+.secondary {
+  border-color: var(--line);
+  background: var(--surface);
+}
+.secondary:hover:not(:disabled) {
+  background: var(--soft);
+}
+.add-row {
+  display: flex;
+  gap: var(--space-2);
+}
+.add-row > .button {
+  flex: 1;
+}
+.add-row > .button > span {
+  margin-left: auto;
+}
+.text-button,
+.cart-actions button {
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  background: var(--transparent);
+  padding: var(--space-1) 0;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

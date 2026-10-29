@@ -2,7 +2,13 @@
 
 Mốc dự kiến: 28/10/2026. Tài liệu này là checklist thực hiện; mọi mục bên dưới khởi tạo ở trạng thái **chưa chạy**, không phải báo cáo đạt kiểm thử.
 
+Cập nhật 29/10/2026: API task A đã có integration tests riêng; xem docs/qa/2026-10-29-task-a.md. Checklist UI bên dưới vẫn chưa chạy. Phạm vi giữ giỏ: 1–10 thiết kế cùng mẫu, mỗi dòng 1–10 bản; kiểm tra thêm một đơn có hai thiết kế và ảnh/preview riêng từng dòng.
+
 Chức năng nghiệp vụ phải được triển khai trước khi chạy checklist. Khung dự án chỉ khởi động/build được không đồng nghĩa với MVP đã hoàn thành.
+
+Cập nhật D 29/10/2026: có UI admin và lệnh `npm run demo:seed` (dừng API, migrate trước; hướng dẫn trong README). [Báo cáo D](qa/2026-10-29-task-d.md) ghi kiểm thử HTTP/client/DB/tệp cho quyền, snapshots, trạng thái, version và restart. Các bằng chứng tự động này chưa xác nhận thao tác UI trong bảng dưới; giữ trạng thái “Chưa chạy” cho nghiệm thu trình duyệt và buổi diễn tập.
+
+Cập nhật E2: code giao diện tối giản và responsive đã triển khai; [báo cáo E2](qa/2026-10-29-clean-layout-phase2.md) có kết quả hồi quy/độ tương phản tĩnh. Cần chạy luồng hai thiết kế → sửa → đặt → sao chép → tracking và reload giỏ tại 375/768/1440 px; chưa đánh dấu AT-16 hoặc nghiệm thu E2 là đạt.
 
 ## 1. Dữ liệu và chuẩn bị
 

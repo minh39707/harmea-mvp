@@ -1,0 +1,24 @@
+.page-section {
+  min-height: 60vh;
+}
+.page-section > h1 {
+  margin-bottom: var(--space-4);
+}
+.page-section > .text-button {
+  margin-bottom: var(--space-2);
+}
+.empty {
+  padding: var(--space-6) 0;
+  text-align: center;
+}
+.empty > .button {
+  width: fit-content;
+  margin: var(--space-3) auto;
+}
+.cart-layout,
+.checkout-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}

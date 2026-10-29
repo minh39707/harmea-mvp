@@ -1,0 +1,25 @@
+footer {
+  max-width: 1200px;
+  margin: auto;
+  padding: var(--space-3);
+  border-top: var(--border) solid var(--line);
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+footer .wordmark {
+  font-size: var(--font-title);
+}
+footer p {
+  color: var(--muted);
+  font-size: var(--font-sm);
+  margin: 0;
+  flex: 1;
+}
+footer a {
+  font-size: var(--font-sm);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}

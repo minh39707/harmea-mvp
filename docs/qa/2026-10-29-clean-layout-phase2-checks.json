@@ -1,0 +1,13 @@
+{
+  "contrast": {
+    "mutedBg": 4.65,
+    "mutedSurface": 4.9,
+    "accentTextBg": 5.9,
+    "dangerSurface": 6.73,
+    "primary": 14.15
+  },
+  "hardColors": [],
+  "oversized": [],
+  "maxLines": 170,
+  "appLines": 9
+}

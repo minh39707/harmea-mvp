@@ -1,0 +1,6 @@
+{
+  "htmlComparisons": 15,
+  "htmlMatched": true,
+  "cssRulesAndCascadeMatched": true,
+  "method": "Server-rendered markup with supplied state, and parsed CSS comparison against d18d6aa; not browser testing"
+}

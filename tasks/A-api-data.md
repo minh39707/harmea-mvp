@@ -1,6 +1,8 @@
 # A — API, dữ liệu và quyền truy cập
 
-**Trạng thái:** công việc cần triển khai; kiểm tra `README.md` để biết khung hiện có. **Dự kiến:** 2,5 giờ sau bước chuẩn bị.
+**Trạng thái:** đã triển khai backend và kiểm tra PGlite; còn kiểm tra PostgreSQL và tích hợp UI ở B–D. **Ước lượng ban đầu:** 2,5 giờ sau bước chuẩn bị.
+
+**Cập nhật 29/10/2026:** đã triển khai backend theo contract 0.2.0 giữ giỏ hàng; kiểm tra Express/PGlite/file thật qua `npm.cmd run test:api`. Chưa áp migration 004 vào DB local đang chạy, chưa kiểm tra PostgreSQL hoặc UI (B–D). Xem [báo cáo A](../docs/qa/2026-10-29-task-a.md).
 
 ## Phạm vi và phụ thuộc
 
@@ -10,7 +12,8 @@ Các đường dẫn dự kiến phụ trách: `apps/api/src/modules/`, middlewa
 
 ## Kết quả phải có
 
-- API đọc sản phẩm hiện tại; tạo đơn multipart theo hợp đồng, kiểm tra dữ liệu/ảnh và tính tiền hàng ở máy chủ.
+- API đọc sản phẩm hiện tại; tạo đơn multipart nhiều dòng theo hợp đồng 0.2.0 (`items[]`, cặp `photo_i`/`preview_i`), kiểm tra dữ liệu/ảnh và tính tiền hàng ở máy chủ.
+- Mỗi đơn 1–10 thiết kế cùng sản phẩm/template, mỗi dòng 1–10 bản; một người nhận và một tiến độ chung. Tổng multipart ≤16 MiB; ảnh gốc từng dòng ≤5 MiB, preview PNG ≤2 MiB. Route demo legacy tạm giữ cho frontend trước C, không tự chuyển dữ liệu vào admin mới.
 - Lưu snapshot thiết kế, giá, template và URL; tệp nằm trong kho riêng, không bật static serving cho toàn bộ thư mục ảnh.
 - Sinh token tracking ngẫu nhiên, chỉ lưu hash; trả token thô một lần khi tạo đơn. Lần gửi trùng `requestKey` trả lỗi 409, không tạo dòng thứ hai.
 - API tracking chỉ trả trường được công khai; không lộ người nhận, số điện thoại, địa chỉ, ảnh, thiết kế hoặc URL nhạc.
@@ -31,7 +34,7 @@ Các đường dẫn dự kiến phụ trách: `apps/api/src/modules/`, middlewa
 ```text
 Triển khai task A trong tasks/A-api-data.md của dự án Harméa. Trước khi sửa, đọc AGENTS.md nếu có, README.md, docs/01-requirements.md, docs/02-architecture.md, docs/03-data-api.md, docs/04-acceptance-demo.md và contracts/openapi.json; kiểm tra phần khung đã có.
 
-Giữ phạm vi demo một người: một sản phẩm/mẫu, một thiết kế mỗi đơn, khách không tài khoản/giỏ hàng/thanh toán. Chỉ làm backend và kiểm tra liên quan. Dùng adapter database, migration và cấu hình đã có; không đổi stack hoặc thêm ORM. Tuân thủ hợp đồng JSON/multipart, bảo vệ tệp riêng, snapshot bất biến, token tracking, quyền admin và state machine. Không trả dữ liệu giả thành kết quả đã lưu. Nếu hợp đồng mâu thuẫn, sửa nhất quán và ghi rõ ảnh hưởng thay vì âm thầm đổi tên trường.
+Giữ phạm vi demo một người: một sản phẩm/mẫu, giữ giỏ hàng, mỗi đơn 1–10 thiết kế cùng mẫu, mỗi dòng 1–10 bản; khách không tài khoản/thanh toán. Chỉ làm backend và kiểm tra liên quan. Dùng adapter database, migration và cấu hình đã có; không đổi stack hoặc thêm ORM. Tuân thủ hợp đồng JSON/multipart, bảo vệ tệp riêng, snapshot bất biến, token tracking, quyền admin và state machine. Không trả dữ liệu giả thành kết quả đã lưu. Nếu hợp đồng mâu thuẫn, sửa nhất quán và ghi rõ ảnh hưởng thay vì âm thầm đổi tên trường.
 
 Hoàn thành các điều kiện Done trong task; báo file đã sửa, lệnh kiểm tra, kết quả thực đo và phần còn thiếu. Không triển khai cloud hoặc thêm chức năng ngoài MVP.
 ```

@@ -7,8 +7,8 @@ Mục tiêu của kế hoạch là hoàn thành một luồng có dữ liệu th
 ## Phạm vi cố định đến buổi demo
 
 - Một sản phẩm, một phiên bản mẫu thẻ; chữ ký nhập bằng chữ.
-- Một thiết kế trên mỗi đơn, số lượng 1–10 bản giống nhau.
-- Khách không đăng ký tài khoản; không giỏ hàng, không thanh toán.
+- Một đơn có 1–10 thiết kế cùng mẫu, mỗi dòng 1–10 bản giống nhau, tổng 1–100 thẻ (quyết định 29/10/2026).
+- Khách không đăng ký tài khoản; giữ giỏ hàng, không thanh toán.
 - Khách xem trước, xác nhận và gửi đơn; nội dung đơn đã gửi không sửa trực tiếp.
 - Một quản trị viên đăng nhập để xem đơn, ảnh, URL nhạc và cập nhật trạng thái.
 - Khách dùng liên kết bí mật để tra cứu tiến độ; trang này không trả thông tin cá nhân hoặc ảnh.
@@ -49,7 +49,7 @@ Mỗi phiếu có prompt để đưa cho một coding agent hoặc dùng làm ch
 
 **Phải sửa trước buổi demo:** không tạo được đơn, mất dữ liệu, lưu sai thiết kế/giá, tracking không cập nhật, người chưa đăng nhập đọc được dữ liệu admin, lộ ảnh/thông tin khách, hoặc chuyển trạng thái sai.
 
-**Có thể để sau:** tinh chỉnh màu/font, animation, nhiều mẫu, chữ ký vẽ tay, tự động xuất file in, đăng nhập khách, giỏ hàng, thanh toán, vận chuyển thật, thông báo email/SMS và cloud. Không cắt việc xác nhận nội dung, validation phía máy chủ hay lưu dữ liệu để đổi lấy trang trí.
+**Có thể để sau:** tinh chỉnh màu/font, animation, nhiều mẫu, chữ ký vẽ tay, tự động xuất file in, đăng nhập khách, thanh toán, vận chuyển thật, thông báo email/SMS và cloud. Không cắt việc xác nhận nội dung, validation phía máy chủ hay lưu dữ liệu để đổi lấy trang trí.
 
 Nếu chưa hoàn tất một chức năng, ghi rõ giới hạn trong demo; không thay dữ liệu tĩnh rồi giới thiệu là thao tác đã được lưu vào hệ thống.
 

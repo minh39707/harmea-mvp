@@ -1,0 +1,71 @@
+TAP version 13
+# Subtest: admin frontend client with real HTTP, database and private files
+    # Subtest: public admin shells contain no order data; APIs remain authenticated
+    ok 1 - public admin shells contain no order data; APIs remain authenticated
+      ---
+      duration_ms: 48.8528
+      type: 'test'
+      ...
+    # Subtest: C checkout appears in D with B snapshots and exact original/PNG bytes
+    ok 2 - C checkout appears in D with B snapshots and exact original/PNG bytes
+      ---
+      duration_ms: 233.9202
+      type: 'test'
+      ...
+    # Subtest: confirmation and cancellation validation prevent client mutation
+    ok 3 - confirmation and cancellation validation prevent client mutation
+      ---
+      duration_ms: 8.8199
+      type: 'test'
+      ...
+    # Subtest: stale version sends one PATCH then one GET, never retries mutation
+    ok 4 - stale version sends one PATCH then one GET, never retries mutation
+      ---
+      duration_ms: 35.0306
+      type: 'test'
+      ...
+    # Subtest: cancellation is private and terminal
+    ok 5 - cancellation is private and terminal
+      ---
+      duration_ms: 143.4055
+      type: 'test'
+      ...
+    # Subtest: restart preserves orders, history and private assets
+    ok 6 - restart preserves orders, history and private assets
+      ---
+      duration_ms: 194.3775
+      type: 'test'
+      ...
+    # Subtest: logout revokes replayed cookie for data and files
+    ok 7 - logout revokes replayed cookie for data and files
+      ---
+      duration_ms: 7.0226
+      type: 'test'
+      ...
+    # Subtest: expired session rejected server-side and lost logout response reports error
+    ok 8 - expired session rejected server-side and lost logout response reports error
+      ---
+      duration_ms: 71.3247
+      type: 'test'
+      ...
+    1..8
+ok 1 - admin frontend client with real HTTP, database and private files
+  ---
+  duration_ms: 2714.4948
+  type: 'test'
+  ...
+# Subtest: demo fixture command creates completed/cancelled once in an isolated database
+ok 2 - demo fixture command creates completed/cancelled once in an isolated database
+  ---
+  duration_ms: 3377.2155
+  type: 'test'
+  ...
+1..2
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6400.6306

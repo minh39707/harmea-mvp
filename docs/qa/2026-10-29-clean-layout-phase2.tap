@@ -1,0 +1,349 @@
+TAP version 13
+# Subtest: admin frontend client with real HTTP, database and private files
+    # Subtest: public admin shells contain no order data; APIs remain authenticated
+    ok 1 - public admin shells contain no order data; APIs remain authenticated
+      ---
+      duration_ms: 61.8617
+      type: 'test'
+      ...
+    # Subtest: C checkout appears in D with B snapshots and exact original/PNG bytes
+    ok 2 - C checkout appears in D with B snapshots and exact original/PNG bytes
+      ---
+      duration_ms: 315.8029
+      type: 'test'
+      ...
+    # Subtest: confirmation and cancellation validation prevent client mutation
+    ok 3 - confirmation and cancellation validation prevent client mutation
+      ---
+      duration_ms: 11.7014
+      type: 'test'
+      ...
+    # Subtest: stale version sends one PATCH then one GET, never retries mutation
+    ok 4 - stale version sends one PATCH then one GET, never retries mutation
+      ---
+      duration_ms: 60.305
+      type: 'test'
+      ...
+    # Subtest: cancellation is private and terminal
+    ok 5 - cancellation is private and terminal
+      ---
+      duration_ms: 204.0467
+      type: 'test'
+      ...
+    # Subtest: restart preserves orders, history and private assets
+    ok 6 - restart preserves orders, history and private assets
+      ---
+      duration_ms: 271.1582
+      type: 'test'
+      ...
+    # Subtest: logout revokes replayed cookie for data and files
+    ok 7 - logout revokes replayed cookie for data and files
+      ---
+      duration_ms: 8.9654
+      type: 'test'
+      ...
+    # Subtest: expired session rejected server-side and lost logout response reports error
+    ok 8 - expired session rejected server-side and lost logout response reports error
+      ---
+      duration_ms: 104.0394
+      type: 'test'
+      ...
+    1..8
+ok 1 - admin frontend client with real HTTP, database and private files
+  ---
+  duration_ms: 3938.2926
+  type: 'test'
+  ...
+# Subtest: demo fixture command creates completed/cancelled once in an isolated database
+ok 2 - demo fixture command creates completed/cancelled once in an isolated database
+  ---
+  duration_ms: 3518.3983
+  type: 'test'
+  ...
+# Subtest: canonical cart orders, admin sessions, assets and state transitions
+    # Subtest: catalog matches canonical Product schema
+    ok 1 - catalog matches canonical Product schema
+      ---
+      duration_ms: 52.5123
+      type: 'test'
+      ...
+    # Subtest: create two designs, price from DB, random token and pending event
+    ok 2 - create two designs, price from DB, random token and pending event
+      ---
+      duration_ms: 177.4281
+      type: 'test'
+      ...
+    # Subtest: duplicate key returns 409 without token or extra files
+    ok 3 - duplicate key returns 409 without token or extra files
+      ---
+      duration_ms: 14.3057
+      type: 'test'
+      ...
+    # Subtest: parallel same-key creates one order and cleans losing files
+    ok 4 - parallel same-key creates one order and cleans losing files
+      ---
+      duration_ms: 155.3027
+      type: 'test'
+      ...
+    # Subtest: tracking allowlist and invalid tokens
+    ok 5 - tracking allowlist and invalid tokens
+      ---
+      duration_ms: 28.486
+      type: 'test'
+      ...
+    # Subtest: all admin data, item files and mutations require session
+    ok 6 - all admin data, item files and mutations require session
+      ---
+      duration_ms: 16.4954
+      type: 'test'
+      ...
+    # Subtest: wrong login, secure session properties and hash-only persistence
+    ok 7 - wrong login, secure session properties and hash-only persistence
+      ---
+      duration_ms: 107.0505
+      type: 'test'
+      ...
+    # Subtest: admin pagination, detail snapshots and exact original bytes
+    ok 8 - admin pagination, detail snapshots and exact original bytes
+      ---
+      duration_ms: 44.4645
+      type: 'test'
+      ...
+    # Subtest: input rejects invalid crop, future dates, URLs, quantity, client prices and template
+    ok 9 - input rejects invalid crop, future dates, URLs, quantity, client prices and template
+      ---
+      duration_ms: 123.7803
+      type: 'test'
+      ...
+    # Subtest: malformed multipart, fake/truncated/oversized images and missing pairs are rejected
+    ok 10 - malformed multipart, fake/truncated/oversized images and missing pairs are rejected
+      ---
+      duration_ms: 237.5015
+      type: 'test'
+      ...
+    # Subtest: whole-request size cap works for known and chunked lengths
+    ok 11 - whole-request size cap works for known and chunked lengths
+      ---
+      duration_ms: 59.222
+      type: 'test'
+      ...
+    # Subtest: ten designs and 100 total copies accepted, eleven designs rejected
+    ok 12 - ten designs and 100 total copies accepted, eleven designs rejected
+      ---
+      duration_ms: 329.5208
+      type: 'test'
+      ...
+    # Subtest: admin rejects invalid pagination and unknown fields
+    ok 13 - admin rejects invalid pagination and unknown fields
+      ---
+      duration_ms: 18.1246
+      type: 'test'
+      ...
+    # Subtest: Origin blocks login, PATCH and DELETE
+    ok 14 - Origin blocks login, PATCH and DELETE
+      ---
+      duration_ms: 5.5194
+      type: 'test'
+      ...
+    # Subtest: state machine, same-version conflict and public history
+    ok 15 - state machine, same-version conflict and public history
+      ---
+      duration_ms: 50.4444
+      type: 'test'
+      ...
+    # Subtest: cancel requires reason, terminal cancellation, private reason excluded
+    ok 16 - cancel requires reason, terminal cancellation, private reason excluded
+      ---
+      duration_ms: 93.4134
+      type: 'test'
+      ...
+    # Subtest: database event failure rolls back create, items and files
+    ok 17 - database event failure rolls back create, items and files
+      ---
+      duration_ms: 110.2017
+      type: 'test'
+      ...
+    # Subtest: database event failure rolls back state and version
+    ok 18 - database event failure rolls back state and version
+      ---
+      duration_ms: 86.2593
+      type: 'test'
+      ...
+    # Subtest: order price snapshot survives catalog edits
+    ok 19 - order price snapshot survives catalog edits
+      ---
+      duration_ms: 10.0989
+      type: 'test'
+      ...
+    # Subtest: session rotation revokes old token and logout revokes new token
+    ok 20 - session rotation revokes old token and logout revokes new token
+      ---
+      duration_ms: 51.0375
+      type: 'test'
+      ...
+    # Subtest: expired sessions rejected and HTTPS configuration sets Secure
+    ok 21 - expired sessions rejected and HTTPS configuration sets Secure
+      ---
+      duration_ms: 90.1859
+      type: 'test'
+      ...
+    # Subtest: login rate limit is enforced
+    ok 22 - login rate limit is enforced
+      ---
+      duration_ms: 199.1756
+      type: 'test'
+      ...
+    # Subtest: restart preserves order, events, session and original assets
+    ok 23 - restart preserves order, events, session and original assets
+      ---
+      duration_ms: 236.8655
+      type: 'test'
+      ...
+    1..23
+ok 3 - canonical cart orders, admin sessions, assets and state transitions
+  ---
+  duration_ms: 6257.5963
+  type: 'test'
+  ...
+# Subtest: migration 004 backfills historical single-design orders without changing snapshots
+ok 4 - migration 004 backfills historical single-design orders without changing snapshots
+  ---
+  duration_ms: 1829.4302
+  type: 'test'
+  ...
+# Subtest: tracking links keep secrets in fragments and reject query-string lookup
+ok 5 - tracking links keep secrets in fragments and reject query-string lookup
+  ---
+  duration_ms: 1.3501
+  type: 'test'
+  ...
+# Subtest: browser checkout coordinator against real Express, PGlite and image files
+    # Subtest: multipart carries B output, original bytes and canonical fields
+    ok 1 - multipart carries B output, original bytes and canonical fields
+      ---
+      duration_ms: 246.1392
+      type: 'test'
+      ...
+    # Subtest: QA-07: two intentional identical orders after success use different keys
+    ok 2 - QA-07: two intentional identical orders after success use different keys
+      ---
+      duration_ms: 353.2407
+      type: 'test'
+      ...
+    # Subtest: double click during submit sends only one POST
+    ok 3 - double click during submit sends only one POST
+      ---
+      duration_ms: 161.1211
+      type: 'test'
+      ...
+    # Subtest: lost response, simulated reload and rejected retry never mint another key
+    ok 4 - lost response, simulated reload and rejected retry never mint another key
+      ---
+      duration_ms: 164.2115
+      type: 'test'
+      ...
+    # Subtest: network failure before arrival retries the same key and can succeed
+    ok 5 - network failure before arrival retries the same key and can succeed
+      ---
+      duration_ms: 166.8493
+      type: 'test'
+      ...
+    # Subtest: first-request validation rejection allows correction without losing data
+    ok 6 - first-request validation rejection allows correction without losing data
+      ---
+      duration_ms: 155.4633
+      type: 'test'
+      ...
+    # Subtest: malformed success response is uncertain, not a fake success or a second order
+    ok 7 - malformed success response is uncertain, not a fake success or a second order
+      ---
+      duration_ms: 162.0288
+      type: 'test'
+      ...
+    # Subtest: unavailable/corrupt browser storage blocks POST before mutation
+    ok 8 - unavailable/corrupt browser storage blocks POST before mutation
+      ---
+      duration_ms: 6.5755
+      type: 'test'
+      ...
+    # Subtest: received token survives storage cleanup failure and next intentional order is fresh
+    ok 9 - received token survives storage cleanup failure and next intentional order is fresh
+      ---
+      duration_ms: 269.5505
+      type: 'test'
+      ...
+    # Subtest: confirmation, recipient and total-size validation run before POST
+    ok 10 - confirmation, recipient and total-size validation run before POST
+      ---
+      duration_ms: 10.2051
+      type: 'test'
+      ...
+    # Subtest: tracking refresh reads admin updates and refuses extra private response fields
+    ok 11 - tracking refresh reads admin updates and refuses extra private response fields
+      ---
+      duration_ms: 101.2227
+      type: 'test'
+      ...
+    1..11
+ok 6 - browser checkout coordinator against real Express, PGlite and image files
+  ---
+  duration_ms: 4686.5736
+  type: 'test'
+  ...
+# Subtest: artwork, physical cut and safe area dimensions stay separate
+ok 7 - artwork, physical cut and safe area dimensions stay separate
+  ---
+  duration_ms: 1.1267
+  type: 'test'
+  ...
+# Subtest: landscape/portrait crops preserve frame aspect and remain bounded when moved/zoomed
+ok 8 - landscape/portrait crops preserve frame aspect and remain bounded when moved/zoomed
+  ---
+  duration_ms: 0.9011
+  type: 'test'
+  ...
+# Subtest: canonical design serializer omits empty optional dates and browser-only data
+ok 9 - canonical design serializer omits empty optional dates and browser-only data
+  ---
+  duration_ms: 17.5065
+  type: 'test'
+  ...
+# Subtest: SVG proof displays DOB, escapes text and cannot embed an external photo URL
+ok 10 - SVG proof displays DOB, escapes text and cannot embed an external photo URL
+  ---
+  duration_ms: 50.8796
+  type: 'test'
+  ...
+# Subtest: real image headers reject oversized pixel counts and mismatched/unknown formats before browser decode
+ok 11 - real image headers reject oversized pixel counts and mismatched/unknown formats before browser decode
+  ---
+  duration_ms: 80.6233
+  type: 'test'
+  ...
+# Subtest: actual SVG raster proof uses expected source crop, not a stretched image
+ok 12 - actual SVG raster proof uses expected source crop, not a stretched image
+  ---
+  duration_ms: 40.7265
+  type: 'test'
+  ...
+# Subtest: Vietnamese, long fields and portrait/landscape references produce complete PNGs
+ok 13 - Vietnamese, long fields and portrait/landscape references produce complete PNGs
+  ---
+  duration_ms: 88.9426
+  type: 'test'
+  ...
+# Subtest: cart JSON round-trip keeps original asset references and migrates legacy metadata safely
+ok 14 - cart JSON round-trip keeps original asset references and migrates legacy metadata safely
+  ---
+  duration_ms: 1.2143
+  type: 'test'
+  ...
+1..14
+# tests 56
+# suites 0
+# pass 56
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8434.3925

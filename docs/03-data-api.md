@@ -1,122 +1,94 @@
-# Dữ liệu và hợp đồng API
+# Dữ liệu và hợp đồng API — giỏ hàng
 
-Nguồn chuẩn: `contracts/openapi.json` cho HTTP và `database/*.sql` cho persistence. Phần này giải thích các quyết định để code frontend/backend khớp nhau. Các API nghiệp vụ đều **planned**; chỉ health được starter triển khai.
+Nguồn chuẩn: `contracts/openapi.json` phiên bản 0.2.0 và `database/*.sql`. Quyết định 29/10/2026 giữ giỏ hàng thay phạm vi một thiết kế/không giỏ hàng ban đầu. Không thanh toán, không tài khoản khách, không cloud.
 
 ## 1. Mô hình dữ liệu
 
-```mermaid
-erDiagram
-    PRODUCTS ||--o{ ORDERS : references
-    ORDERS ||--|{ ORDER_STATUS_EVENTS : records
-    PRODUCTS {
-        uuid id PK
-        int unit_price_vnd
-        string template_version
-        boolean is_active
-    }
-    ORDERS {
-        uuid id PK
-        uuid product_id FK
-        uuid request_key UK
-        jsonb product_snapshot
-        jsonb design_snapshot
-        jsonb recipient_snapshot
-        int quantity
-        int subtotal_vnd
-        string tracking_token_hash UK
-        string status
-        int version
-    }
-    ORDER_STATUS_EVENTS {
-        uuid id PK
-        uuid order_id FK
-        int order_version
-        string from_status
-        string to_status
-        string actor
-    }
-    ADMIN_SESSIONS {
-        uuid id PK
-        string token_hash UK
-        datetime expires_at
-    }
-```
+- `products`: tối đa một sản phẩm đang hoạt động, một template, giá demo nguyên VND.
+- `orders`: một người nhận, một status/version và lịch sử chung. `quantity` là tổng 1–100 thẻ; `subtotal_vnd = unit_price_vnd × quantity`. Giá/template/sản phẩm/người nhận là snapshot.
+- `order_items`: 1–10 dòng theo position, mỗi dòng 1–10 bản; design_snapshot/photo_key/preview_key riêng. Cùng product/giá/template của header, URL nhạc riêng trong design, không fetch backend.
+- `order_status_events`: một event mỗi version, kể cả pending lúc tạo; status/version và event cùng transaction.
+- `admin_sessions`: SHA-256 của token ngẫu nhiên 32 byte, hạn 8 giờ, không lưu raw token.
 
-Một sản phẩm có 0..n đơn; mỗi đơn thuộc đúng một sản phẩm và có ít nhất event tạo `pending`. Ràng buộc ít nhất một event được service/transaction bảo đảm, FK một mình không bảo đảm. Admin duy nhất là cấu hình ngoài DB nên không có bảng users. Session dùng cho admin, không cho tracking khách.
+Migration 004 thêm order_items, nới quantity header đến 100 và backfill đơn một thiết kế cũ. Các cột design_snapshot/photo_key/preview_key cũ của orders giữ bản dòng đầu để tương thích; API chi tiết dùng order_items. Không sửa migration 001–003 đã áp dụng.
 
-Không có order_items: mỗi đơn đúng một thiết kế và số lượng các bản giống nhau. Khi cần nhiều thiết kế/giỏ hàng, thiết kế migration mới tách order_items; không giả định đã có trong MVP.
+`demo_checkouts` là kho legacy riêng, không tự chuyển thành orders, không xuất hiện trong admin canonical. Các đơn này chưa có tiến độ sản xuất/giao hàng.
 
-## 2. Snapshot và tiền
+## 2. Endpoint
 
-- `product_snapshot`: tên, templateVersion và thông số mẫu tại lúc đặt; `unit_price_vnd` chốt riêng trong order.
-- `design_snapshot`: các trường cá nhân hóa + crop, không tham chiếu một draft có thể sửa sau đó.
-- `recipient_snapshot`: người nhận, điện thoại, địa chỉ.
-- `photo_key`, `preview_key`: key tương đối riêng tư; chỉ endpoint admin đã xác thực mới stream file.
-- `subtotal_vnd = unit_price_vnd × quantity`. API dùng camelCase `subtotalVnd` và `shippingFeeVnd: null`; phí ship chưa được báo và xác nhận ngoài hệ thống. Không gọi đây là số tiền đã thanh toán.
-- Giá seed 50.000 VND là giả. Mọi số tiền là integer VND, không float.
+| Method/path | Quyền | Trạng thái sau A |
+| --- | --- | --- |
+| GET `/api/health` | Public | Đã có |
+| GET `/api/products/current` | Public | Đã có Product theo contract; alias deprecated cho client cũ |
+| POST `/api/orders` | Guest | Đã có multipart nhiều dòng |
+| POST `/api/tracking/lookup` | Token trong body | Đã có allowlist tiến độ/lịch sử |
+| POST `/api/admin/session` | Login | Đã có scrypt + cookie |
+| GET `/api/admin/session` | Admin | Đã có kiểm tra phiên |
+| DELETE `/api/admin/session` | Admin | Đã có thu hồi phiên/cookie |
+| GET `/api/admin/orders` | Admin | Đã có lọc/pagination |
+| GET `/api/admin/orders/{id}` | Admin | Đã có snapshots/items/lịch sử |
+| PATCH `/api/admin/orders/{id}/status` | Admin | Đã có expectedVersion/state machine |
+| GET `/api/admin/orders/{id}/items/{itemId}/assets/{kind}` | Admin | Đã có photo/preview từng dòng |
+| POST `/api/demo-checkouts`, `/api/demo-tracking` | Legacy public | Tạm giữ cho frontend trước C; không thuộc luồng admin mới |
 
-## 3. Các endpoint
+Code UI checkout/tracking/admin đã nối API canonical ở C–D. API/client frontend đã kiểm tra bằng Express/PGlite/file thật; chưa nghiệm thu thao tác trình duyệt, IndexedDB/Canvas/clipboard hoặc PostgreSQL. Frontend không còn gọi route demo; route legacy vẫn giữ riêng, không tự promote đơn cũ. D có `npm run test:admin` và `npm run demo:seed`; xem báo cáo `docs/qa/2026-10-29-task-d.md`.
 
-| Method/path | Người dùng | Chức năng |
-|---|---|---|
-| GET `/api/health` | Public | Liveness đã có |
-| GET `/api/products/current` | Public | Một sản phẩm/template đang bán |
-| POST `/api/orders` | Guest | Tạo đơn multipart |
-| POST `/api/tracking/lookup` | Có token bí mật | Tra cứu chỉ dữ liệu public |
-| POST `/api/admin/session` | Login | Tạo phiên admin |
-| DELETE `/api/admin/session` | Admin | Hủy phiên |
-| GET `/api/admin/orders` | Admin | Danh sách có phân trang/lọc trạng thái |
-| GET `/api/admin/orders/{id}` | Admin | Chi tiết + lịch sử |
-| PATCH `/api/admin/orders/{id}/status` | Admin | Chuyển trạng thái kèm expectedVersion |
-| GET `/api/admin/orders/{id}/assets/{kind}` | Admin | Stream ảnh `photo` hoặc `preview` |
-
-Tham số, required fields, validation và error codes đọc trực tiếp trong OpenAPI; không tự đổi response ở frontend. `npm run contract:check` kiểm tra hợp đồng hợp lệ, không xác nhận server triển khai đúng hợp đồng.
-
-## 4. Payload tạo đơn
-
-Multipart có đúng ba phần: `payload` là JSON string, `photo` là JPEG/PNG, `preview` là PNG. Ví dụ nội dung payload (dữ liệu hư cấu):
+## 3. Multipart tạo đơn
 
 ```json
 {
   "requestKey": "22222222-2222-4222-8222-222222222222",
-  "productId": "11111111-1111-4111-8111-111111111111",
-  "templateVersion": "harmea-card-v1",
-  "quantity": 2,
   "designConfirmed": true,
-  "design": {
-    "fullName": "Demo Harméa",
-    "dateOfBirth": "2003-01-01",
-    "place": "Hà Nội",
-    "commemorativeDate": "2026-10-28",
-    "signatureText": "Demo",
-    "musicUrl": "https://www.youtube.com/watch?v=demo",
-    "crop": { "x": 0, "y": 0, "width": 1, "height": 1 }
-  },
+  "items": [{
+    "productId": "11111111-1111-4111-8111-111111111111",
+    "templateVersion": "harmea-card-v1",
+    "quantity": 2,
+    "design": {
+      "fullName": "Demo Harméa",
+      "musicUrl": "https://www.youtube.com/watch?v=demo",
+      "color": "cream",
+      "crop": { "x": 0, "y": 0, "width": 1, "height": 1 }
+    }
+  }],
   "recipient": { "name": "Khách Demo", "phone": "0900000000", "address": "Địa chỉ giả cho demo" },
-  "note": "Dữ liệu thử, không giao hàng thật"
+  "note": "Không giao hàng thật"
 }
 ```
 
-URL trên là placeholder minh họa schema, không phải bài hát đã xác minh. Trước demo thay bằng URL phát được mà bạn chọn. ID requestKey phải sinh mới cho lần đặt mới; giữ nguyên khi retry cùng lần gửi. Không copy UUID ví dụ cho mọi đơn.
+Ví dụ dùng dữ liệu giả và URL placeholder, không phải bài hát đã xác minh; sinh requestKey mới bằng crypto.randomUUID() cho lần đặt mới.
 
-Photo tối đa 5 MiB; preview tối đa 2 MiB; decoder giới hạn 20MP/cạnh8192. Crop phải nằm trong [0,1], width/height >0, x+width<=1, y+height<=1. Ngày dùng YYYY-MM-DD và kiểm tra ngày có thật; DOB không trong tương lai. URL chỉ HTTPS/hostname nằm trong allowlist của schema, không credentials/custom port; không fetch server-side.
+`payload` chứa JSON dưới dạng string; mỗi dòng i từ 0 có đúng một `photo_i` (JPEG/PNG ≤5 MiB) và `preview_i` (PNG ≤2 MiB). Không nhận phần dư/lặp/thiếu hoặc ảnh động/nhiều frame. Server decode đầy đủ, ≤20MP/cạnh8192; lưu đúng byte ảnh gốc và PNG proof riêng tư, tên ngẫu nhiên do server sinh.
 
-## 5. Trạng thái, lỗi và đồng thời
+Tổng request ≤16 MiB, JSON ≤65.536 ký tự, tối đa hai upload đang xử lý mỗi tiến trình. Giới hạn tổng có thể nhỏ hơn tổng giới hạn từng ảnh. Quá kích thước trả 413; sai kiểu/không decode được trả 415; cấu trúc multipart/JSON hỏng trả 400. Web FormData có buffer giới hạn, không phải streaming-to-disk, chưa đo tải public lớn.
+
+Tên, URL nhạc và crop bắt buộc. Ngày sinh, ngày kỷ niệm, địa điểm, chữ ký tùy chọn; ngày nếu có phải YYYY-MM-DD có thật, không gửi chuỗi rỗng. DOB không trong tương lai theo Asia/Ho_Chi_Minh. Màu cream/blue/rose, mặc định cream. Crop hữu hạn trong [0,1], width/height >0, x+width/y+height ≤1, theo ảnh đã xử lý chiều EXIF. URL HTTPS/exact-host allowlist, không credentials/cổng tùy chỉnh; không tự tải URL. Preview phải được admin đối chiếu với thiết kế, không được cam kết là file in chuẩn.
+
+Lấy giá từ DB, từ chối field giá/tổng client. Kiểm tra product/template trong transaction; sai trả PRODUCT_CHANGED 409. `shippingFeeVnd: null` là chưa báo phí, không phải miễn phí hay đã thanh toán. Không sửa snapshot/tệp của đơn gửi qua API.
+
+## 4. Tracking, auth và trạng thái
+
+Token tracking ngẫu nhiên 32 byte, chỉ lưu SHA-256 và trả một lần khi tạo thành công. `/track#token` → POST lookup body. UNIQUE requestKey trả DUPLICATE_REQUEST 409, không replay token. Mất response cần liên hệ cửa hàng; không tự sinh khóa mới cho retry. Khóa mới chỉ dành cho lần đặt mới.
+
+C ghi record `{requestKey,fingerprint}` vào sessionStorage trước POST. Fingerprint SHA-256 bao gồm payload đã chuẩn hóa và SHA-256 từng Blob, record không chứa PII/raw body/URL nhạc/token. Khi kết quả chưa rõ, đổi nội dung bị chặn; retry giữ khóa, kể cả retry nhận 4xx vẫn chưa chứng minh lần trước chưa lưu. Chỉ thành công hợp lệ hoặc lần gửi đầu bị từ chối rõ ràng mới giải phóng khóa. Timeout POST 45 giây, lookup 15 giây; không có tự retry POST. Giới hạn client dành thêm 16 KiB cho envelope multipart bên trong trần 16 MiB.
+
+Public response chỉ có orderNumber/status/createdAt/updatedAt/trackingCode và history `{status,occurredAt}`; không ID, giá, người nhận, thiết kế, ảnh, URL, note, actor/lý do hủy. Admin response dùng allowlist khác và chỉ trả endpoint ảnh có xác thực, không key/path filesystem hoặc token/hash.
+
+Cookie admin `harmea_admin`: HttpOnly, SameSite=Lax, Path=/api/admin, 8 giờ; Secure khi APP_ORIGIN dùng HTTPS. Login thay phiên của client hiện tại; logout/expiry thu hồi quyền dù còn cookie. Mật khẩu scrypt từ setup, không có password mặc định; chưa cấu hình hash trả 503. Giới hạn 5 login/IP/phút và 40 mutation/IP/phút; Origin áp dụng POST/PATCH/DELETE/PUT. Không localStorage cho admin session; không log token, mật khẩu hoặc body/URL nhạc.
 
 ```text
 pending -> confirmed -> producing -> shipping -> completed
-    |           |
-    +-----------+----> cancelled (bắt buộc lý do)
+   |           |
+   +-----------+----> cancelled (cần lý do)
 ```
 
-Không nhảy bước/quay lùi; completed/cancelled kết thúc. Admin PATCH gửi version đang thấy; UPDATE WHERE id=$id AND version=$expectedVersion; tăng version và insert event cùng transaction. Khi không cập nhật được, phân biệt không có đơn và xung đột phiên bản; không ghi event giả.
+Không nhảy bước/quay lùi/cùng trạng thái/mở lại đơn cuối. PATCH gửi expectedVersion; cùng version chỉ một lần thành công, lần còn lại VERSION_CONFLICT 409, không event thừa. cancellationReason chỉ cho cancelled, trackingCode chỉ cho shipping. Website ghi nhận thao tác admin, không chứng minh NFC hoặc giao hàng vật lý.
 
-Error envelope thống nhất: `{ "error": { "code": "...", "message": "...", "fields": {} } }`; fields tùy chọn. HTTP 401 cho thiếu phiên admin; 404 cho tài nguyên/tracking không thấy; 409 cho gửi trùng, version hoặc trạng thái xung đột; 413 cho quá kích thước; giới hạn validation xem hợp đồng.
+Error envelope `{ "error": { "code": "...", "message": "..." } }`. Thiếu phiên 401, tài nguyên không thấy 404, validation 422, conflict 409. Không trả stack trace hoặc dữ liệu nội bộ.
 
-Tracking response phải được xây từ allowlist (mã đơn, status, timestamps, progress/trackingCode theo schema); không trả recipient/design/photo/musicUrl/internalNote/cancellationReason nguyên văn. Một người có token không có quyền quản trị. Token thô không lưu trong DB; chỉ trả lúc create thành công. Mất token cần hỗ trợ ngoài hệ thống trong P0.
+## 5. Kiểm tra và vận hành
 
-## 6. Migration và kiểm thử
+`npm.cmd run test:api` dùng Express/PGlite/file thật trong thư mục tạm, gồm migration lặp, đa thiết kế, giá/snapshot, ảnh, privacy, session/rotation/logout/expiry, state/concurrency, rollback DB + dọn tệp khi insert event lỗi và restart. Không mock database. `contract:check` chỉ xác minh file contract hợp lệ.
 
-`001_initial.sql` tạo bốn bảng. `002_seed_demo.sql` thêm một sản phẩm demo. Script migration có checksum và bảng schema_migrations; chạy lần hai phải bỏ qua file đã áp dụng. Không sửa migration đã chạy, thêm file 003_... nếu cần thay đổi.
+Dừng API trước khi migrate PGlite; không mở hai process cùng DATA_DIR. Migration 004 không tự áp vào database đang chạy; dữ liệu local hiện có chưa được thay đổi trong phiên phát triển A. Sau khi dừng API, chạy `npm.cmd run db:migrate`, `db:check`, rồi khởi động lại.
 
-Khi triển khai task A, cần chứng minh rollback khi tạo order/event lỗi, UNIQUE requestKey, privacy tracking và cập nhật optimistic concurrency. Không coi kiểm tra schema/seed của starter là kiểm thử nghiệp vụ này.
+DB và filesystem không cùng transaction. Nhánh lỗi dọn file vừa ghi; process chết giữa ghi file và commit có thể để tệp mồ côi, chưa có job quét. Chưa nghiệm thu PostgreSQL server, tải public lớn hoặc khôi phục power loss. Route demo legacy giữ hành vi cũ (ảnh nén trong JSON, replay token), client đã chuyển ở C; không dùng kết quả legacy để tuyên bố API canonical đã được nghiệm thu qua UI.

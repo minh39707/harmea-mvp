@@ -1,6 +1,8 @@
 # D — Quản trị, tích hợp và diễn tập
 
-**Trạng thái:** công việc cần triển khai. **Dự kiến:** 1 giờ quản trị, cộng 0,5–2,5 giờ diễn tập/sửa lỗi. **Phụ thuộc:** A; kiểm tra toàn luồng cần B và C.
+**Trạng thái:** code admin và dữ liệu diễn tập đã triển khai ngày 29/10/2026; chưa nghiệm thu UI/diễn tập 5–7 phút. **Dự kiến:** 1 giờ quản trị, cộng 0,5–2,5 giờ diễn tập/sửa lỗi. **Phụ thuộc:** A; kiểm tra toàn luồng cần B và C.
+
+Kết quả thực tế: [báo cáo D](../docs/qa/2026-10-29-task-d.md), 10 tests D qua với API/PGlite/tệp thật; regression A 25, B 8, C 13 qua. Có `/admin/login`, `/admin/orders`, chi tiết đơn và `npm run demo:seed`. Chưa có bằng chứng thao tác trình duyệt, mobile, PostgreSQL hoặc NFC; checklist nghiệm thu vẫn chờ. Code E Giai đoạn 2 là việc tiếp theo theo thứ tự đã chốt.
 
 ## Phạm vi và quyền sửa
 

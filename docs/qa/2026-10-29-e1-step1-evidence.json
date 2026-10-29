@@ -1,0 +1,208 @@
+{
+  "date": "2026-10-29",
+  "environment": {
+    "node": "v24.15.0",
+    "database": "isolated disk PGlite",
+    "source": "working tree, including pre-existing commerce.ts edit"
+  },
+  "checks": [
+    {
+      "name": "catalog HTTP",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "catalog contract fields",
+      "actual": 7,
+      "expected": 0,
+      "pass": false,
+      "missing": [
+        "isDemo",
+        "physicalSizeMm",
+        "artworkSizeMm",
+        "safeAreaMm"
+      ],
+      "extra": [
+        "isDemoPrice",
+        "image",
+        "cardSizeMm"
+      ]
+    },
+    {
+      "name": "create demo checkout",
+      "actual": 201,
+      "expected": 201,
+      "pass": true
+    },
+    {
+      "name": "server calculated subtotal",
+      "actual": 100000,
+      "expected": 100000,
+      "pass": true
+    },
+    {
+      "name": "track created checkout",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "tracking private field leakage",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "invalid tracking token",
+      "actual": 404,
+      "expected": 404,
+      "pass": true
+    },
+    {
+      "name": "duplicate request per P0 contract",
+      "actual": 200,
+      "expected": 409,
+      "pass": false,
+      "sameOrder": true,
+      "tokenReturnedAgain": true
+    },
+    {
+      "name": "same key different payload",
+      "actual": 409,
+      "expected": 409,
+      "pass": true
+    },
+    {
+      "name": "missing confirmation",
+      "actual": 422,
+      "expected": 422,
+      "pass": true
+    },
+    {
+      "name": "quantity 11",
+      "actual": 422,
+      "expected": 422,
+      "pass": true
+    },
+    {
+      "name": "invalid phone",
+      "actual": 422,
+      "expected": 422,
+      "pass": true
+    },
+    {
+      "name": "future DOB",
+      "actual": 422,
+      "expected": 422,
+      "pass": true
+    },
+    {
+      "name": "nonexistent date",
+      "actual": 422,
+      "expected": 422,
+      "pass": true
+    },
+    {
+      "name": "javascript URL",
+      "actual": 422,
+      "expected": 422,
+      "pass": true
+    },
+    {
+      "name": "host suffix attack",
+      "actual": 422,
+      "expected": 422,
+      "pass": true
+    },
+    {
+      "name": "fake PNG",
+      "actual": 422,
+      "expected": 422,
+      "pass": true
+    },
+    {
+      "name": "invalid product UUID",
+      "actual": 422,
+      "expected": 422,
+      "pass": true
+    },
+    {
+      "name": "real PNG accepted",
+      "actual": 201,
+      "expected": 201,
+      "pass": true
+    },
+    {
+      "name": "client cannot set price",
+      "actual": 100000,
+      "expected": 100000,
+      "pass": true
+    },
+    {
+      "name": "foreign browser origin denied",
+      "actual": 403,
+      "expected": 403,
+      "pass": true
+    },
+    {
+      "name": "contract create endpoint exists",
+      "actual": 404,
+      "expected": 422,
+      "pass": false
+    },
+    {
+      "name": "contract lookup endpoint resolves valid token",
+      "actual": 404,
+      "expected": 200,
+      "pass": false
+    },
+    {
+      "name": "admin session implemented",
+      "actual": 404,
+      "expected": 422,
+      "pass": false,
+      "errorCode": "NOT_FOUND"
+    },
+    {
+      "name": "admin orders requires authentication",
+      "actual": 404,
+      "expected": 401,
+      "pass": false
+    },
+    {
+      "name": "admin login page served",
+      "actual": 404,
+      "expected": 200,
+      "pass": false
+    },
+    {
+      "name": "concurrent requests create only one row",
+      "actual": 1,
+      "expected": 1,
+      "pass": true,
+      "statuses": [
+        201,
+        200
+      ]
+    },
+    {
+      "name": "snapshot retains design",
+      "actual": "QA Tiếng Việt",
+      "expected": "QA Tiếng Việt",
+      "pass": true
+    },
+    {
+      "name": "snapshot has preview PNG",
+      "actual": false,
+      "expected": true,
+      "pass": false
+    },
+    {
+      "name": "tracking survives server and DB reopen",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    }
+  ]
+}

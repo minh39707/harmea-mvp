@@ -25,11 +25,11 @@ Nguồn sản phẩm: [EBU Final — Product Description & USP](https://docs.goo
 | Có đặt hàng và theo dõi đơn; chưa cần thanh toán | Người dùng đã xác nhận |
 | Một người thực hiện, demo ngày 28/10/2026 | Người dùng đã xác nhận |
 | React + TypeScript, Node.js/Express và PostgreSQL | Người dùng đã chấp nhận phương án mặc định |
-| Một sản phẩm, một mẫu cố định, một thiết kế trong mỗi đơn | Quyết định triển khai đề xuất để kịp demo |
+| Một sản phẩm, một mẫu cố định; mỗi đơn 1–10 thiết kế, mỗi thiết kế 1–10 bản | Quyết định giữ giỏ hàng 29/10/2026, thay phạm vi cũ |
 | Chữ ký là văn bản có kiểu chữ ký; chưa vẽ bằng chuột/cảm ứng | Đơn giản hóa đề xuất cho bản đầu |
-| Khách không đăng nhập, không có giỏ hàng | Đơn giản hóa đề xuất cho bản đầu |
+| Khách không đăng nhập; có giỏ hàng, không thanh toán | Đã chốt trong task E và hợp đồng 0.2.0 |
 
-Một đơn có số lượng từ 1 đến 10; mọi chiếc trong đơn dùng cùng một thiết kế và URL nhạc. Muốn hai thiết kế khác nhau thì tạo hai đơn. Các tham số này có thể đổi sau demo nhưng phải đổi hợp đồng API và kiểm thử cùng lúc.
+Một đơn có 1–10 dòng thiết kế cùng sản phẩm/template hiện hành. Mỗi dòng 1–10 bản giống nhau và URL nhạc riêng, tổng 1–100 thẻ. Mỗi đơn có một người nhận và một tiến độ chung; không giao hàng/trạng thái riêng từng dòng. Khách thêm, sửa, xóa dòng trước khi gửi. Các tham số này có thể đổi sau demo nhưng phải đổi hợp đồng API và kiểm thử cùng lúc.
 
 Người dùng có thể chạy Docker. Khung dự án kèm Docker Compose PostgreSQL và cấu hình `DB_DRIVER=postgres`/`DATABASE_URL`. PGlite lưu đĩa là phương án local dự phòng, mặc định trong `.env.example` để kiểm tra nhanh khi Docker chưa sẵn sàng. Hai driver dùng chung SQL nhưng dữ liệu riêng; không suy ra đã nghiệm thu production hoặc nhiều phiên cùng ghi.
 
@@ -57,7 +57,7 @@ Giới hạn trường, tên trường JSON, định dạng lỗi và đường 
 ### FR-02 — Cá nhân hóa một mẫu thẻ
 
 - Nhập các trường thiết kế theo hợp đồng; chọn ảnh và nhập URL nhạc.
-- Tên trường thống nhất: `fullName`, `dateOfBirth`, `place`, `commemorativeDate`, `signatureText`, `musicUrl` và `crop`. Ngày dùng `YYYY-MM-DD`; ngày sinh không được ở tương lai. Crop dùng tọa độ chuẩn hóa trong ảnh; không cho vùng crop vượt biên.
+- Tên trường thống nhất: `fullName`, `dateOfBirth`, `place`, `commemorativeDate`, `signatureText`, `musicUrl`, `color` và `crop`. Tên, URL nhạc và crop bắt buộc; ngày sinh, ngày kỷ niệm, địa điểm và chữ ký tùy chọn. Màu cream/blue/rose dùng cùng mẫu. Ngày nếu có không gửi chuỗi rỗng và dùng `YYYY-MM-DD`; ngày sinh không được ở tương lai. Crop dùng tọa độ chuẩn hóa trong ảnh; không cho vùng crop vượt biên.
 - Dùng một template có mã và phiên bản xác định. Bản đầu có chữ ký dạng văn bản.
 - Kiểm tra ở frontend để hỗ trợ người dùng, đồng thời kiểm tra lại ở backend.
 - Nghiệm thu: sửa trường hoặc ảnh làm thay đổi phần xem trước; dữ liệu thiếu hoặc sai không tạo được đơn.
@@ -78,7 +78,7 @@ Giới hạn trường, tên trường JSON, định dạng lỗi và đường 
 
 ### FR-05 — Tạo đơn và lưu thông tin đã chốt
 
-- Gửi một request multipart gồm JSON đơn hàng, ảnh gốc và preview; không xây hệ thống bản nháp tải ảnh riêng trong P0.
+- Gửi một request multipart gồm `payload` JSON có `items[]`, đúng một cặp `photo_i`/`preview_i` cho mỗi dòng i từ 0; không xây hệ thống bản nháp tải ảnh riêng trong P0.
 - Backend kiểm tra sản phẩm, template/phiên bản, số lượng và dữ liệu; tính tổng tiền sản phẩm bằng đơn giá phía server × số lượng, với số nguyên VND.
 - Gọi số tiền này là `subtotalVnd`, không gọi là tổng thanh toán cuối cùng. `shippingFeeVnd` là `null`; màn hình ghi rõ chưa bao gồm phí giao hàng và cửa hàng sẽ xác nhận ngoài hệ thống. Không biến phí chưa biết thành miễn phí.
 - Lưu thông tin sản phẩm, đơn giá, template, cấu hình, URL nhạc và địa chỉ tại thời điểm đặt. Đơn sau khi tạo không bị thay đổi bởi việc sửa danh mục.
@@ -115,7 +115,7 @@ Giới hạn trường, tên trường JSON, định dạng lỗi và đường 
 
 ### FR-10 — Xử lý tệp và duy trì dữ liệu
 
-- Ảnh gốc: JPEG/PNG, tối đa 5 MiB. Preview: PNG, tối đa 2 MiB.
+- Ảnh gốc mỗi dòng: JPEG/PNG, tối đa 5 MiB. Preview mỗi dòng: PNG, tối đa 2 MiB. Tổng request ≤16 MiB, JSON ≤65.536 ký tự, tối đa hai upload đang xử lý mỗi tiến trình. Không nhận ảnh động/nhiều frame.
 - Backend kiểm tra nội dung tệp bằng giải mã ảnh, tối đa 20 megapixel và cạnh dài nhất 8192 pixel; không chỉ tin phần mở rộng hoặc MIME do trình duyệt gửi.
 - Tệp nằm ngoài thư mục public; tên lưu do server tạo. Không cho client điều khiển đường dẫn filesystem.
 - Lưu trên đĩa/database bền vững; dọn tệp tạm khi tạo đơn thất bại. Việc khởi động lại không xóa dữ liệu demo.
@@ -152,7 +152,7 @@ URL nhạc chỉ nhận HTTPS, không có thông tin đăng nhập hoặc cổng
 ## 7. P1 — làm sau demo
 
 - Thanh toán, đặt cọc, hoàn tiền, COD và đối soát.
-- Giỏ hàng, nhiều thiết kế trong một đơn, tài khoản khách, lịch sử mua hàng.
+- Tài khoản khách, lịch sử mua hàng, nhiều sản phẩm/mẫu hoặc trạng thái/giao hàng riêng từng dòng. Giỏ hàng cùng mẫu đã chuyển vào phạm vi hiện tại.
 - Nhiều mẫu/sản phẩm, mã giảm giá, kho hàng, phí giao hàng tự động.
 - Vẽ chữ ký, chỉnh ảnh chuyên sâu, kéo thả, đổi font tự do và lưu bản nháp.
 - Luồng cửa hàng gửi mẫu để khách duyệt nhiều vòng.

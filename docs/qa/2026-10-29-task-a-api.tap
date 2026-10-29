@@ -1,0 +1,161 @@
+TAP version 13
+# Subtest: canonical cart orders, admin sessions, assets and state transitions
+    # Subtest: catalog matches canonical Product schema
+    ok 1 - catalog matches canonical Product schema
+      ---
+      duration_ms: 42.293
+      type: 'test'
+      ...
+    # Subtest: create two designs, price from DB, random token and pending event
+    ok 2 - create two designs, price from DB, random token and pending event
+      ---
+      duration_ms: 110.1587
+      type: 'test'
+      ...
+    # Subtest: duplicate key returns 409 without token or extra files
+    ok 3 - duplicate key returns 409 without token or extra files
+      ---
+      duration_ms: 11.431
+      type: 'test'
+      ...
+    # Subtest: parallel same-key creates one order and cleans losing files
+    ok 4 - parallel same-key creates one order and cleans losing files
+      ---
+      duration_ms: 84.1325
+      type: 'test'
+      ...
+    # Subtest: tracking allowlist and invalid tokens
+    ok 5 - tracking allowlist and invalid tokens
+      ---
+      duration_ms: 19.7443
+      type: 'test'
+      ...
+    # Subtest: all admin data, item files and mutations require session
+    ok 6 - all admin data, item files and mutations require session
+      ---
+      duration_ms: 12.3674
+      type: 'test'
+      ...
+    # Subtest: wrong login, secure session properties and hash-only persistence
+    ok 7 - wrong login, secure session properties and hash-only persistence
+      ---
+      duration_ms: 74.4875
+      type: 'test'
+      ...
+    # Subtest: admin pagination, detail snapshots and exact original bytes
+    ok 8 - admin pagination, detail snapshots and exact original bytes
+      ---
+      duration_ms: 22.546
+      type: 'test'
+      ...
+    # Subtest: input rejects invalid crop, future dates, URLs, quantity, client prices and template
+    ok 9 - input rejects invalid crop, future dates, URLs, quantity, client prices and template
+      ---
+      duration_ms: 68.1903
+      type: 'test'
+      ...
+    # Subtest: malformed multipart, fake/truncated/oversized images and missing pairs are rejected
+    ok 10 - malformed multipart, fake/truncated/oversized images and missing pairs are rejected
+      ---
+      duration_ms: 168.4673
+      type: 'test'
+      ...
+    # Subtest: whole-request size cap works for known and chunked lengths
+    ok 11 - whole-request size cap works for known and chunked lengths
+      ---
+      duration_ms: 37.3769
+      type: 'test'
+      ...
+    # Subtest: ten designs and 100 total copies accepted, eleven designs rejected
+    ok 12 - ten designs and 100 total copies accepted, eleven designs rejected
+      ---
+      duration_ms: 207.4759
+      type: 'test'
+      ...
+    # Subtest: admin rejects invalid pagination and unknown fields
+    ok 13 - admin rejects invalid pagination and unknown fields
+      ---
+      duration_ms: 14.9932
+      type: 'test'
+      ...
+    # Subtest: Origin blocks login, PATCH and DELETE
+    ok 14 - Origin blocks login, PATCH and DELETE
+      ---
+      duration_ms: 5.0081
+      type: 'test'
+      ...
+    # Subtest: state machine, same-version conflict and public history
+    ok 15 - state machine, same-version conflict and public history
+      ---
+      duration_ms: 35.2476
+      type: 'test'
+      ...
+    # Subtest: cancel requires reason, terminal cancellation, private reason excluded
+    ok 16 - cancel requires reason, terminal cancellation, private reason excluded
+      ---
+      duration_ms: 58.8283
+      type: 'test'
+      ...
+    # Subtest: database event failure rolls back create, items and files
+    ok 17 - database event failure rolls back create, items and files
+      ---
+      duration_ms: 86.0414
+      type: 'test'
+      ...
+    # Subtest: database event failure rolls back state and version
+    ok 18 - database event failure rolls back state and version
+      ---
+      duration_ms: 62.5389
+      type: 'test'
+      ...
+    # Subtest: order price snapshot survives catalog edits
+    ok 19 - order price snapshot survives catalog edits
+      ---
+      duration_ms: 7.9598
+      type: 'test'
+      ...
+    # Subtest: session rotation revokes old token and logout revokes new token
+    ok 20 - session rotation revokes old token and logout revokes new token
+      ---
+      duration_ms: 39.0518
+      type: 'test'
+      ...
+    # Subtest: expired sessions rejected and HTTPS configuration sets Secure
+    ok 21 - expired sessions rejected and HTTPS configuration sets Secure
+      ---
+      duration_ms: 75.33
+      type: 'test'
+      ...
+    # Subtest: login rate limit is enforced
+    ok 22 - login rate limit is enforced
+      ---
+      duration_ms: 155.1977
+      type: 'test'
+      ...
+    # Subtest: restart preserves order, events, session and original assets
+    ok 23 - restart preserves order, events, session and original assets
+      ---
+      duration_ms: 183.7689
+      type: 'test'
+      ...
+    1..23
+ok 1 - canonical cart orders, admin sessions, assets and state transitions
+  ---
+  duration_ms: 4187.4627
+  type: 'test'
+  ...
+# Subtest: migration 004 backfills historical single-design orders without changing snapshots
+ok 2 - migration 004 backfills historical single-design orders without changing snapshots
+  ---
+  duration_ms: 1557.1377
+  type: 'test'
+  ...
+1..2
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6037.0718

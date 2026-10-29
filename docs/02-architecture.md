@@ -19,7 +19,7 @@ flowchart LR
     AD --> F
 ```
 
-Các module trên là thiết kế cần triển khai, không phải mô tả chức năng đã có. Starter chỉ có health, adapter DB và script migration.
+Task A đã triển khai API catalog/orders/tracking/admin với kiểm thử PGlite; B–D đã nối editor, checkout, tracking và admin vào API canonical. Nghiệm thu thao tác trình duyệt còn chờ; không tự chuyển đơn legacy thành orders.
 
 ## 2. Stack và lựa chọn vận hành
 
@@ -41,7 +41,7 @@ Nguồn kỹ thuật đã đối chiếu: [Vite](https://vite.dev/guide/), [Expr
 
 ```text
 apps/
-  web/src/features/     editor, checkout, tracking, admin — task B/C/D
+  web/src/features/     editor, cart, checkout, tracking, admin
   api/src/
     app.ts             HTTP app, middleware và routes
     server.ts          bootstrap/listen
@@ -52,22 +52,24 @@ contracts/openapi.json API contract, chưa phải server sinh tự động
 scripts/               setup, migration, kiểm tra DB/contract
 docs/                  requirement, kiến trúc, kế hoạch, nghiệm thu
 tasks/                 bốn phiếu triển khai tuần tự
+tests/                 smoke API với database thử riêng
+docs/qa/               báo cáo và bằng chứng kiểm tra
 storage/               dữ liệu local, ignored, không đưa vào ZIP
 ```
 
 Router/controller parse HTTP, nhận session và trả response. Service kiểm tra quyền, giá, trạng thái và nghiệp vụ. Repository chỉ thực thi SQL có tham số. Validation và upload middleware áp giới hạn trước service. Không cần tạo lớp trừu tượng chỉ để lặp lại một hàm SQL.
 
-Frontend giữ dữ liệu thiết kế chưa gửi trong bộ nhớ. Refresh trước khi gửi có thể mất draft; lưu draft là P1. Crop là hình chữ nhật chuẩn hóa trong ảnh gốc. Một mẫu cố định có thể crop giữa mặc định, chưa cần drag/zoom. Chữ ký dùng text, chưa vẽ tay.
+Frontend giữ draft đang sửa trong bộ nhớ. Giỏ lưu metadata/thumbnail tại `harmea.cart.v2`; B lưu Blob ảnh gốc/preview PNG riêng trong IndexedDB `harmea.editor.v1`, tham chiếu bằng assetKey mỗi snapshot. Không đưa Blob vào JSON/localStorage. Crop chuẩn hóa trong ảnh gốc theo chiều hiển thị; B có căn giữa/phóng/vị trí và renderer SVG chung cho preview/PNG. C nối multipart mới, D đối chiếu preview với dữ liệu trước sản xuất. Chữ ký dùng text; PNG chỉ là proof, không cam kết DPI/màu/bleed in thực tế.
 
 Node 24 chạy trực tiếp TypeScript backend/scripts bằng type stripping; tsc vẫn kiểm tra riêng và build JS. Dùng `import type` cho type-only imports và extension `.ts` cho import tương đối trong source; tsc rewrite thành `.js` khi build. Không dùng enum/parameter properties/decorator cần transform ở backend. Frontend TSX do Vite xử lý. Xem [Node TypeScript](https://nodejs.org/api/typescript.html).
 
 ## 4. Tạo đơn nhất quán
 
-1. Browser dựng preview rồi gửi một multipart: `payload` JSON string + `photo` + `preview`.
-2. Server giới hạn body/ảnh, parse và kiểm tra dữ liệu; không tự fetch URL nhạc.
+1. Browser dựng preview rồi gửi một multipart: `payload` JSON có items[] + đúng một cặp `photo_i`/`preview_i` cho từng dòng i từ 0.
+2. Server giới hạn tổng multipart 16 MiB, JSON 65.536 ký tự, từng ảnh 5/2 MiB và hai upload mỗi tiến trình. Web FormData có buffer giới hạn, không phải streaming-to-disk. Decode đầy đủ ảnh tuần tự, tối đa 20MP/cạnh8192, không fetch URL nhạc.
 3. Đọc sản phẩm hiện hành, kiểm tra templateVersion; lấy giá từ DB. Tạo UUID đơn, số đơn, token tracking random 32 byte; hash token SHA-256.
 4. Ghi ảnh đã xác minh vào thư mục riêng bằng tên server tạo. Lưu key tương đối; không tin path từ client.
-5. Trong transaction: insert order chứa snapshot + event `pending`, rồi commit. Khi ghi DB thất bại, xóa đúng các file vừa tạo; không xóa file của đơn khác.
+5. Trong transaction: insert order chứa snapshot + các order_items + event `pending`, rồi commit. Khi ghi DB thất bại, xóa đúng các file vừa tạo; không xóa file của đơn khác.
 6. Trả mã đơn, tiền hàng và raw tracking token **một lần**. Client tạo `/track#token`, cho sao chép liên kết.
 
 Filesystem và DB không có chung transaction: process chết giữa bước 4/5 có thể để lại file mồ côi. P0 cần cleanup trong nhánh lỗi; quét file không còn tham chiếu là việc bổ sung sau, không quảng cáo atomicity tuyệt đối của hai kho.
@@ -78,7 +80,7 @@ Preview client gửi chỉ là proof trực quan; admin phải đối chiếu v�
 
 ## 5. Auth, tracking và trạng thái
 
-- Admin password trong `.env` là scrypt salt/hash; dùng timingSafeEqual khi so sánh. Setup sinh mật khẩu local trong `.local-admin.txt`; module login còn cần triển khai.
+- Admin password trong `.env` là scrypt salt/hash; dùng timingSafeEqual khi so sánh. Setup sinh mật khẩu local trong `.local-admin.txt`; module login có ở A, UI quản trị D tại `/admin/login`. Hash sai/chưa cấu hình trả 503, không có mật khẩu mặc định.
 - Login tạo session random, lưu SHA-256; expiry 8 giờ. Cookie `harmea_admin`: HttpOnly, SameSite=Lax; Secure khi HTTPS. Logout xóa DB session và cookie. Không session trong localStorage.
 - Kiểm tra Origin với APP_ORIGIN cho request browser làm thay đổi dữ liệu; kết hợp session và rate limit cho admin. Không bật CORS `*` kèm credentials. Vite proxy giữ API cùng origin ở browser.
 - Tracking token trong fragment không đi vào HTTP request trang; frontend POST body tới lookup. Không ghi token/body trong access log; Referrer-Policy no-referrer. API công khai chỉ chọn các trường cho phép, không spread bản ghi DB.

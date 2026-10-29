@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2022", "strict": true, "skipLibCheck": true,
-    "esModuleInterop": true, "forceConsistentCasingInFileNames": true,
+    "target": "ES2022",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "noUncheckedIndexedAccess": true,
     "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,

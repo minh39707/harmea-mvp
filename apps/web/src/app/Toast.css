@@ -1,0 +1,16 @@
+.toast {
+  position: fixed;
+  bottom: var(--space-3);
+  right: var(--space-3);
+  z-index: 20;
+  max-width: min(480px, calc(100vw - 48px));
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.toast button {
+  border: 0;
+  background: var(--transparent);
+  text-decoration: underline;
+}
