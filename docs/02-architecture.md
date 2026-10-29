@@ -52,6 +52,8 @@ contracts/openapi.json API contract, chưa phải server sinh tự động
 scripts/               setup, migration, kiểm tra DB/contract
 docs/                  requirement, kiến trúc, kế hoạch, nghiệm thu
 tasks/                 bốn phiếu triển khai tuần tự
+tests/                 smoke API với database thử riêng
+docs/qa/               báo cáo và bằng chứng kiểm tra
 storage/               dữ liệu local, ignored, không đưa vào ZIP
 ```
 
