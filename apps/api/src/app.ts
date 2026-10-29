@@ -4,14 +4,14 @@ import { apiRouter } from './modules/index.ts';
 import { securityHeaders } from './middleware/security-headers.ts';
 import { apiGuard } from './middleware/api-guard.ts';
 import type { Database } from './db.ts';
+import { InputError } from './lib/errors.ts';
 
 export function createApp(db?: Database, secret = '') {
   const app = express();
   app.disable('x-powered-by');
   app.use(securityHeaders);
-  app.use(express.json({ limit: '4mb' }));
   app.use('/api', apiGuard());
-  // Demo commerce routes are mounted below; admin/order contract routes remain planned.
+  app.use(express.json({ limit: '4mb' }));
   app.get('/api/health', (_request, response) => {
     response.json({ status: 'ok', service: 'harmea-api' });
   });
@@ -24,6 +24,15 @@ export function createApp(db?: Database, secret = '') {
     });
   });
   const errorHandler: express.ErrorRequestHandler = (error, _request, response, _next) => {
+    if (response.headersSent) return _next(error);
+    if (error instanceof InputError) {
+      if (error.code === 'REQUEST_TOO_LARGE') {
+        response.setHeader('Connection', 'close');
+        _request.resume();
+      }
+      response.status(error.status).json({ error: { code: error.code, message: error.message } });
+      return;
+    }
     const status =
       error.type === 'entity.too.large' ? 413 : error instanceof SyntaxError ? 400 : 500;
     response.status(status).json({

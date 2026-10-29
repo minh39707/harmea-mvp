@@ -22,7 +22,8 @@
     "start:api": "node --env-file-if-exists=.env apps/api/dist/server.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test:smoke": "node tests/smoke.mjs"
+    "test:smoke": "node tests/smoke.mjs",
+    "test:api": "node --test tests/api-integration.mjs"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",

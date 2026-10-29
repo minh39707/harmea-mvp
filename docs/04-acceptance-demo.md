@@ -2,6 +2,8 @@
 
 Mốc dự kiến: 28/10/2026. Tài liệu này là checklist thực hiện; mọi mục bên dưới khởi tạo ở trạng thái **chưa chạy**, không phải báo cáo đạt kiểm thử.
 
+Cập nhật 29/10/2026: API task A đã có integration tests riêng; xem docs/qa/2026-10-29-task-a.md. Checklist UI bên dưới vẫn chưa chạy. Phạm vi giữ giỏ: 1–10 thiết kế cùng mẫu, mỗi dòng 1–10 bản; kiểm tra thêm một đơn có hai thiết kế và ảnh/preview riêng từng dòng.
+
 Chức năng nghiệp vụ phải được triển khai trước khi chạy checklist. Khung dự án chỉ khởi động/build được không đồng nghĩa với MVP đã hoàn thành.
 
 ## 1. Dữ liệu và chuẩn bị

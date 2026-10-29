@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Harméa MVP API contract",
-    "version": "0.1.0",
-    "description": "Hợp đồng triển khai demo 28/10/2026. Chỉ /api/health có trong starter; mọi endpoint nghiệp vụ đánh dấu planned. Không có thanh toán, tài khoản khách hoặc giỏ hàng. Giá50000VND là dữ liệu giả demo; phí ship chưa báo."
+    "version": "0.2.0",
+    "description": "Harméa local cart MVP: one product/template, 1–10 designs per order, each 1–10 copies. No payment/customer account. Canonical orders use multipart; legacy demo routes retained temporarily until task C."
   },
   "servers": [
     {
@@ -38,7 +38,7 @@
     },
     "/api/products/current": {
       "get": {
-        "x-implementation-status": "planned",
+        "x-implementation-status": "implemented",
         "operationId": "getCurrentProduct",
         "summary": "Lấy sản phẩm và template duy nhất đang bán.",
         "responses": {
@@ -67,10 +67,10 @@
     },
     "/api/orders": {
       "post": {
-        "x-implementation-status": "planned",
+        "x-implementation-status": "implemented",
         "operationId": "createOrder",
         "summary": "Tạo một đơn từ thiết kế và ảnh; chưa thanh toán.",
-        "description": "FormData.append('payload', JSON.stringify(data)); photo/preview là File. Backend parse JSON, kiểm tra MIME thực/giải mã ảnh, asset kích thước, URL và product trước transaction. <=20MP và mỗi cạnh<=8192px sau decode. Toàn bộ request<=8MiB. Không tin giá hoặc ảnh preview để suy ra dữ liệu in. requestKey lặp trả409; không thực hiện replay response.",
+        "description": "FormData: payload JSON CreateOrder; photo_0/preview_0 ... photo_9/preview_9, exactly one pair per item in array order. Photo <=5MiB JPEG/PNG, preview <=2MiB PNG, each <=20MP/8192px. Total multipart <=16MiB (sum limit applies even when each file fits). Full decode; max two active upload requests per process. requestKey duplicate returns 409 without replaying token. Only one active product/template, server sums quantities and price. No payment.",
         "requestBody": {
           "required": true,
           "content": {
@@ -86,33 +86,110 @@
                       "$ref": "#/components/schemas/CreateOrder"
                     }
                   },
-                  "photo": {
+                  "photo_0": {
                     "type": "string",
                     "format": "binary",
                     "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
                   },
-                  "preview": {
+                  "preview_0": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
+                  },
+                  "photo_1": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
+                  },
+                  "preview_1": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
+                  },
+                  "photo_2": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
+                  },
+                  "preview_2": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
+                  },
+                  "photo_3": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
+                  },
+                  "preview_3": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
+                  },
+                  "photo_4": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
+                  },
+                  "preview_4": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
+                  },
+                  "photo_5": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
+                  },
+                  "preview_5": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
+                  },
+                  "photo_6": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
+                  },
+                  "preview_6": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
+                  },
+                  "photo_7": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
+                  },
+                  "preview_7": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
+                  },
+                  "photo_8": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
+                  },
+                  "preview_8": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
+                  },
+                  "photo_9": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG, <=5MiB (5242880 bytes)."
+                  },
+                  "preview_9": {
                     "type": "string",
                     "format": "binary",
                     "description": "PNG <=2MiB (2097152 bytes), ảnh proof của đúng cấu hình khách xác nhận."
                   }
                 },
                 "required": [
-                  "payload",
-                  "photo",
-                  "preview"
+                  "payload"
                 ]
-              },
-              "encoding": {
-                "payload": {
-                  "contentType": "text/plain"
-                },
-                "photo": {
-                  "contentType": "image/jpeg, image/png"
-                },
-                "preview": {
-                  "contentType": "image/png"
-                }
               }
             }
           }
@@ -203,7 +280,7 @@
     },
     "/api/tracking/lookup": {
       "post": {
-        "x-implementation-status": "planned",
+        "x-implementation-status": "implemented",
         "operationId": "lookupTracking",
         "summary": "Tra cứu công khai bằng secret trong body.",
         "description": "Trang /track#token đọc fragment và POST body. Cache-Control:no-store và Referrer-Policy:no-referrer. Không log token/request body; rate limit. Token sai hoặc không tồn tại cùng404.",
@@ -283,7 +360,7 @@
     },
     "/api/admin/session": {
       "post": {
-        "x-implementation-status": "planned",
+        "x-implementation-status": "implemented",
         "operationId": "loginAdmin",
         "summary": "Đăng nhập một tài khoản quản trị cấu hình ngoài mã nguồn.",
         "description": "So sánh password với ADMIN_PASSWORD_HASH. Thành công sinh session32bytes, lưu SHA256 và hạn8h; rotate session khi login. Kiểm tra Origin và rate limit đăng nhập.",
@@ -392,11 +469,21 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Admin credentials not configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
-        "x-implementation-status": "planned",
+        "x-implementation-status": "implemented",
         "operationId": "logoutAdmin",
         "summary": "Xóa session phía server và cookie.",
         "security": [
@@ -427,13 +514,105 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Invalid input/identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getAdminSession",
+        "x-implementation-status": "implemented",
+        "summary": "Inspect current cookie session.",
+        "security": [
+          {
+            "adminCookie": []
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "JSON hoặc cấu trúc request không hợp lệ.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_CREDENTIALS; thông báo chung.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ORIGIN_NOT_ALLOWED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dữ liệu không đạt quy tắc nghiệp vụ.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Quá nhiều yêu cầu; thử lại sau.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi nội bộ; không trả stack trace hay thông tin nhạy cảm.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Authenticated session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSession"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/admin/orders": {
       "get": {
-        "x-implementation-status": "planned",
+        "x-implementation-status": "implemented",
         "operationId": "listAdminOrders",
         "summary": "Danh sách đơn cho quản trị.",
         "security": [
@@ -448,7 +627,8 @@
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "default": 1
+              "default": 1,
+              "maximum": 1000000
             }
           },
           {
@@ -509,13 +689,23 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Invalid input/identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/admin/orders/{id}": {
       "get": {
-        "x-implementation-status": "planned",
+        "x-implementation-status": "implemented",
         "operationId": "getAdminOrder",
         "summary": "Chi tiết đầy đủ đơn, không trả raw token hay đường dẫn kho tệp.",
         "security": [
@@ -574,13 +764,23 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Invalid input/identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/admin/orders/{id}/status": {
       "patch": {
-        "x-implementation-status": "planned",
+        "x-implementation-status": "implemented",
         "operationId": "updateOrderStatus",
         "summary": "Chuyển trạng thái với optimistic concurrency.",
         "security": [
@@ -703,9 +903,9 @@
         }
       }
     },
-    "/api/admin/orders/{id}/assets/{kind}": {
+    "/api/admin/orders/{id}/items/{itemId}/assets/{kind}": {
       "get": {
-        "x-implementation-status": "planned",
+        "x-implementation-status": "implemented",
         "operationId": "downloadOrderAsset",
         "summary": "Tải tệp riêng tư qua kiểm tra session.",
         "security": [
@@ -716,6 +916,15 @@
         "parameters": [
           {
             "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "itemId",
             "in": "path",
             "required": true,
             "schema": {
@@ -776,6 +985,178 @@
           },
           "404": {
             "description": "ORDER_OR_ASSET_NOT_FOUND.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input/identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo-checkouts": {
+      "post": {
+        "operationId": "legacyDemoCheckout",
+        "deprecated": true,
+        "x-implementation-status": "legacy",
+        "summary": "Temporary pre-task-C demo client compatibility.",
+        "description": "Uses isolated demo_checkouts table, not admin orders. No production/state workflow. Checkout JSON requestKey/confirmed/items/recipient with embedded JPEG data URLs; repeat request replays token. See historical E1 QA. Retire only after client migration.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyReceipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyReceipt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo-tracking": {
+      "post": {
+        "operationId": "legacyDemoTracking",
+        "deprecated": true,
+        "x-implementation-status": "legacy",
+        "summary": "Temporary pre-task-C demo client compatibility.",
+        "description": "Uses isolated demo_checkouts table, not admin orders. No production/state workflow. Checkout JSON requestKey/confirmed/items/recipient with embedded JPEG data URLs; repeat request replays token. See historical E1 QA. Retire only after client migration.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackingLookup"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyReceipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyReceipt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Legacy response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Legacy response",
             "content": {
               "application/json": {
                 "schema": {
@@ -909,7 +1290,6 @@
           },
           "place": {
             "type": "string",
-            "minLength": 1,
             "maxLength": 120
           },
           "commemorativeDate": {
@@ -919,7 +1299,6 @@
           },
           "signatureText": {
             "type": "string",
-            "minLength": 1,
             "maxLength": 80,
             "description": "Chữ ký nhập bằng bàn phím trong MVP; không xác thực danh tính."
           },
@@ -931,14 +1310,19 @@
           },
           "crop": {
             "$ref": "#/components/schemas/Crop"
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "cream",
+              "blue",
+              "rose"
+            ],
+            "default": "cream"
           }
         },
         "required": [
           "fullName",
-          "dateOfBirth",
-          "place",
-          "commemorativeDate",
-          "signatureText",
           "musicUrl",
           "crop"
         ]
@@ -1047,6 +1431,36 @@
               "width",
               "height"
             ]
+          },
+          "isDemoPrice": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "Temporary compatibility field for pre-task-C demo client."
+          },
+          "image": {
+            "type": "string",
+            "deprecated": true,
+            "description": "Temporary compatibility field for pre-task-C demo client."
+          },
+          "cardSizeMm": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "width": {
+                "type": "number",
+                "const": 54
+              },
+              "height": {
+                "type": "number",
+                "const": 86
+              }
+            },
+            "required": [
+              "width",
+              "height"
+            ],
+            "deprecated": true,
+            "description": "Temporary compatibility field for pre-task-C demo client."
           }
         },
         "required": [
@@ -1070,22 +1484,6 @@
             "format": "uuid",
             "description": "crypto.randomUUID() tạo một lần cho lần submit; giữ nguyên khi retry. Trùng key trả 409, không trả lại raw tracking token."
           },
-          "productId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "templateVersion": {
-            "type": "string",
-            "const": "harmea-card-v1"
-          },
-          "design": {
-            "$ref": "#/components/schemas/Design"
-          },
-          "quantity": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10
-          },
           "recipient": {
             "$ref": "#/components/schemas/Recipient"
           },
@@ -1098,14 +1496,19 @@
             "type": "boolean",
             "const": true,
             "description": "Khách xác nhận bản xem trước trước khi gửi."
+          },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/components/schemas/OrderItemInput"
+            }
           }
         },
         "required": [
           "requestKey",
-          "productId",
-          "templateVersion",
-          "design",
-          "quantity",
+          "items",
           "recipient",
           "designConfirmed"
         ]
@@ -1125,7 +1528,10 @@
             "$ref": "#/components/schemas/OrderStatus"
           },
           "quantity": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Total quantity across all designs. One product/unit price per order."
           },
           "unitPriceVnd": {
             "type": "integer"
@@ -1392,9 +1798,6 @@
           "productSnapshot": {
             "$ref": "#/components/schemas/Product"
           },
-          "designSnapshot": {
-            "$ref": "#/components/schemas/Design"
-          },
           "recipient": {
             "$ref": "#/components/schemas/Recipient"
           },
@@ -1419,28 +1822,18 @@
               "null"
             ]
           },
-          "assets": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "photo": {
-                "type": "string",
-                "description": "Relative authorized endpoint /api/admin/orders/{id}/assets/photo"
-              },
-              "preview": {
-                "type": "string",
-                "description": "Relative authorized endpoint /api/admin/orders/{id}/assets/preview"
-              }
-            },
-            "required": [
-              "photo",
-              "preview"
-            ]
-          },
           "history": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AdminStatusEvent"
+            }
+          },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/components/schemas/AdminOrderItem"
             }
           }
         },
@@ -1457,15 +1850,14 @@
           "createdAt",
           "updatedAt",
           "productSnapshot",
-          "designSnapshot",
           "recipient",
           "note",
           "unitPriceVnd",
           "templateVersion",
           "trackingCode",
           "cancellationReason",
-          "assets",
-          "history"
+          "history",
+          "items"
         ]
       },
       "AdminOrderPage": {
@@ -1543,6 +1935,114 @@
         "required": [
           "authenticated",
           "expiresAt"
+        ]
+      },
+      "OrderItemInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "templateVersion": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "design": {
+            "$ref": "#/components/schemas/Design"
+          }
+        },
+        "required": [
+          "productId",
+          "templateVersion",
+          "quantity",
+          "design"
+        ]
+      },
+      "AdminOrderItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "designSnapshot": {
+            "$ref": "#/components/schemas/Design"
+          },
+          "assets": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "photo": {
+                "type": "string",
+                "description": "Authorized item asset endpoint"
+              },
+              "preview": {
+                "type": "string",
+                "description": "Authorized item asset endpoint"
+              }
+            },
+            "required": [
+              "photo",
+              "preview"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "quantity",
+          "designSnapshot",
+          "assets"
+        ]
+      },
+      "LegacyReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderNumber": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "const": "pending"
+          },
+          "subtotalVnd": {
+            "type": "integer"
+          },
+          "shippingFeeVnd": {
+            "type": "null"
+          },
+          "isTest": {
+            "const": true,
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "trackingToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "orderNumber",
+          "status",
+          "subtotalVnd",
+          "shippingFeeVnd",
+          "isTest",
+          "createdAt"
         ]
       }
     }

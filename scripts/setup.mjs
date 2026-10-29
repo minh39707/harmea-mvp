@@ -22,7 +22,7 @@ if (existsSync('.env')) {
   await writeFile('.env', env, { flag: 'wx', mode: 0o600 });
   await writeFile(
     '.local-admin.txt',
-    `Local demo credentials; admin authentication is still task A.\nUsername: admin\nPassword: ${password}\n`,
+    `Local demo admin credentials. Keep private.\nUsername: admin\nPassword: ${password}\n`,
     { flag: 'wx', mode: 0o600 }
   );
   console.log(

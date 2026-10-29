@@ -1,5 +1,6 @@
 import express from 'express';
 import type { Database } from '../../db.ts';
+import { productSnapshot } from './product.ts';
 export function catalogRouter(db: Database) {
   const router = express.Router();
   router.get('/products/current', async (_req, res) => {
@@ -14,11 +15,7 @@ export function catalogRouter(db: Database) {
       return;
     }
     res.json({
-      id: p.id,
-      name: 'Harméa NFC Music Card',
-      unitPriceVnd: p.unit_price_vnd,
-      currency: 'VND',
-      templateVersion: p.template_version,
+      ...productSnapshot(p),
       isDemoPrice: p.is_demo,
       image: '/images/card-sample.png',
       cardSizeMm: { width: 54, height: 86 }

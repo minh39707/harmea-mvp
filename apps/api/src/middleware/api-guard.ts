@@ -3,7 +3,7 @@ export function apiGuard() {
   const rates = new Map<string, { count: number; until: number }>();
   const guard: RequestHandler = (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
-    if (req.method === 'POST') {
+    if (['POST', 'PATCH', 'DELETE', 'PUT'].includes(req.method)) {
       const origin = req.headers.origin;
       if (
         origin &&
