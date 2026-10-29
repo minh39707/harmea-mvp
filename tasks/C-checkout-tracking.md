@@ -1,6 +1,8 @@
 # C — Đặt hàng và theo dõi đơn
 
-**Trạng thái:** công việc cần triển khai. **Dự kiến:** 1,5 giờ. **Phụ thuộc:** API của A và đầu ra thiết kế của B.
+**Trạng thái:** đã triển khai code checkout/tracking canonical và kiểm tra tích hợp; còn nghiệm thu UI trên trình duyệt. **Ước lượng ban đầu:** 1,5 giờ. **Phụ thuộc:** API của A và đầu ra thiết kế của B.
+
+**Cập nhật 29/10/2026:** frontend không còn gọi route demo hoặc dùng alias Product cũ. QA-07 đã sửa bằng coordinator reset khóa sau thành công; request chưa rõ kết quả giữ cùng khóa/fingerprint trong sessionStorage, không lưu PII/token vào record này. `npm.cmd run test:checkout` đã qua 13 tests với Express/PGlite/file thật. Xem [báo cáo C](../docs/qa/2026-10-29-task-c.md); phần browser/IndexedDB/clipboard chưa được đánh dấu PASS.
 
 **Hợp đồng cập nhật sau A:** dùng `contracts/openapi.json` 0.2.0. Public tracking chỉ trả tiến độ/lịch sử, không có subtotal; success dùng OrderCreated để hiển thị tiền. Product dùng `isDemo` và các kích thước canonical; alias `isDemoPrice`/`image`/`cardSizeMm` chỉ giữ tạm cho client cũ. Sau khi nối xong, xử lý rõ các draft/đơn legacy, không tự đưa chúng vào luồng admin mới.
 

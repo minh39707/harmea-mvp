@@ -24,7 +24,8 @@
     "format:check": "prettier --check .",
     "test:smoke": "node tests/smoke.mjs",
     "test:api": "node --test tests/api-integration.mjs",
-    "test:editor": "node --test tests/editor.mjs"
+    "test:editor": "node --test tests/editor.mjs",
+    "test:checkout": "node --test tests/checkout.mjs"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",

@@ -31,7 +31,7 @@ Migration 004 thêm order_items, nới quantity header đến 100 và backfill �
 | GET `/api/admin/orders/{id}/items/{itemId}/assets/{kind}` | Admin | Đã có photo/preview từng dòng |
 | POST `/api/demo-checkouts`, `/api/demo-tracking` | Legacy public | Tạm giữ cho frontend trước C; không thuộc luồng admin mới |
 
-UI chưa nối API canonical đến C; UI admin còn D. API đã chạy bằng Express/PGlite/file thật trong integration test, chưa nghiệm thu PostgreSQL hoặc trình duyệt.
+Code UI checkout/tracking đã nối API canonical ở C; UI admin còn D. API/controller frontend đã kiểm tra bằng Express/PGlite/file thật; chưa nghiệm thu thao tác trình duyệt, IndexedDB/Canvas/clipboard hoặc PostgreSQL. Frontend không còn gọi route demo; route legacy vẫn giữ riêng, không tự promote đơn cũ.
 
 ## 3. Multipart tạo đơn
 
@@ -68,6 +68,8 @@ Lấy giá từ DB, từ chối field giá/tổng client. Kiểm tra product/tem
 ## 4. Tracking, auth và trạng thái
 
 Token tracking ngẫu nhiên 32 byte, chỉ lưu SHA-256 và trả một lần khi tạo thành công. `/track#token` → POST lookup body. UNIQUE requestKey trả DUPLICATE_REQUEST 409, không replay token. Mất response cần liên hệ cửa hàng; không tự sinh khóa mới cho retry. Khóa mới chỉ dành cho lần đặt mới.
+
+C ghi record `{requestKey,fingerprint}` vào sessionStorage trước POST. Fingerprint SHA-256 bao gồm payload đã chuẩn hóa và SHA-256 từng Blob, record không chứa PII/raw body/URL nhạc/token. Khi kết quả chưa rõ, đổi nội dung bị chặn; retry giữ khóa, kể cả retry nhận 4xx vẫn chưa chứng minh lần trước chưa lưu. Chỉ thành công hợp lệ hoặc lần gửi đầu bị từ chối rõ ràng mới giải phóng khóa. Timeout POST 45 giây, lookup 15 giây; không có tự retry POST. Giới hạn client dành thêm 16 KiB cho envelope multipart bên trong trần 16 MiB.
 
 Public response chỉ có orderNumber/status/createdAt/updatedAt/trackingCode và history `{status,occurredAt}`; không ID, giá, người nhận, thiết kế, ảnh, URL, note, actor/lý do hủy. Admin response dùng allowlist khác và chỉ trả endpoint ảnh có xác thực, không key/path filesystem hoặc token/hash.
 

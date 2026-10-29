@@ -25,8 +25,6 @@ export type Product = {
   id: string;
   name: string;
   unitPriceVnd: number;
-  isDemoPrice: boolean;
-  image: string;
   templateVersion: string;
   isDemo: boolean;
   physicalSizeMm: { width: number; height: number };
@@ -34,11 +32,26 @@ export type Product = {
   safeAreaMm: { width: number; height: number };
 };
 export type Receipt = {
+  id: string;
   orderNumber: string;
-  status: string;
+  status: OrderStatus;
+  quantity: number;
+  unitPriceVnd: number;
   subtotalVnd: number;
+  shippingFeeVnd: null;
+  currency: 'VND';
   createdAt: string;
-  trackingToken?: string;
+  trackingToken: string;
+};
+export type OrderStatus =
+  'pending' | 'confirmed' | 'producing' | 'shipping' | 'completed' | 'cancelled';
+export type PublicTracking = {
+  orderNumber: string;
+  status: OrderStatus;
+  createdAt: string;
+  updatedAt: string;
+  trackingCode: string | null;
+  history: Array<{ status: OrderStatus; occurredAt: string }>;
 };
 export type View = 'product' | 'cart' | 'checkout' | 'success' | 'tracking';
 export const blankDesign: Design = {

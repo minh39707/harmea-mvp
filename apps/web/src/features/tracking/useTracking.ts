@@ -1,32 +1,65 @@
-import { useEffect } from 'react';
-import type { Receipt, StateSetter } from '../../shared/types';
+import { useEffect, useRef, useState } from 'react';
+import type { PublicTracking, StateSetter, View } from '../../shared/types';
 import { api } from '../../shared/api';
+import { trackingResponse } from '../checkout/responses';
+import { trackingToken } from './links';
 type TrackingState = {
-  setBusy: StateSetter<boolean>;
+  view: View;
   setError: StateSetter<string>;
-  setReceipt: StateSetter<Receipt | null>;
+  setTracking: StateSetter<PublicTracking | null>;
   setTrackInput: StateSetter<string>;
 };
-export function useTracking({ setBusy, setError, setReceipt, setTrackInput }: TrackingState) {
+export function useTracking({ view, setError, setTracking, setTrackInput }: TrackingState) {
+  const [trackingBusy, setTrackingBusy] = useState(false);
+  const sequence = useRef(0),
+    controller = useRef<AbortController | null>(null);
   async function lookup(value: string) {
-    setBusy(true);
+    const request = ++sequence.current;
+    controller.current?.abort();
+    const abort = new AbortController();
+    controller.current = abort;
+    setTrackingBusy(true);
     setError('');
-    setReceipt(null);
-    let token = value.trim();
+    setTracking(null);
     try {
-      if (token.includes('#')) token = new URL(token).hash.slice(1);
-      const result = await api<Receipt>('/demo-tracking', { token });
-      setReceipt(result);
+      const token = trackingToken(value);
+      const result = trackingResponse(
+        await api<unknown>(
+          '/tracking/lookup',
+          { token },
+          { signal: AbortSignal.any([abort.signal, AbortSignal.timeout(15000)]) }
+        )
+      );
+      if (request !== sequence.current || location.pathname !== '/track') return;
+      setTracking(result);
       setTrackInput(token);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Kiểm tra lại liên kết.');
+      history.replaceState(null, '', `/track#${token}`);
+    } catch (error) {
+      if (request === sequence.current && !abort.signal.aborted && location.pathname === '/track')
+        setError(error instanceof Error ? error.message : 'Không tra cứu được đơn.');
     } finally {
-      setBusy(false);
+      if (request === sequence.current) setTrackingBusy(false);
     }
   }
   useEffect(() => {
-    if (location.pathname === '/track' && location.hash.length > 1)
-      void lookup(location.hash.slice(1));
-  }, []);
-  return lookup;
+    setTrackingBusy(false);
+    if (view === 'tracking') {
+      const load = () => {
+        if (location.pathname === '/track' && location.hash.length > 1)
+          void lookup(location.hash.slice(1));
+      };
+      load();
+      window.addEventListener('hashchange', load);
+      return () => {
+        window.removeEventListener('hashchange', load);
+        sequence.current++;
+        controller.current?.abort();
+      };
+    }
+    return () => {
+      sequence.current++;
+      controller.current?.abort();
+    };
+  }, [view]);
+  return { lookup, trackingBusy };
 }

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Design, Item, Product, Receipt, View } from '../shared/types';
+import type { Design, Item, Product, Receipt, PublicTracking, View } from '../shared/types';
 import { blankDesign as blank } from '../shared/types';
 import { api } from '../shared/api';
 import { loadCart, saveCart } from '../features/cart/cart-storage';
 import { removeAssets } from '../features/editor/asset-store';
 import { useEditor } from '../features/editor/useEditor';
 import { useCheckout } from '../features/checkout/useCheckout';
+import { trackingLink } from '../features/tracking/links';
 import { useTracking } from '../features/tracking/useTracking';
 export function useShop() {
   const [product, setProduct] = useState<Product | null>(null),
@@ -20,6 +21,7 @@ export function useShop() {
     [error, setError] = useState('');
   const [busy, setBusy] = useState(false),
     [receipt, setReceipt] = useState<Receipt | null>(null),
+    [tracking, setTracking] = useState<PublicTracking | null>(null),
     [trackInput, setTrackInput] = useState(location.hash.slice(1));
   const [recipient, setRecipient] = useState({ name: '', phone: '', address: '', note: '' }),
     [confirmed, setConfirmed] = useState(false);
@@ -35,6 +37,7 @@ export function useShop() {
   useEffect(fetchProduct, []);
   useEffect(() => {
     try {
+      setConfirmed(false);
       saveCart(cart);
       const retained = new Set(cart.map(i => i.assetKey));
       for (const item of previousCart.current)
@@ -53,10 +56,13 @@ export function useShop() {
     return () => clearTimeout(t);
   }, [notice]);
   function go(next: View) {
+    if (busy && view === 'checkout' && next !== 'success') return;
     setView(next);
     setError('');
     setNotice('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (next === 'tracking' && location.pathname !== '/track')
+      history.replaceState(null, '', '/track');
     if (location.pathname === '/track' && next !== 'tracking') history.replaceState(null, '', '/');
   }
   const { update, updateCrop, photo, add, edit, exportPreview, editorBusy } = useEditor({
@@ -75,7 +81,8 @@ export function useShop() {
     setCart,
     go
   });
-  const checkout = useCheckout({
+  const { checkout, pendingRequestKey } = useCheckout({
+    editorBusy,
     busy,
     cart,
     recipient,
@@ -88,10 +95,8 @@ export function useShop() {
     setConfirmed,
     go
   });
-  const lookup = useTracking({ setBusy, setError, setReceipt, setTrackInput });
-  const trackLink = receipt?.trackingToken
-    ? `${location.origin}/track#${receipt.trackingToken}`
-    : '';
+  const { lookup, trackingBusy } = useTracking({ view, setError, setTracking, setTrackInput });
+  const trackLink = receipt ? trackingLink(location.origin, receipt.trackingToken) : '';
   return {
     product,
     setProduct,
@@ -114,6 +119,10 @@ export function useShop() {
     busy,
     receipt,
     setReceipt,
+    tracking,
+    setTracking,
+    trackingBusy,
+    pendingRequestKey,
     trackInput,
     setTrackInput,
     recipient,

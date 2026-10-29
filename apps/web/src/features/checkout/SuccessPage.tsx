@@ -1,5 +1,6 @@
 import type { Shop } from '../../app/useShop';
 import { blankDesign as blank } from '../../shared/types';
+import { statusLabels } from '../../shared/order-status';
 import { money } from '../../shared/format';
 
 export default function SuccessPage({
@@ -28,11 +29,15 @@ export default function SuccessPage({
       <div className="receipt-box">
         <div>
           <span>Trạng thái</span>
-          <b>Đã nhận đơn thử</b>
+          <b>{statusLabels[receipt.status]}</b>
         </div>
         <div>
           <span>Tiền sản phẩm (demo)</span>
           <b>{money(receipt.subtotalVnd)}</b>
+        </div>
+        <div>
+          <span>Số lượng thẻ</span>
+          <b>{receipt.quantity}</b>
         </div>
         <label>
           Liên kết theo dõi riêng

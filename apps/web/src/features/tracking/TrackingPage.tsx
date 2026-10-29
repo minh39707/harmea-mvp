@@ -1,19 +1,20 @@
 import type { Shop } from '../../app/useShop';
-import { money } from '../../shared/format';
-
+import { statusLabels } from '../../shared/order-status';
+const date = (value: string) =>
+  new Date(value).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 export default function TrackingPage({
   lookup,
   trackInput,
   setTrackInput,
-  busy,
+  trackingBusy,
   error,
-  receipt
-}: Pick<Shop, 'lookup' | 'trackInput' | 'setTrackInput' | 'busy' | 'error' | 'receipt'>) {
+  tracking
+}: Pick<Shop, 'lookup' | 'trackInput' | 'setTrackInput' | 'trackingBusy' | 'error' | 'tracking'>) {
   return (
     <section className="tracking page-section">
       <p className="eyebrow">HÀNH TRÌNH CỦA MỘT KỶ NIỆM</p>
       <h1>
-        Theo dõi <em>đơn thử.</em>
+        Theo dõi <em>đơn của bạn.</em>
       </h1>
       <form
         onSubmit={e => {
@@ -25,13 +26,16 @@ export default function TrackingPage({
           Liên kết theo dõi hoặc mã truy cập bí mật
           <input
             required
+            disabled={trackingBusy}
             value={trackInput}
             onChange={e => setTrackInput(e.target.value)}
-            placeholder="Dán liên kết bạn đã nhận sau checkout"
+            placeholder="Dán liên kết nhận sau khi đặt đơn"
+            autoComplete="off"
+            spellCheck={false}
           />
         </label>
-        <button className="button primary" disabled={busy}>
-          {busy ? 'Đang tra cứu…' : 'Tra cứu đơn →'}
+        <button className="button primary" disabled={trackingBusy}>
+          {trackingBusy ? 'Đang tra cứu…' : 'Tra cứu đơn →'}
         </button>
       </form>
       {error && (
@@ -39,18 +43,39 @@ export default function TrackingPage({
           {error}
         </p>
       )}
-      {receipt && (
-        <div className="tracking-result">
-          <span className="status">● Đã nhận đơn thử</span>
-          <h2>{receipt.orderNumber}</h2>
-          <p>Tạo lúc {new Date(receipt.createdAt).toLocaleString('vi-VN')}</p>
+      {tracking && (
+        <div className="tracking-result" aria-live="polite">
+          <span className="status">● {statusLabels[tracking.status]}</span>
+          <h2>{tracking.orderNumber}</h2>
           <p>
-            Tiền sản phẩm: <strong>{money(receipt.subtotalVnd)}</strong>
+            Tạo lúc {date(tracking.createdAt)}
+            <br />
+            Cập nhật {date(tracking.updatedAt)}
           </p>
-          <div className="test-note">
-            Đơn đã được lưu. Bản demo chưa xử lý sản xuất hoặc vận chuyển và không thu tiền. Không
-            có thông tin người nhận hay ảnh cá nhân trên trang này.
-          </div>
+          {tracking.trackingCode && (
+            <p>
+              Mã vận đơn: <strong>{tracking.trackingCode}</strong>
+            </p>
+          )}
+          <ol className="tracking-history">
+            {tracking.history.map((event, i) => (
+              <li key={i}>
+                <strong>{statusLabels[event.status]}</strong>
+                <time dateTime={event.occurredAt}>{date(event.occurredAt)}</time>
+              </li>
+            ))}
+          </ol>
+          <button
+            className="button secondary"
+            disabled={trackingBusy}
+            onClick={() => void lookup(trackInput)}
+          >
+            Làm mới tiến độ
+          </button>
+          <p className="fineprint">
+            Chỉ hiển thị tiến độ do cửa hàng ghi nhận; thông tin người nhận, ảnh và thiết kế được
+            giữ riêng tư.
+          </p>
         </div>
       )}
     </section>

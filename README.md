@@ -1,17 +1,17 @@
 # Harméa MVP — bắt đầu tại đây
 
-Bản demo local và tài liệu triển khai cho **một người**; mốc demo ban đầu 28/10/2026. Task A đã có API đơn hàng/admin, frontend hiện vẫn là luồng đặt thử legacy chờ B/C/D nối vào. Không có thanh toán.
+Bản demo local và tài liệu triển khai cho **một người**; mốc demo ban đầu 28/10/2026. API A và code editor/checkout/tracking B–C đã triển khai theo hợp đồng canonical. UI admin và nghiệm thu toàn luồng còn ở D. Không có thanh toán.
 
 ## Đã có / cần làm tiếp
 
 | Đã triển khai / chuẩn bị | Cần làm tiếp |
 |---|---|
 | UI sản phẩm, cá nhân hóa, giỏ hàng, checkout, success và tracking | Kiểm tra thao tác trình duyệt, desktop và mobile |
-| Hợp đồng 0.2.0 giữ giỏ: `/api/orders` multipart, `/api/tracking/lookup` | C chuyển frontend khỏi `/api/demo-*`; đơn legacy không tự vào admin mới |
-| Editor có crop/PNG, ngày sinh, lưu ảnh gốc theo dòng; backend giữ file/snapshot | C nối đầu ra B với multipart canonical; kiểm tra IndexedDB/Canvas thực trên trình duyệt |
+| Frontend C dùng `/api/orders` multipart và `/api/tracking/lookup` | Đơn legacy không tự vào admin mới; các route demo còn giữ để tương thích/lịch sử |
+| Editor B và checkout C giữ ảnh gốc/PNG/crop từng dòng; backend lưu snapshot | Kiểm tra upload/IndexedDB/Canvas/clipboard thực trên trình duyệt |
 | Auth cookie, API admin list/detail/assets và status/version/history | D làm UI admin và nghiệm thu qua trình duyệt |
 | Migration checksum 001–004, PGlite integration tests, adapter PostgreSQL và Compose | Áp 004 vào DB local sau khi dừng API; kiểm tra PostgreSQL thực tế |
-| E Giai đoạn 1, API A và phần code editor B đã triển khai | Nghiệm thu UI B, rồi C → D → E Giai đoạn 2 (redesign) |
+| E Giai đoạn 1, API A và code B–C đã triển khai | Nghiệm thu UI B/C, D → E Giai đoạn 2 (redesign) |
 
 Giá seed **50.000 VND là số giả cho demo**. Không có thanh toán hoặc tự động sản xuất/giao hàng. API canonical đã qua **25 tests Node (23 trường hợp con, một test cha và một test nâng migration)** trên PGlite. Bộ smoke legacy lịch sử hiện **30 phép / 25 khớp / 5 không khớp**, không phải bộ nghiệm thu contract mới. Xem [báo cáo task A](docs/qa/2026-10-29-task-a.md). Chưa nghiệm thu toàn MVP hoặc PostgreSQL thực tế.
 
@@ -33,13 +33,15 @@ CSS của từng feature nằm cạnh component; `styles/index.css` nhập tập
 
 Editor B dùng cùng một SVG cho xem trước và xuất PNG 570×900 (artwork 57×90, thẻ 54×86, safe area 49×82). Đây là proof minh họa, chưa phải file in chuẩn. Metadata/thumbnail giữ trong `harmea.cart.v2`; Blob ảnh gốc và PNG nằm trong IndexedDB `harmea.editor.v1`. Không đưa Blob vào localStorage. Giỏ cũ thiếu ảnh gốc cần chọn lại ảnh khi sửa. Xem [báo cáo B](docs/qa/2026-10-29-task-b.md); phần upload/download/IndexedDB trên trình duyệt chưa được xác nhận.
 
+Checkout C giữ UUID + SHA-256 fingerprint của lần gửi chưa rõ kết quả trong sessionStorage `harmea.checkout.pending.v1`; không có raw token, URL nhạc, body hoặc người nhận trong record. Thành công mới xóa pending và cho lần đặt mới dùng khóa mới. Mất response giữ cùng khóa; nhận 409 trùng thì liên hệ cửa hàng, không giả vờ khôi phục link. Tracking dùng fragment/POST body và chỉ hiện tiến độ/lịch sử công khai. Xem [báo cáo C](docs/qa/2026-10-29-task-c.md).
+
 ## Đọc theo thứ tự
 
 1. [Requirement và phạm vi](docs/01-requirements.md).
 2. [Kiến trúc và quyết định kỹ thuật](docs/02-architecture.md).
 3. [Dữ liệu, API và quy tắc tích hợp](docs/03-data-api.md); hợp đồng máy đọc được: [OpenAPI](contracts/openapi.json).
 4. [Kế hoạch 8–10 giờ dự kiến cho một người](docs/05-solo-plan.md).
-5. E Giai đoạn 1, API A và code editor B đã triển khai; nghiệm thu UI B khi browser khả dụng, rồi C → D → E Giai đoạn 2. Xem [báo cáo E1](docs/qa/2026-10-29-clean-layout.md), [báo cáo A](docs/qa/2026-10-29-task-a.md) và [báo cáo B](docs/qa/2026-10-29-task-b.md).
+5. E Giai đoạn 1, API A và code B–C đã triển khai; nghiệm thu UI khi browser khả dụng, rồi D → E Giai đoạn 2. Xem các báo cáo [E1](docs/qa/2026-10-29-clean-layout.md), [A](docs/qa/2026-10-29-task-a.md), [B](docs/qa/2026-10-29-task-b.md), [C](docs/qa/2026-10-29-task-c.md).
 6. Dùng [checklist demo](docs/04-acceptance-demo.md) để nghiệm thu.
 
 ## Chạy trên Windows / PowerShell
@@ -97,6 +99,7 @@ npm.cmd run build
 npm.cmd run contract:check
 npm.cmd run test:api
 npm.cmd run test:editor
+npm.cmd run test:checkout
 npm.cmd run test:smoke
 npm.cmd run db:check
 ```

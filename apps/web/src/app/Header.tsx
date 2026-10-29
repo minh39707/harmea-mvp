@@ -5,8 +5,8 @@ export default function Header({
   go,
   view,
   count,
-  setReceipt
-}: Pick<Shop, 'go' | 'view' | 'count' | 'setReceipt'>) {
+  setTracking
+}: Pick<Shop, 'go' | 'view' | 'count' | 'setTracking'>) {
   return (
     <>
       <div className="announcement">
@@ -35,7 +35,7 @@ export default function Header({
           <button
             className={view === 'tracking' ? 'active' : ''}
             onClick={() => {
-              setReceipt(null);
+              setTracking(null);
               go('tracking');
             }}
           >

@@ -46,7 +46,7 @@ export default function ProductPage(
           </p>
           <div className="price-row">
             <strong>{product ? money(product.unitPriceVnd) : 'Đang tải giá…'}</strong>
-            <span>{product?.isDemoPrice ? 'Giá demo · chờ nhóm xác nhận' : 'Giá dự kiến'}</span>
+            <span>{product?.isDemo ? 'Giá demo · chờ nhóm xác nhận' : 'Giá dự kiến'}</span>
           </div>
           <div className="pills">
             <span>✧ Cá nhân hóa theo bạn</span>

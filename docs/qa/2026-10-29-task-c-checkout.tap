@@ -1,0 +1,89 @@
+TAP version 13
+# Subtest: tracking links keep secrets in fragments and reject query-string lookup
+ok 1 - tracking links keep secrets in fragments and reject query-string lookup
+  ---
+  duration_ms: 1.0791
+  type: 'test'
+  ...
+# Subtest: browser checkout coordinator against real Express, PGlite and image files
+    # Subtest: multipart carries B output, original bytes and canonical fields
+    ok 1 - multipart carries B output, original bytes and canonical fields
+      ---
+      duration_ms: 162.0283
+      type: 'test'
+      ...
+    # Subtest: QA-07: two intentional identical orders after success use different keys
+    ok 2 - QA-07: two intentional identical orders after success use different keys
+      ---
+      duration_ms: 209.7168
+      type: 'test'
+      ...
+    # Subtest: double click during submit sends only one POST
+    ok 3 - double click during submit sends only one POST
+      ---
+      duration_ms: 92.1305
+      type: 'test'
+      ...
+    # Subtest: lost response, simulated reload and rejected retry never mint another key
+    ok 4 - lost response, simulated reload and rejected retry never mint another key
+      ---
+      duration_ms: 94.3494
+      type: 'test'
+      ...
+    # Subtest: network failure before arrival retries the same key and can succeed
+    ok 5 - network failure before arrival retries the same key and can succeed
+      ---
+      duration_ms: 85.9016
+      type: 'test'
+      ...
+    # Subtest: first-request validation rejection allows correction without losing data
+    ok 6 - first-request validation rejection allows correction without losing data
+      ---
+      duration_ms: 100.8429
+      type: 'test'
+      ...
+    # Subtest: malformed success response is uncertain, not a fake success or a second order
+    ok 7 - malformed success response is uncertain, not a fake success or a second order
+      ---
+      duration_ms: 91.5727
+      type: 'test'
+      ...
+    # Subtest: unavailable/corrupt browser storage blocks POST before mutation
+    ok 8 - unavailable/corrupt browser storage blocks POST before mutation
+      ---
+      duration_ms: 3.237
+      type: 'test'
+      ...
+    # Subtest: received token survives storage cleanup failure and next intentional order is fresh
+    ok 9 - received token survives storage cleanup failure and next intentional order is fresh
+      ---
+      duration_ms: 164.4945
+      type: 'test'
+      ...
+    # Subtest: confirmation, recipient and total-size validation run before POST
+    ok 10 - confirmation, recipient and total-size validation run before POST
+      ---
+      duration_ms: 7.5544
+      type: 'test'
+      ...
+    # Subtest: tracking refresh reads admin updates and refuses extra private response fields
+    ok 11 - tracking refresh reads admin updates and refuses extra private response fields
+      ---
+      duration_ms: 70.7186
+      type: 'test'
+      ...
+    1..11
+ok 2 - browser checkout coordinator against real Express, PGlite and image files
+  ---
+  duration_ms: 2805.829
+  type: 'test'
+  ...
+1..2
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3087.7599

@@ -12,7 +12,9 @@ export default function CheckoutPage({
   cart,
   product,
   subtotal,
-  busy
+  busy,
+  editorBusy,
+  pendingRequestKey
 }: Pick<
   Shop,
   | 'go'
@@ -26,18 +28,20 @@ export default function CheckoutPage({
   | 'product'
   | 'subtotal'
   | 'busy'
+  | 'editorBusy'
+  | 'pendingRequestKey'
 >) {
   return (
     <section className="page-section">
-      <button className="text-button" onClick={() => go('cart')}>
+      <button className="text-button" disabled={busy} onClick={() => go('cart')}>
         ← Quay lại giỏ hàng
       </button>
       <p className="eyebrow">CHECKOUT THỬ · KHÔNG THANH TOÁN</p>
       <h1>
         Gửi một điều <em>đặc biệt.</em>
       </h1>
-      <form className="checkout-layout" onSubmit={checkout}>
-        <div className="checkout-fields">
+      <form className="checkout-layout" onSubmit={checkout} aria-busy={busy}>
+        <fieldset className="checkout-fields" disabled={busy}>
           <h3>Thông tin người nhận</h3>
           <p className="muted">Hãy dùng thông tin giả khi thử quy trình này.</p>
           <div className="two-fields">
@@ -45,7 +49,7 @@ export default function CheckoutPage({
               Họ tên *
               <input
                 required
-                maxLength={100}
+                maxLength={80}
                 autoComplete="name"
                 value={recipient.name}
                 onChange={e => setRecipient({ ...recipient, name: e.target.value })}
@@ -56,7 +60,9 @@ export default function CheckoutPage({
               <input
                 required
                 type="tel"
-                maxLength={20}
+                maxLength={16}
+                minLength={8}
+                pattern="[+]?[0-9]{8,15}"
                 autoComplete="tel"
                 value={recipient.phone}
                 onChange={e => setRecipient({ ...recipient, phone: e.target.value })}
@@ -68,7 +74,8 @@ export default function CheckoutPage({
             Địa chỉ nhận hàng *
             <textarea
               required
-              maxLength={300}
+              minLength={10}
+              maxLength={500}
               autoComplete="street-address"
               rows={3}
               value={recipient.address}
@@ -96,12 +103,20 @@ export default function CheckoutPage({
               <strong>đơn thử, không thu tiền, không giao hàng tự động</strong>.
             </span>
           </label>
+          {pendingRequestKey && (
+            <div className="test-note">
+              Có yêu cầu chưa xác nhận kết quả. Giữ nguyên nội dung khi thử lại hoặc cung cấp mã này
+              cho cửa hàng:
+              <br />
+              <code className="request-reference">{pendingRequestKey}</code>
+            </div>
+          )}
           {error && (
             <p className="error" role="alert">
               {error}
             </p>
           )}
-        </div>
+        </fieldset>
         <aside className="order-summary">
           <h3>Đơn thử của bạn</h3>
           {cart.map(i => (
@@ -124,9 +139,15 @@ export default function CheckoutPage({
           <button
             className="button primary"
             type="submit"
-            disabled={busy || !cart.length || !product}
+            disabled={busy || editorBusy || !cart.length || !product}
           >
-            {busy ? 'Đang lưu đơn…' : 'Xác nhận đặt thử →'}
+            {busy
+              ? 'Đang lưu đơn…'
+              : editorBusy
+                ? 'Đang chuẩn bị thiết kế…'
+                : pendingRequestKey
+                  ? 'Thử gửi lại cùng nội dung →'
+                  : 'Xác nhận đặt thử →'}
           </button>
         </aside>
       </form>

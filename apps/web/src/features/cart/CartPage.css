@@ -17,6 +17,7 @@
   min-width: 0;
 }
 .cart-copy h3 {
+  overflow-wrap: anywhere;
   margin: 8px 0;
   font-family: var(--serif);
   font-size: 22px;

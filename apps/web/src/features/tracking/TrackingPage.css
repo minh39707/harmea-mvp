@@ -11,6 +11,7 @@
   flex: 1;
 }
 .tracking-result {
+  overflow-wrap: anywhere;
   margin: 35px 0;
   background: #f0f0e8;
   padding: 30px;
@@ -26,6 +27,19 @@
   font-size: 27px;
 }
 .tracking-result p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tracking-history {
+  padding-left: 20px;
+  line-height: 1.6;
+}
+.tracking-history li {
+  margin: 12px 0;
+}
+.tracking-history time {
+  display: block;
   font-size: 12px;
   color: var(--muted);
 }
