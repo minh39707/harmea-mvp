@@ -1,0 +1,8 @@
+{
+  "version": "v1.1.0",
+  "digest": "sha256:1ccbf6b4bcb22a4fea3ce21b14310b294f4f78e5682fa9b4bebc8a1637c45c24",
+  "revision": "e5c17ef6e5ee96ed263e22168335bd927ebda169",
+  "architecture": "amd64",
+  "user": "node",
+  "imageBytes": 413421122
+}

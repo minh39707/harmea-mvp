@@ -1,5 +1,7 @@
 # H — Nghiệm thu toàn bộ
 
+> Sau release: `v1.1.0` đã phát hành, CI và browser trên đúng digest PASS. Người dùng xác nhận ảnh điện thoại thật/Excel chưa thử. Xem [báo cáo release](../docs/qa/2026-11-11-release-v1.1.0.md); trạng thái candidate bên dưới là lịch sử.
+
 **Trạng thái:** `v1` đã nghiệm thu và có findings. [H-fix](H-fix.md) đã sửa CSP/H-02/H-03/H-04, browser candidate local PASS. **Chờ ảnh điện thoại thật/Excel, review/commit, phát hành và nghiệm thu digest `v1.1.0` trước bàn giao.** Xem [H gốc](../docs/qa/2026-11-11-acceptance.md) và [H-fix](../docs/qa/2026-11-11-task-H-fix.md). **Phụ thuộc:** R1–R4, G1–G3 (R5 và G1b nếu đã làm).
 
 ## Mục tiêu

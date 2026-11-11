@@ -1,5 +1,7 @@
 # H-fix — Hoàn thiện UI trước v1.1.0
 
+> Cập nhật: đã review/commit và phát hành `v1.1.0`; browser trên đúng digest release PASS. Ảnh điện thoại thật/Excel vẫn chưa kiểm tra. Xem [báo cáo release](../docs/qa/2026-11-11-release-v1.1.0.md).
+
 Trạng thái: đã sửa và browser test local PASS ngày 11/11/2026. Chờ người dùng kiểm tra thủ công, review/commit, phát hành và nghiệm thu digest `v1.1.0`. Báo cáo: [H-fix](../docs/qa/2026-11-11-task-H-fix.md).
 
 Phạm vi do người dùng giao sau review H:

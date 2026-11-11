@@ -66,7 +66,7 @@ H  Nghiệm thu toàn bộ
 | 07 | G1b (tùy chọn) | [07-G1b-s3-storage-optional.md](07-G1b-s3-storage-optional.md) | 2–3 giờ | G1 | MinIO/S3 đã qua CI và local; AWS thật chưa kiểm tra ([H](../docs/qa/2026-11-11-acceptance.md)) |
 | 08 | G2 | [08-G2-ci-dockerhub.md](08-G2-ci-dockerhub.md) | 1,5–2 giờ | G1 | CI/release xanh; image v1 đã phát hành. H phát hiện lỗi cần sửa trước bàn giao ([H](../docs/qa/2026-11-11-acceptance.md)) |
 | 09 | G3 | [09-G3-deploy-handoff.md](09-G3-deploy-handoff.md) | 1,5–2 giờ | G2 | Backup/restore qua CI Linux; persistence Docker local qua; chưa chạy server ([H](../docs/qa/2026-11-11-acceptance.md)) |
-| 10 | H | [10-H-acceptance.md](10-H-acceptance.md) | 3–4 giờ | tất cả | H-fix đã sửa findings, browser local PASS; chờ thủ công/review/release và nghiệm thu digest v1.1.0 ([H-fix](../docs/qa/2026-11-11-task-H-fix.md)) |
+| 10 | H | [10-H-acceptance.md](10-H-acceptance.md) | 3–4 giờ | tất cả | v1.1.0 đã phát hành, CI/browser đúng digest PASS; còn ảnh điện thoại thật/Excel và server ([release](../docs/qa/2026-11-11-release-v1.1.0.md)) |
 
 Thời lượng chỉ là ước lượng.
 

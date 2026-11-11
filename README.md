@@ -14,10 +14,10 @@ Website demo đặt một sản phẩm NFC Music Card. Phạm vi hiện tại l�
 | R3 — admin sản phẩm/thống kê/xuất CSV | Đã triển khai; xem [báo cáo R3](docs/qa/2026-11-11-task-R3.md). Còn kiểm tra trực quan trên trình duyệt |
 | R4 — router, nội dung, SEO | Đã triển khai; xem [báo cáo R4](docs/qa/2026-11-11-task-R4.md). Còn browser QA |
 | G1 — Docker runtime | Đã qua CI Linux và nghiệm thu image local; xem [H](docs/qa/2026-11-11-acceptance.md) |
-| G2 — CI và release Docker Hub | CI/release xanh; đã phát hành `hainam164/harmea-web:v1`, commit `7fde77f`; H phát hiện các điểm chưa đạt trong bản này |
+| G2 — CI và release Docker Hub | CI/release xanh; đã phát hành `hainam164/harmea-web:v1.1.0`, commit `e5c17ef`; [digest/bằng chứng](docs/qa/2026-11-11-release-v1.1.0.md) |
 | G3 — bàn giao | Backup/xóa volumes/restore đã qua trong CI release; persistence local qua. Chưa triển khai server; xem [H](docs/qa/2026-11-11-acceptance.md) |
 | G1b — storage local/S3 | MinIO/S3 đã qua trên CI và Docker local; chưa kiểm tra AWS thật |
-| H — nghiệm thu cuối | `v1` có findings; H-fix đã sửa và browser candidate local PASS. Chờ ảnh điện thoại thật/Excel, review/commit, phát hành và nghiệm thu digest `v1.1.0` ([H-fix](docs/qa/2026-11-11-task-H-fix.md)) |
+| H — nghiệm thu cuối | Browser trên đúng digest `v1.1.0` PASS (12 checks, 18 layout); người dùng chưa thử ảnh điện thoại thật/Excel, chưa nghiệm thu server ([báo cáo release](docs/qa/2026-11-11-release-v1.1.0.md)) |
 | R5 thanh toán | Tùy chọn, tạm bỏ qua theo yêu cầu người dùng |
 
 Task F3/F4 cũ đã hủy; báo cáo của chúng được giữ làm lịch sử. UI storefront hiện có tiếp tục được dùng và có thể chỉnh sau.

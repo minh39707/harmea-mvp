@@ -1,10 +1,10 @@
 # Bàn giao ứng dụng Harméa
 
-**Chưa chạy trên server người vận hành.** CI/release `v1`, Docker local và MinIO đã chạy. Findings của H đã sửa; **candidate H-fix local PASS, chưa phát hành `v1.1.0`**. Chờ ảnh điện thoại thật/Excel, review/commit và nghiệm thu đúng digest release mới trước bàn giao. Xem [H gốc](docs/qa/2026-11-11-acceptance.md) và [H-fix](docs/qa/2026-11-11-task-H-fix.md). Người phụ trách gửi riêng image version/digest, Compose, tài liệu/scripts và `.env` thật qua kênh an toàn; loại `.env`, storage, backup, node_modules và cache khỏi Git/ZIP.
+**Đã phát hành `hainam164/harmea-web:v1.1.0`**, commit `e5c17ef`, digest `sha256:1ccbf6b4bcb22a4fea3ce21b14310b294f4f78e5682fa9b4bebc8a1637c45c24`. CI/release, MinIO và Docker acceptance đều qua. **Chưa chạy trên server người vận hành; người dùng xác nhận chưa thử ảnh điện thoại thật và CSV trong Excel.** Kết quả browser trên đúng digest nằm trong [báo cáo release](docs/qa/2026-11-11-release-v1.1.0.md). Người phụ trách gửi riêng image version/digest, Compose, tài liệu/scripts và `.env` thật qua kênh an toàn; loại `.env`, storage, backup, node_modules và cache khỏi Git/ZIP.
 
 **1. Image.** `<dockerhub-user>/harmea-web:vN` hoặc `:vN.M.K`, platform `linux/amd64`; triển khai bằng version cụ thể. Ghi digest thật sau H, không dùng riêng `latest`. Release cần `DOCKERHUB_USERNAME` (secret hoặc repo variable), `DOCKERHUB_TOKEN` (secret Read & Write) và section version có dòng migration trong CHANGELOG. Workflow smoke image trước push, không tự deploy.
 
-Image đã kiểm tra: `hainam164/harmea-web:v1`, commit `7fde77f`, digest `sha256:eb683458f154e5209bf2a6a7100de8bbd7481fe5391079f24549a0b49c5fd035`. Đây là bản có các lỗi H nêu trên, chưa phải xác nhận sẵn sàng mở bán. Giữ nguyên tag/digest này; sau review sửa lỗi, phát hành version mới và chạy lại H trên đúng digest mới.
+Image hiện hành: `hainam164/harmea-web:v1.1.0@sha256:1ccbf6b4bcb22a4fea3ce21b14310b294f4f78e5682fa9b4bebc8a1637c45c24`. `Có migration: không` so với v1; DB mới vẫn chạy 001–006. `v1` giữ nguyên digest `sha256:eb683458f154e5209bf2a6a7100de8bbd7481fe5391079f24549a0b49c5fd035`, có findings lịch sử trong [H gốc](docs/qa/2026-11-11-acceptance.md).
 
 **2. Kết nối.** Service/container `app`, cổng nội bộ `3000`, proxy của người vận hành gọi `app:3000` qua network external `web` đã được chuẩn bị. Compose chính không publish app/DB; DB chỉ nối `backend` internal. Proxy, DNS và hạ tầng do người vận hành quản lý; tài liệu không chứa Caddyfile hay runbook AWS.
 
