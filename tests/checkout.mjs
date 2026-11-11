@@ -71,7 +71,7 @@ test('browser checkout coordinator against real Express, PGlite and image files'
     mode = 'normal',
     requests = [];
   const start = async () => {
-    server = createApp(db, 'isolated-checkout-qa').listen(0, '127.0.0.1');
+    server = createApp(db).listen(0, '127.0.0.1');
     await new Promise(r => server.once('listening', r));
     base = `http://127.0.0.1:${server.address().port}`;
   };

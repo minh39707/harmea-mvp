@@ -78,9 +78,8 @@ test('canonical cart orders, admin sessions, assets and state transitions', asyn
     server,
     base,
     cookie;
-  const secret = randomBytes(32).toString('hex');
   const start = async () => {
-    server = createApp(db, secret).listen(0, '127.0.0.1');
+    server = createApp(db).listen(0, '127.0.0.1');
     await new Promise(r => server.once('listening', r));
     base = `http://127.0.0.1:${server.address().port}`;
   };
@@ -687,7 +686,6 @@ test('migration 004 backfills historical single-design orders without changing s
     assert.equal(order.subtotal_vnd, 100000);
     assert.equal(order.photo_key, item.photo_key);
     assert.equal(order.preview_key, item.preview_key);
-    assert.equal(await db.query('SELECT id FROM demo_checkouts').then(r => r.rows.length), 0);
   } finally {
     await db.close();
   }

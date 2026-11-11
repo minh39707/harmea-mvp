@@ -10,15 +10,16 @@ Phạm vi v2 đã chốt trong [roadmap](tasks/00-ROADMAP-v2.md): MySQL 8.4, tà
 
 | Đã triển khai / chuẩn bị | Cần làm tiếp |
 |---|---|
-| F0: phạm vi v2 và OpenAPI 0.3.0; xem [báo cáo](docs/qa/2026-11-11-task-F0.md) | F1 gỡ legacy → F2 MySQL → F3 auth/roles; F4–G3 và H theo roadmap |
+| F0 chốt phạm vi v2; xem [báo cáo F0](docs/qa/2026-11-11-task-F0.md) | F1 đã gỡ API legacy; xem [báo cáo F1](docs/qa/2026-11-11-task-F1.md) |
+| F1 smoke canonical và contract 0.3.0 | F2 MySQL → F3 auth/roles; tiếp tục F4–G3 và H theo roadmap |
 | UI tối giản E2: sản phẩm, cá nhân hóa, giỏ hàng, checkout, success và tracking | Kiểm tra thao tác trình duyệt tại 375/768/1440 px |
-| Frontend C dùng `/api/orders` multipart và `/api/tracking/lookup` | Đơn legacy không tự vào admin mới; các route demo còn giữ để tương thích/lịch sử |
+| Frontend C dùng `/api/orders` multipart và `/api/tracking/lookup`; API legacy đã được F1 gỡ | Dữ liệu bảng fixture chỉ còn trong migration PostgreSQL lịch sử, không chuyển sang MySQL ở F2 |
 | Editor B và checkout C giữ ảnh gốc/PNG/crop từng dòng; backend lưu snapshot | Kiểm tra upload/IndexedDB/Canvas/clipboard thực trên trình duyệt |
 | Auth cookie, UI admin list/detail/assets và status/version/history | Nghiệm thu admin qua trình duyệt, gồm hai tab xung đột |
 | Migration checksum 001–004, PGlite integration tests, adapter PostgreSQL và Compose | Áp 004 vào DB local sau khi dừng API; kiểm tra PostgreSQL thực tế |
 | Code E cả hai giai đoạn, API A và code B–D đã triển khai | Nghiệm thu trực quan B/C/D/E2 và diễn tập toàn luồng |
 
-Giá seed **50.000 VND là số giả cho demo**. Không có thanh toán hoặc tự động sản xuất/giao hàng. Các bộ A/B/C/D hiện qua **56 tests Node** trên PGlite/HTTP/tệp thật. Bộ smoke legacy lịch sử hiện **30 phép / 26 khớp / 4 không khớp**, không phải bộ nghiệm thu contract mới. Xem [báo cáo task A](docs/qa/2026-10-29-task-a.md) và [báo cáo E2](docs/qa/2026-10-29-clean-layout-phase2.md). Chưa nghiệm thu toàn MVP hoặc PostgreSQL thực tế.
+Giá seed **50.000 VND là số giả cho demo**. Không có thanh toán hoặc tự động sản xuất/giao hàng. A–D có **56 tests Node** trên PGlite/HTTP/tệp thật; F1 thay smoke legacy 30 phép bằng smoke luồng canonical. Xem các báo cáo trong `docs/qa/` và [báo cáo E2](docs/qa/2026-10-29-clean-layout-phase2.md). Chưa nghiệm thu toàn MVP hoặc PostgreSQL thực tế.
 
 ## Cấu trúc hiện tại
 
@@ -29,8 +30,8 @@ apps/web/src/shared/     types, API client, format và UI dùng chung
 apps/web/src/styles/     CSS chung, tokens và responsive
 apps/api/src/middleware/ headers, Origin và rate limit
 apps/api/src/lib/        validation, lỗi và hash
-apps/api/src/modules/    catalog, orders, admin; checkout/tracking legacy tạm thời
-tests/                  integration API canonical và smoke legacy, DB thử riêng
+apps/api/src/modules/    catalog, orders, admin
+tests/                  integration API canonical và smoke canonical, DB thử riêng
 docs/qa/                báo cáo và bằng chứng kiểm tra
 ```
 
@@ -91,7 +92,7 @@ PGlite dùng PostgreSQL nhúng, dữ liệu bền tại `storage/db`. Chỉ mộ
 
 **Hai chế độ có kho dữ liệu riêng.** Đổi driver không tự chuyển đơn hoặc tài khoản; chạy migration/seed trên chế độ mới. Nếu chuyển máy, sao lưu DB theo driver và `storage/uploads` khi ứng dụng đã dừng; không chỉ copy mã nguồn.
 
-**Nâng bản local đang dùng:** dừng API trước, chạy `npm.cmd run db:migrate` (thêm 004, không sửa 001–003), `npm.cmd run db:check`, rồi khởi động lại API. Phiên phát triển task A chỉ migrate database thử, chưa thay DB đang chạy của bạn. Các đơn `demo_checkouts` vẫn giữ riêng và không tự được chuyển thành đơn có tiến độ/admin.
+**Nâng bản local đang dùng:** dừng API trước, chạy `npm.cmd run db:migrate` (thêm 004, không sửa 001–003), `npm.cmd run db:check`, rồi khởi động lại API. Phiên phát triển task A chỉ migrate database thử, chưa thay DB đang chạy của bạn. Migration PostgreSQL cũ còn bảng fixture tách biệt; API đã gỡ ở F1. F2 lưu migration cũ làm lịch sử và không chuyển bảng/đơn fixture sang MySQL.
 
 ## Địa chỉ và kiểm tra
 
@@ -113,7 +114,7 @@ npm.cmd run test:smoke
 npm.cmd run db:check
 ```
 
-Kết quả starter: [kiểm tra starter](docs/qa/2026-10-27-starter-verification.md); kết quả refactor: [báo cáo E1](docs/qa/2026-10-29-clean-layout.md). Smoke không ghi file mặc định; thêm `-- --out <file>` khi muốn lưu bằng chứng. Script khảo sát không dùng exit code để báo các mismatch đã biết. Docker cần kiểm tra trên máy có Docker engine; không suy ra đã chạy từ việc có Compose.
+Kết quả starter: [kiểm tra starter](docs/qa/2026-10-27-starter-verification.md); kết quả refactor: [báo cáo E1](docs/qa/2026-10-29-clean-layout.md). `test:smoke` chạy kiểm tra ngắn trên DB PGlite riêng; nó tạo một đơn canonical, tra tracking, xác nhận các route đã gỡ trả 404 và xóa thư mục thử sau khi chạy. Docker cần kiểm tra trên máy có Docker engine; không suy ra đã chạy từ việc có Compose.
 
 ### Chuẩn bị hai đơn diễn tập
 

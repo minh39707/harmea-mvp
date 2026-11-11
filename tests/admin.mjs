@@ -57,7 +57,7 @@ test('admin frontend client with real HTTP, database and private files', async t
     dropLogout = false,
     requests = [];
   const start = async () => {
-    server = createApp(db, 'qa-admin-isolated').listen(0, '127.0.0.1');
+    server = createApp(db).listen(0, '127.0.0.1');
     await new Promise(r => server.once('listening', r));
     base = `http://127.0.0.1:${server.address().port}`;
   };

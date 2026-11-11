@@ -1,6 +1,6 @@
 # F1 — Gỡ API legacy `/api/demo-*`
 
-**Trạng thái:** chưa làm. **Ước lượng:** 1 giờ. **Phụ thuộc:** F0.
+**Trạng thái:** đã hoàn thành và kiểm tra ngày 11/11/2026 trên nhánh `feat/F1-remove-legacy`; xem [báo cáo F1](../docs/qa/2026-11-11-task-F1.md). **Ước lượng ban đầu:** 1 giờ. **Phụ thuộc:** F0.
 
 ## Lý do
 

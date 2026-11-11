@@ -6,7 +6,7 @@ import { apiGuard } from './middleware/api-guard.ts';
 import type { Database } from './db.ts';
 import { InputError } from './lib/errors.ts';
 
-export function createApp(db?: Database, secret = '') {
+export function createApp(db?: Database) {
   const app = express();
   app.disable('x-powered-by');
   app.use(securityHeaders);
@@ -15,7 +15,7 @@ export function createApp(db?: Database, secret = '') {
   app.get('/api/health', (_request, response) => {
     response.json({ status: 'ok', service: 'harmea-api' });
   });
-  if (db && secret) app.use('/api', apiRouter(db, secret));
+  if (db) app.use('/api', apiRouter(db));
   app.use(express.static(resolve('apps/web/dist')));
   app.get('/track', (_req, res) => res.sendFile(resolve('apps/web/dist/index.html')));
   // Public HTML shell only; every admin data/asset API is authenticated separately.
