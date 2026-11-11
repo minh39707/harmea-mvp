@@ -1,5 +1,6 @@
 import type { Item, Design } from '../../shared/types';
 import { validCrop } from '../editor/geometry.ts';
+export const CART_STORAGE_KEY = 'harmea.cart.v2';
 const strings = [
   'fullName',
   'signatureText',
@@ -44,6 +45,8 @@ function storedItem(raw: unknown): Item | null {
       : { x: 0, y: 0, width: 1, height: 1 };
   const dimension = (n: unknown) =>
     typeof n === 'number' && Number.isFinite(n) && n > 0 && n <= 8192 ? n : 0;
+  const signatureData =
+    typeof d.signatureData === 'string' && d.signatureData.length <= 150000 ? d.signatureData : '';
   return {
     id: i.id,
     productId: i.productId,
@@ -52,7 +55,8 @@ function storedItem(raw: unknown): Item | null {
       ...texts,
       crop,
       photoWidth: dimension(d.photoWidth),
-      photoHeight: dimension(d.photoHeight)
+      photoHeight: dimension(d.photoHeight),
+      ...(signatureData ? { signatureData } : {})
     },
     ...(typeof i.assetKey === 'string' && /^[0-9a-f-]{36}$/.test(i.assetKey)
       ? { assetKey: i.assetKey }
@@ -64,7 +68,7 @@ function storedItem(raw: unknown): Item | null {
 }
 export function loadCart(): Item[] {
   try {
-    const value: unknown = JSON.parse(localStorage.getItem('harmea.cart.v2') ?? '[]');
+    const value: unknown = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) ?? '[]');
     return parseCart(value);
   } catch {
     return [];
@@ -80,5 +84,5 @@ export function parseCart(value: unknown): Item[] {
     : [];
 }
 export function saveCart(cart: Item[]) {
-  localStorage.setItem('harmea.cart.v2', JSON.stringify(cart));
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
 }

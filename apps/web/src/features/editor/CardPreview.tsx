@@ -11,16 +11,12 @@ export default function CardPreview({
   small?: boolean;
   guides?: boolean;
 }) {
-  const src = useMemo(
-    () => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(cardSvg(design, guides))}`,
-    [design, guides]
-  );
+  const svgMarkup = useMemo(() => cardSvg(design, guides), [design, guides]);
+
   return (
-    <div className={`music-card ${small ? 'small' : ''}`}>
-      <img
-        src={src}
-        alt={`Thiết kế thẻ ${design.fullName || 'Harméa'}${design.dateOfBirth ? `, ngày sinh ${design.dateOfBirth}` : ''}`}
-      />
-    </div>
+    <div
+      className={`music-card ${small ? 'small' : ''}`}
+      dangerouslySetInnerHTML={{ __html: svgMarkup }}
+    />
   );
 }

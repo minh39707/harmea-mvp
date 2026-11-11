@@ -12,7 +12,7 @@ export function orderInput(items: PreparedItem[], recipient: Recipient, confirme
   if (
     !name ||
     name.length > 80 ||
-    !/^\+?[0-9]{8,15}$/.test(phone) ||
+    !/^[+0-9\s.-]{8,32}$/.test(phone) ||
     address.length < 10 ||
     address.length > 500 ||
     note.length > 500

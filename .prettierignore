@@ -2,6 +2,8 @@ node_modules/
 .npm-cache/
 dist/
 storage/
+!apps/api/src/lib/storage/
+!apps/api/src/lib/storage/**
 coverage/
 package-lock.json
 contracts/

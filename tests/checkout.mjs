@@ -1,16 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readdir, readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { randomBytes, scryptSync, createHash } from 'node:crypto';
+import { randomBytes, createHash } from 'node:crypto';
 import sharp from 'sharp';
 import { openDatabase } from '../apps/api/src/db.ts';
+import { createTestDatabase } from './helpers/db.mjs';
 import { createApp } from '../apps/api/src/app.ts';
 import { checkoutAttempt, pendingStorageKey } from '../apps/web/src/features/checkout/attempt.ts';
 import { api, ApiError } from '../apps/web/src/shared/api.ts';
 import { trackingResponse } from '../apps/web/src/features/checkout/responses.ts';
-import { trackingToken, trackingLink } from '../apps/web/src/features/tracking/links.ts';
+import { normalizePhone } from '../apps/api/src/modules/orders/lookup.ts';
 import { blankDesign } from '../apps/web/src/shared/types.ts';
 import { orderDesign } from '../apps/web/src/features/editor/validate-design.ts';
 import { cardSvg } from '../apps/web/src/features/editor/card-svg.ts';
@@ -31,40 +32,60 @@ function store(initial) {
     removeItem: k => map.delete(k)
   };
 }
-test('tracking links keep secrets in fragments and reject query-string lookup', () => {
-  const token = randomBytes(32).toString('base64url');
-  for (const input of [
-    token,
-    `#${token}`,
-    `/track#${token}`,
-    `http://localhost:5173/track#${token}`
-  ])
-    assert.ok(trackingToken(input) === token);
-  const url = new URL(trackingLink('http://localhost:5173', token));
-  assert.equal(url.pathname, '/track');
-  assert.equal(url.search, '');
-  assert.ok(url.hash === `#${token}`);
-  for (const input of [
-    `http://localhost/track?token=${token}`,
-    `javascript:alert(1)#${token}`,
-    'bad-token'
-  ])
-    assert.throws(() => trackingToken(input));
+test('shared phone normalizer accepts common domestic formats', () => {
+  for (const input of ['0912 345 678', '+84912345678', '84-912-345-678'])
+    assert.equal(normalizePhone(input), '0912345678');
+  assert.throws(() => normalizePhone('not-a-phone'));
 });
 
-test('browser checkout coordinator against real Express, PGlite and image files', async t => {
+test('inactive product rejection is definitive and clears the pending checkout key', async () => {
+  const nativeFetch = globalThis.fetch;
+  const storage = store();
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        error: { code: 'PRODUCT_INACTIVE', message: 'Sản phẩm đang tạm ngừng nhận đơn.' }
+      }),
+      { status: 409, headers: { 'Content-Type': 'application/json' } }
+    );
+  try {
+    const attempt = checkoutAttempt(storage);
+    const item = {
+      payload: {
+        productId: '11111111-1111-4111-8111-111111111111',
+        templateVersion: 'harmea-card-v1',
+        quantity: 1,
+        design: {
+          fullName: 'Thử',
+          musicUrl: 'https://open.spotify.com/track/test',
+          crop: { x: 0, y: 0, width: 1, height: 1 }
+        }
+      },
+      photo: new Blob(['photo'], { type: 'image/jpeg' }),
+      preview: new Blob(['preview'], { type: 'image/png' })
+    };
+    await assert.rejects(
+      attempt.submit(
+        [item],
+        { name: 'Người nhận', phone: '0900000000', address: 'Địa chỉ thử đủ mười ký tự', note: '' },
+        true
+      ),
+      error => error.kind === 'input' && error.message.includes('Tạm ngừng nhận đơn')
+    );
+    assert.equal(attempt.pendingKey(), '');
+    assert.equal(storage.getItem(pendingStorageKey), null);
+  } finally {
+    globalThis.fetch = nativeFetch;
+  }
+});
+
+test('browser checkout coordinator against real Express, MySQL and image files', async t => {
+  const testDatabase = await createTestDatabase(t);
   const root = await mkdtemp(join(tmpdir(), 'harmea-checkout-c-'));
-  process.env.DB_DRIVER = 'pglite';
-  process.env.DATA_DIR = join(root, 'db');
   process.env.UPLOAD_DIR = join(root, 'uploads');
-  process.env.APP_ORIGIN = 'http://localhost:5173';
-  process.env.ADMIN_USERNAME = 'qa-admin';
-  const password = randomBytes(24).toString('base64url'),
-    salt = randomBytes(16).toString('hex');
-  process.env.ADMIN_PASSWORD_HASH = `${salt}:${scryptSync(password, salt, 64).toString('hex')}`;
+  process.env.APP_URL = 'http://localhost:5173';
+  process.env.LOOKUP_SECRET = randomBytes(32).toString('base64url');
   const db = await openDatabase();
-  for (const file of (await readdir('database')).filter(n => /^\d+.*\.sql$/.test(n)).sort())
-    await db.exec(await readFile(join('database', file), 'utf8'));
   const nativeFetch = globalThis.fetch;
   let server,
     base,
@@ -119,7 +140,7 @@ test('browser checkout coordinator against real Express, PGlite and image files'
       await run();
     });
   const count = async () =>
-    Number((await db.query('SELECT count(*)::int AS n FROM orders')).rows[0].n);
+    Number((await db.query('SELECT CAST(COUNT(*) AS UNSIGNED) AS n FROM orders')).rows[0].n);
   const original = await sharp({
     create: { width: 120, height: 80, channels: 3, background: '#8facb8' }
   })
@@ -182,19 +203,27 @@ test('browser checkout coordinator against real Express, PGlite and image files'
       assert.ok(!('photo' in requests[0].payload.items[0].design));
       const row = (
         await db.query(
-          'SELECT photo_key,preview_key,design_snapshot FROM order_items WHERE order_id=$1 ORDER BY position',
+          'SELECT photo_key,preview_key,design_snapshot FROM order_items WHERE order_id=? ORDER BY position',
           [latestReceipt.id]
         )
       ).rows[0];
-      assert.equal(
-        hash(await readFile(join(process.env.UPLOAD_DIR, row.photo_key))),
-        hash(original)
-      );
+      const storedPhoto = await readFile(join(process.env.UPLOAD_DIR, row.photo_key));
+      const storedPhotoMeta = await sharp(storedPhoto).metadata();
+      assert.equal(storedPhotoMeta.format, 'jpeg');
+      assert.deepEqual([storedPhotoMeta.width, storedPhotoMeta.height], [120, 80]);
+      assert.equal(storedPhotoMeta.exif, undefined);
+      assert.notEqual(hash(storedPhoto), hash(original));
       assert.equal(row.design_snapshot.dateOfBirth, '2003-01-15');
       assert.deepEqual(row.design_snapshot.crop, prepared[0].payload.design.crop);
-      assert.equal(
-        hash(await readFile(join(process.env.UPLOAD_DIR, row.preview_key))),
-        hash(Buffer.from(await prepared[0].preview.arrayBuffer()))
+      assert.deepEqual(
+        await sharp(await readFile(join(process.env.UPLOAD_DIR, row.preview_key)))
+          .ensureAlpha()
+          .raw()
+          .toBuffer(),
+        await sharp(Buffer.from(await prepared[0].preview.arrayBuffer()))
+          .ensureAlpha()
+          .raw()
+          .toBuffer()
       );
       assert.equal(storage.getItem(pendingStorageKey), null);
       const recorded = JSON.parse(storage.writes[0]);
@@ -331,7 +360,7 @@ test('browser checkout coordinator against real Express, PGlite and image files'
       assert.equal(await count(), before);
     });
     await check(
-      'received token survives storage cleanup failure and next intentional order is fresh',
+      'received order number survives storage cleanup failure and next intentional order is fresh',
       async () => {
         const storage = store(),
           realSet = storage.setItem;
@@ -345,7 +374,7 @@ test('browser checkout coordinator against real Express, PGlite and image files'
         const attempt = checkoutAttempt(storage);
         const first = await attempt.submit(items(), recipient, true);
         assert.ok(first.storageWarning);
-        assert.ok(first.receipt.trackingToken.length === 43);
+        assert.match(first.receipt.orderNumber, /^HM-[0-9A-F]{16}$/);
         assert.equal(attempt.pendingKey(), '');
         const second = await attempt.submit(items(), recipient, true);
         assert.notEqual(first.receipt.id, second.receipt.id);
@@ -370,38 +399,33 @@ test('browser checkout coordinator against real Express, PGlite and image files'
     await check(
       'tracking refresh reads admin updates and refuses extra private response fields',
       async () => {
-        const token = trackingToken(trackingLink(base, latestReceipt.trackingToken));
-        const first = trackingResponse(await api('/tracking/lookup', { token }));
+        const lookup = { orderNumber: latestReceipt.orderNumber, phone: recipient.phone };
+        const first = trackingResponse(await api('/tracking/lookup', lookup));
         assert.equal(first.status, 'pending');
         assert.ok(!('subtotalVnd' in first));
-        const login = await nativeFetch(base + '/api/admin/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: 'qa-admin', password })
-        });
-        assert.equal(login.status, 200);
-        const cookie = login.headers.get('set-cookie').split(';')[0];
         const updated = await nativeFetch(base + `/api/admin/orders/${latestReceipt.id}/status`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', Cookie: cookie },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ expectedVersion: 1, status: 'confirmed' })
         });
         assert.equal(updated.status, 200);
-        const refreshed = trackingResponse(await api('/tracking/lookup', { token }));
+        const refreshed = trackingResponse(await api('/tracking/lookup', lookup));
         assert.equal(refreshed.status, 'confirmed');
         assert.equal(refreshed.history.length, 2);
         assert.throws(() => trackingResponse({ ...refreshed, recipient: { name: 'private' } }));
         await assert.rejects(
-          api('/tracking/lookup', { token: 'bad-token' }),
+          api('/tracking/lookup', { orderNumber: 'bad-token', phone: recipient.phone }),
           error => error instanceof ApiError && error.status === 404
         );
         assert.ok(requests.every(r => r.search === '' && r.fragment === ''));
-        assert.ok(requests.every(r => !r.path.includes(token)));
+        assert.ok(requests.every(r => !r.path.includes(latestReceipt.orderNumber)));
       }
     );
   } finally {
     globalThis.fetch = nativeFetch;
     await stop();
     await db.close();
+    await testDatabase.destroy();
+    await rm(root, { recursive: true, force: true });
   }
 });

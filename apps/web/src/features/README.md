@@ -1,8 +1,8 @@
 # Feature folders
 
-Task B: `editor/` — mẫu thẻ, form, preview.
-Task C: `checkout/`, `tracking/` — đặt và tra cứu đơn.
-Task D: `admin/` — đăng nhập, danh sách/chi tiết, đổi trạng thái.
+`home/`, `editor/`, `cart/` — storefront, tùy chỉnh, giữ và sửa giỏ.
+`checkout/`, `tracking/` — đặt đơn không tài khoản, tra cứu bằng mã đơn + SĐT.
+`admin/` — danh sách/chi tiết đơn, ảnh riêng, cập nhật trạng thái, quản lý sản phẩm, thống kê và CSV sau gate.
 
-Một router/layout chung ở `src/` khi bắt đầu UI. Dùng `/api` qua Vite proxy.
-Không lưu admin token trong localStorage; không đưa tracking token vào query string.
+Một shell/layout chung ở `src/`; dùng `/api` qua Vite proxy.
+Không có trang account/login hoặc session admin; mã đơn và SĐT chỉ gửi trong POST body để tra cứu.

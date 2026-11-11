@@ -1,6 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Shop } from '../../app/useShop';
 import Card from './CardPreview';
+import {
+  IconExpand,
+  IconChevronLeft,
+  IconChevronRight,
+  IconImage,
+  IconCheck,
+  IconClose
+} from '../../shared/ui/Icons';
+
+export const COLOR_SAMPLES = [
+  {
+    id: 'cream',
+    src: '/images/card-sample-cream.jpg',
+    title: 'Màu Kem kỷ niệm',
+    label: 'Kem kỷ niệm',
+    artist: 'The Weeknd — The Idol'
+  },
+  {
+    id: 'blue',
+    src: '/images/card-sample-blue.jpg',
+    title: 'Màu Xanh bình yên',
+    label: 'Xanh bình yên',
+    artist: 'Drake — Nothing Was The Same'
+  },
+  {
+    id: 'rose',
+    src: '/images/card-sample-rose.jpg',
+    title: 'Màu Hồng dịu dàng',
+    label: 'Hồng dịu dàng',
+    artist: 'Kendrick Lamar — DAMN.'
+  }
+];
 
 export default function ProductGallery({
   gallery,
@@ -8,36 +40,207 @@ export default function ProductGallery({
   draft
 }: Pick<Shop, 'gallery' | 'setGallery' | 'draft'>) {
   const [guides, setGuides] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const activePhoto = COLOR_SAMPLES[activePhotoIndex] || COLOR_SAMPLES[0]!;
+
+  const handleNextPhoto = useCallback(() => {
+    setActivePhotoIndex(prev => (prev + 1) % COLOR_SAMPLES.length);
+    if (gallery !== 'sample') {
+      setGallery('sample');
+    }
+  }, [gallery, setGallery]);
+
+  const handlePrevPhoto = useCallback(() => {
+    setActivePhotoIndex(prev => (prev - 1 + COLOR_SAMPLES.length) % COLOR_SAMPLES.length);
+    if (gallery !== 'sample') {
+      setGallery('sample');
+    }
+  }, [gallery, setGallery]);
+
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setIsLightboxOpen(false);
+      if (e.key === 'ArrowRight') handleNextPhoto();
+      if (e.key === 'ArrowLeft') handlePrevPhoto();
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen, handleNextPhoto, handlePrevPhoto]);
+
+  function selectPhoto(index: number) {
+    setActivePhotoIndex(index);
+    if (gallery !== 'sample') {
+      setGallery('sample');
+    }
+  }
+
   return (
-    <div className="gallery">
-      <div className={`hero-image ${gallery === 'preview' ? 'preview-stage' : ''}`}>
-        {gallery === 'sample' ? (
-          <img
-            src="/images/card-sample.png"
-            alt="Ảnh thẻ NFC mẫu được nhóm cung cấp trong tài liệu Harméa"
-          />
-        ) : (
-          <Card design={draft} guides={guides} />
-        )}
-      </div>
-      <div className="gallery-toggle" role="group" aria-label="Chọn ảnh xem trước">
-        <button aria-pressed={gallery === 'sample'} onClick={() => setGallery('sample')}>
-          Ảnh thật
+    <div className="product-gallery-card">
+      {/* 1. KHUNG PREVIEW TRÊN NỀN XÁM NHẸ VỚI NÚT PHÓNG TO VÀ ĐIỀU HƯỚNG */}
+      <div className="gallery-preview-box">
+        {/* Nút phóng to ở góc trên bên phải */}
+        <button
+          type="button"
+          className="btn-expand-preview"
+          onClick={() => setIsLightboxOpen(true)}
+          title="Phóng to xem ảnh chi tiết"
+          aria-label="Phóng to ảnh"
+        >
+          <IconExpand size={16} />
         </button>
-        <button aria-pressed={gallery === 'preview'} onClick={() => setGallery('preview')}>
+
+        {/* Nút mũi tên chuyển ảnh trước (tròn, bóng nhẹ) */}
+        <button
+          type="button"
+          className="gallery-nav-arrow prev"
+          onClick={handlePrevPhoto}
+          aria-label="Ảnh trước"
+          title="Xem ảnh mẫu trước"
+        >
+          <IconChevronLeft size={18} />
+        </button>
+
+        {/* Vùng hiển thị thẻ chính giữa */}
+        <div className="gallery-display-center">
+          {gallery === 'sample' ? (
+            <div
+              className="hero-image-clickable"
+              onClick={() => setIsLightboxOpen(true)}
+              title="Nhấn để phóng to xem chi tiết ảnh mẫu"
+            >
+              <img src={activePhoto.src} alt={activePhoto.title} className="card-sample-img" />
+            </div>
+          ) : (
+            <Card design={draft} guides={guides} />
+          )}
+        </div>
+
+        {/* Nút mũi tên chuyển ảnh sau (tròn, bóng nhẹ) */}
+        <button
+          type="button"
+          className="gallery-nav-arrow next"
+          onClick={handleNextPhoto}
+          aria-label="Ảnh sau"
+          title="Xem ảnh mẫu tiếp theo"
+        >
+          <IconChevronRight size={18} />
+        </button>
+
+        {/* 3 chấm chuyển trang (carousel dots) ở đáy khung preview */}
+        <div className="carousel-dots" role="tablist" aria-label="Danh sách ảnh mẫu">
+          {COLOR_SAMPLES.map((photo, idx) => {
+            const isDotActive = gallery === 'sample' && activePhotoIndex === idx;
+            return (
+              <button
+                key={photo.id}
+                type="button"
+                role="tab"
+                aria-selected={isDotActive}
+                className={`carousel-dot ${isDotActive ? 'active' : ''}`}
+                onClick={() => selectPhoto(idx)}
+                title={`Chuyển đến mẫu ${photo.label}`}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 2. KHU VỰC "CHỌN ẢNH MẪU" DƯỚI KHUNG PREVIEW */}
+      <div className="gallery-sample-section">
+        <div className="sample-section-header">
+          <IconImage size={18} color="#1b4332" />
+          <span className="sample-section-title">Chọn ảnh mẫu</span>
+        </div>
+
+        <div className="sample-grid" role="group" aria-label="3 ảnh mẫu với 3 màu">
+          {COLOR_SAMPLES.map((photo, idx) => {
+            const isSelected = gallery === 'sample' && activePhotoIndex === idx;
+            return (
+              <button
+                key={photo.id}
+                type="button"
+                className={`sample-card-item ${isSelected ? 'active' : ''}`}
+                onClick={() => selectPhoto(idx)}
+                title={`Xem mẫu ${photo.label}`}
+              >
+                {isSelected && (
+                  <span className="sample-check-badge" aria-hidden="true">
+                    <IconCheck size={12} strokeWidth={2.5} />
+                  </span>
+                )}
+                <div className="sample-thumb-img-wrap">
+                  <img src={photo.src} alt={photo.title} />
+                </div>
+                <span className="sample-caption">{photo.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. NÚT CHUYỂN ĐỔI CHẾ ĐỘ XEM (ẢNH MẪU / THIẾT KẾ CỦA BẠN) */}
+      <div className="gallery-mode-toggle" role="group" aria-label="Chọn chế độ hiển thị">
+        <button
+          type="button"
+          className={`btn-mode-toggle ${gallery === 'sample' ? 'active' : ''}`}
+          onClick={() => setGallery('sample')}
+        >
+          Ảnh mẫu ({COLOR_SAMPLES.length} màu)
+        </button>
+        <button
+          type="button"
+          className={`btn-mode-toggle ${gallery === 'preview' ? 'active' : ''}`}
+          onClick={() => setGallery('preview')}
+        >
           Thiết kế của bạn
         </button>
       </div>
+
       {gallery === 'preview' && (
         <div className="artwork-info">
           <label>
             <input type="checkbox" checked={guides} onChange={e => setGuides(e.target.checked)} />
-            Hiện đường cắt và vùng an toàn (chỉ để đối chiếu)
+            <span>Hiện đường cắt và vùng an toàn (chỉ để đối chiếu)</span>
           </label>
-          <p className="note">
-            Thẻ 54 × 86 mm · artwork 57 × 90 mm · vùng an toàn 49 × 82 mm. PNG minh họa, chưa phải
-            file in chuẩn.
-          </p>
+        </div>
+      )}
+
+      {/* 4. LIGHTBOX XEM ẢNH TO CHI TIẾT */}
+      {isLightboxOpen && (
+        <div
+          className="lightbox-overlay"
+          onClick={() => setIsLightboxOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+            <button
+              className="lightbox-close"
+              onClick={() => setIsLightboxOpen(false)}
+              aria-label="Đóng"
+            >
+              <IconClose size={20} />
+            </button>
+            <button className="lightbox-arrow prev" onClick={handlePrevPhoto} aria-label="Trước">
+              ‹
+            </button>
+            <div className="lightbox-img-box">
+              <img src={activePhoto.src} alt={activePhoto.title} />
+              <div className="lightbox-bar">
+                <strong>{activePhoto.title}</strong>
+                <span> • {activePhoto.artist}</span>
+                <span className="lightbox-counter">
+                  ({activePhotoIndex + 1}/{COLOR_SAMPLES.length})
+                </span>
+              </div>
+            </div>
+            <button className="lightbox-arrow next" onClick={handleNextPhoto} aria-label="Sau">
+              ›
+            </button>
+          </div>
         </div>
       )}
     </div>

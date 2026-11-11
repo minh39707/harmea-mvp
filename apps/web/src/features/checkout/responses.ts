@@ -23,7 +23,6 @@ export function receiptResponse(value: unknown): Receipt {
     'subtotalVnd',
     'shippingFeeVnd',
     'currency',
-    'trackingToken',
     'createdAt'
   ]);
   if (
@@ -34,9 +33,7 @@ export function receiptResponse(value: unknown): Receipt {
     r.status !== 'pending' ||
     !stamp(r.createdAt) ||
     r.currency !== 'VND' ||
-    r.shippingFeeVnd !== null ||
-    typeof r.trackingToken !== 'string' ||
-    !/^[A-Za-z0-9_-]{43}$/.test(r.trackingToken)
+    r.shippingFeeVnd !== null
   )
     throw Error('Chưa xác nhận được kết quả đặt đơn.');
   if (

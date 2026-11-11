@@ -74,8 +74,7 @@ export function useCheckout({
       setRecipient({ name: '', phone: '', address: '', note: '' });
       setConfirmed(false);
       go('success');
-      if (result.storageWarning)
-        setError('Đơn đã lưu. Hãy sao chép liên kết; trình duyệt chưa xóa được mã gửi cũ.');
+      if (result.storageWarning) setError('Đơn đã lưu. Trình duyệt chưa xóa được mã gửi cũ.');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Chưa gửi được đơn. Dữ liệu vẫn còn.');
     } finally {

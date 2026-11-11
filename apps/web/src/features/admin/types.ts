@@ -1,5 +1,4 @@
 import type { Product, OrderStatus, Crop } from '../../shared/types';
-export type AdminSession = { authenticated: true; expiresAt: string };
 export type AdminSummary = {
   id: string;
   orderNumber: string;
@@ -14,6 +13,21 @@ export type AdminSummary = {
   updatedAt: string;
 };
 export type AdminPage = { items: AdminSummary[]; page: number; pageSize: number; total: number };
+export type AdminProduct = {
+  id: string;
+  name: string;
+  description: string;
+  unitPriceVnd: number;
+  isActive: boolean;
+  version: number;
+  templateVersion: string;
+};
+export type AdminStats = {
+  ordersByStatus: Record<OrderStatus, number>;
+  subtotalVnd: number;
+  cardCount: number;
+  ordersByDay: Array<{ date: string; orderCount: number }>;
+};
 export type AdminDesign = {
   fullName: string;
   musicUrl: string;

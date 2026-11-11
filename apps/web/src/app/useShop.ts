@@ -1,28 +1,43 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Design, Item, Product, Receipt, PublicTracking, View } from '../shared/types';
+import type { StateSetter } from '../shared/types';
 import { blankDesign as blank } from '../shared/types';
 import { api } from '../shared/api';
-import { loadCart, saveCart } from '../features/cart/cart-storage';
-import { removeAssets } from '../features/editor/asset-store';
+import { CART_STORAGE_KEY, loadCart, saveCart } from '../features/cart/cart-storage';
+import { cleanOrphanAssets, removeAssets } from '../features/editor/asset-store';
 import { useEditor } from '../features/editor/useEditor';
 import { useCheckout } from '../features/checkout/useCheckout';
-import { trackingLink } from '../features/tracking/links';
 import { useTracking } from '../features/tracking/useTracking';
+import { matchRoute, navigate, usePathname } from '../shared/router';
+
+function viewForPath(pathname: string): View {
+  const name = matchRoute(pathname)?.route.name;
+  if (name === 'design' || name === 'product-alias') return 'product';
+  if (name === 'cart') return 'cart';
+  if (name === 'checkout') return 'checkout';
+  if (name === 'tracking') return 'tracking';
+  return 'home';
+}
+
 export function useShop() {
+  const pathname = usePathname();
   const [product, setProduct] = useState<Product | null>(null),
     [loadError, setLoadError] = useState('');
-  const [cart, setCart] = useState<Item[]>(loadCart),
-    [view, setView] = useState<View>(location.pathname === '/track' ? 'tracking' : 'product');
+  const [cart, setCartState] = useState<Item[]>(loadCart),
+    [view, setView] = useState<View>(() => viewForPath(location.pathname));
   const [draft, setDraft] = useState<Design>({ ...blank }),
     [quantity, setQuantity] = useState(1),
-    [editing, setEditing] = useState<string | null>(null);
+    [editing, setEditing] = useState<string | null>(null),
+    [editingPosition, setEditingPosition] = useState<number | null>(null);
   const [gallery, setGallery] = useState<'sample' | 'preview'>('sample'),
     [notice, setNotice] = useState(''),
     [error, setError] = useState('');
+  const [assetStoreReady, setAssetStoreReady] = useState(false);
   const [busy, setBusy] = useState(false),
     [receipt, setReceipt] = useState<Receipt | null>(null),
     [tracking, setTracking] = useState<PublicTracking | null>(null),
-    [trackInput, setTrackInput] = useState(location.hash.slice(1));
+    [trackOrderNumber, setTrackOrderNumber] = useState(''),
+    [trackPhone, setTrackPhone] = useState('');
   const [recipient, setRecipient] = useState({ name: '', phone: '', address: '', note: '' }),
     [confirmed, setConfirmed] = useState(false);
   const count = cart.reduce((n, i) => n + i.quantity, 0),
@@ -33,23 +48,63 @@ export function useShop() {
       .then(setProduct)
       .catch(e => setLoadError(e.message));
   };
-  const previousCart = useRef(cart);
+  const commitCart = useCallback(
+    (action: Item[] | ((current: Item[]) => Item[]), cleanupRemoved = true) => {
+      const previous = loadCart();
+      const next = typeof action === 'function' ? action(previous) : action;
+      if (next.length > 10) throw Error('Mỗi giỏ tối đa 10 thiết kế.');
+      saveCart(next);
+      setCartState(next);
+      setConfirmed(false);
+      if (cleanupRemoved) {
+        const retained = new Set(next.flatMap(item => (item.assetKey ? [item.assetKey] : [])));
+        for (const item of previous)
+          if (item.assetKey && !retained.has(item.assetKey))
+            void removeAssets(item.assetKey).catch(() =>
+              setError('Không xóa được ảnh khỏi bộ nhớ thiết bị.')
+            );
+      }
+      return next;
+    },
+    []
+  );
+  const setCart: StateSetter<Item[]> = useCallback(
+    action => {
+      try {
+        commitCart(action);
+      } catch {
+        setError('Không lưu được giỏ hàng trên trình duyệt. Kiểm tra dung lượng hoặc quyền lưu.');
+      }
+    },
+    [commitCart]
+  );
   useEffect(fetchProduct, []);
   useEffect(() => {
-    try {
+    setView(current =>
+      current === 'success' && pathname === '/checkout' ? current : viewForPath(pathname)
+    );
+  }, [pathname]);
+  useEffect(() => {
+    let mounted = true;
+    const synchronize = (event: StorageEvent) => {
+      if (event.key !== null && event.key !== CART_STORAGE_KEY) return;
+      const latest = loadCart();
+      setCartState(latest);
       setConfirmed(false);
-      saveCart(cart);
-      const retained = new Set(cart.map(i => i.assetKey));
-      for (const item of previousCart.current)
-        if (item.assetKey && !retained.has(item.assetKey))
-          void removeAssets(item.assetKey).catch(() =>
-            setError('Không xóa được ảnh khỏi bộ nhớ thiết bị.')
-          );
-      previousCart.current = cart;
-    } catch {
-      setError('Bộ nhớ trình duyệt đầy. Giảm ảnh trong giỏ để lưu khi tải lại.');
-    }
-  }, [cart]);
+    };
+    window.addEventListener('storage', synchronize);
+    void cleanOrphanAssets(() => loadCart().flatMap(item => (item.assetKey ? [item.assetKey] : [])))
+      .catch(() => {
+        if (mounted) setError('Không thể dọn ảnh cũ khỏi bộ nhớ trình duyệt.');
+      })
+      .finally(() => {
+        if (mounted) setAssetStoreReady(true);
+      });
+    return () => {
+      mounted = false;
+      window.removeEventListener('storage', synchronize);
+    };
+  }, []);
   useEffect(() => {
     if (!notice) return;
     const t = setTimeout(() => setNotice(''), 5000);
@@ -60,30 +115,37 @@ export function useShop() {
     setView(next);
     setError('');
     setNotice('');
-    window.scrollTo({
-      top: 0,
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-    });
-    if (next === 'tracking' && location.pathname !== '/track')
-      history.replaceState(null, '', '/track');
-    if (location.pathname === '/track' && next !== 'tracking') history.replaceState(null, '', '/');
+    const destination: Partial<Record<View, string>> = {
+      home: '/',
+      product: '/design',
+      cart: '/cart',
+      checkout: '/checkout',
+      tracking: '/track'
+    };
+    if (next !== 'success' && destination[next]) navigate(destination[next]!);
   }
-  const { update, updateCrop, photo, add, edit, exportPreview, editorBusy } = useEditor({
+  const editor = useEditor({
     view,
     product,
     cart,
+    ready: assetStoreReady,
     draft,
     quantity,
     editing,
+    editingPosition,
     setDraft,
     setQuantity,
     setEditing,
+    setEditingPosition,
     setGallery,
     setError,
     setNotice,
-    setCart,
+    commitCart,
     go
   });
+  const { update, updateCrop, photo, photoStats, add, addAsNew, edit, exportPreview, saveStatus } =
+    editor;
+  const editorBusy = editor.editorBusy;
   const { checkout, pendingRequestKey } = useCheckout({
     editorBusy,
     busy,
@@ -98,8 +160,7 @@ export function useShop() {
     setConfirmed,
     go
   });
-  const { lookup, trackingBusy } = useTracking({ view, setError, setTracking, setTrackInput });
-  const trackLink = receipt ? trackingLink(location.origin, receipt.trackingToken) : '';
+  const { lookup, trackingBusy } = useTracking({ view, setError, setTracking });
   return {
     product,
     setProduct,
@@ -113,6 +174,8 @@ export function useShop() {
     setQuantity,
     editing,
     setEditing,
+    editingPosition,
+    setEditingPosition,
     gallery,
     setGallery,
     notice,
@@ -126,8 +189,10 @@ export function useShop() {
     setTracking,
     trackingBusy,
     pendingRequestKey,
-    trackInput,
-    setTrackInput,
+    trackOrderNumber,
+    setTrackOrderNumber,
+    trackPhone,
+    setTrackPhone,
     recipient,
     setRecipient,
     confirmed,
@@ -141,11 +206,13 @@ export function useShop() {
     exportPreview,
     editorBusy,
     photo,
+    photoStats,
     add,
+    addAsNew,
+    saveStatus,
     edit,
     checkout,
-    lookup,
-    trackLink
+    lookup
   };
 }
 export type Shop = ReturnType<typeof useShop>;

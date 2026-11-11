@@ -1,0 +1,20 @@
+name: harmea-mvp
+services:
+  db:
+    image: mysql:8.4.13
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-harmea}
+      MYSQL_USER: ${MYSQL_USER:-harmea}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Run npm run setup first}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Run npm run setup first}
+    ports:
+      - '127.0.0.1:${MYSQL_PORT:-3306}:3306'
+    volumes:
+      - harmea_mysql:/var/lib/mysql
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -u root -p"$$MYSQL_ROOT_PASSWORD" --silent']
+      interval: 3s
+      timeout: 3s
+      retries: 30
+volumes:
+  harmea_mysql:

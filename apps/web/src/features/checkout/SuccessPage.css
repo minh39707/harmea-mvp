@@ -21,6 +21,14 @@
 .receipt-box > .button {
   margin-top: var(--space-2);
 }
+.success-order-number {
+  margin: var(--space-3) 0;
+  color: var(--ink);
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
 .success > .text-button {
   margin-top: var(--space-2);
 }

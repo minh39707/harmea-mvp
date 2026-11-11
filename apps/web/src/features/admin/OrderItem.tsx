@@ -4,13 +4,11 @@ import PrivateAsset from './PrivateAsset';
 export default function OrderItem({
   item,
   orderId,
-  index,
-  onUnauthorized
+  index
 }: {
   item: AdminItem;
   orderId: string;
   index: number;
-  onUnauthorized: () => void;
 }) {
   const [original, setOriginal] = useState(false),
     d = item.designSnapshot;
@@ -27,7 +25,6 @@ export default function OrderItem({
             itemId={item.id}
             kind={original ? 'photo' : 'preview'}
             path={original ? item.assets.photo : item.assets.preview}
-            onUnauthorized={onUnauthorized}
           />
           <button className="button secondary" onClick={() => setOriginal(value => !value)}>
             {original ? 'Xem preview đã chốt' : 'Xem ảnh gốc'}

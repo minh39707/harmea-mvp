@@ -56,9 +56,7 @@ export default function CheckoutPage({
               <input
                 required
                 type="tel"
-                maxLength={16}
-                minLength={8}
-                pattern="[+]?[0-9]{8,15}"
+                maxLength={32}
                 autoComplete="tel"
                 value={recipient.phone}
                 onChange={e => setRecipient({ ...recipient, phone: e.target.value })}
@@ -128,15 +126,17 @@ export default function CheckoutPage({
           <button
             className="button primary"
             type="submit"
-            disabled={busy || editorBusy || !cart.length || !product}
+            disabled={busy || editorBusy || !cart.length || !product || product.isActive === false}
           >
             {busy
               ? 'Đang lưu đơn…'
               : editorBusy
                 ? 'Đang chuẩn bị thiết kế…'
-                : pendingRequestKey
-                  ? 'Thử gửi lại cùng nội dung →'
-                  : 'Xác nhận đặt thử →'}
+                : product?.isActive === false
+                  ? 'Tạm ngừng nhận đơn'
+                  : pendingRequestKey
+                    ? 'Thử gửi lại cùng nội dung →'
+                    : 'Xác nhận đặt thử →'}
           </button>
           <p className="note">Demo, không thu tiền và không giao hàng tự động.</p>
         </aside>

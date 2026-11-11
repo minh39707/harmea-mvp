@@ -1,64 +1,407 @@
+.product-page-container {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 16px 20px 36px;
+}
+
 .product-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-7);
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
   align-items: start;
 }
-.product-info,
-.gallery {
-  min-width: 0;
+
+/* =========================================================================
+   SECTION DIVIDER LINE (ĐƯỜNG LINE PHÂN TÁCH)
+   ========================================================================= */
+.section-divider {
+  width: 100%;
+  max-width: 1220px;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    rgba(156, 137, 116, 0.2) 0%,
+    #9c8974 12%,
+    #8e7c69 50%,
+    #9c8974 88%,
+    rgba(156, 137, 116, 0.2) 100%
+  );
+  margin: 20px auto 24px;
+  border: none;
 }
-.gallery {
+
+/* =========================================================================
+   1. KHỐI TRÁI: PRODUCT GALLERY CARD
+   ========================================================================= */
+.product-gallery-card {
+  background: #ffffff;
+  border: 1.5px solid #d4cebe;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
   position: sticky;
-  top: var(--space-3);
+  top: 24px;
+  display: flex;
+  flex-direction: column;
 }
-.hero-image {
-  height: 560px;
-  border-radius: var(--radius);
-  background: var(--soft);
-  overflow: hidden;
+
+/* Hộp Preview nền xám nhẹ bo cong 16px */
+.gallery-preview-box {
+  background: #f7f6f2;
+  border: 1px solid #e2dac7;
+  border-radius: 16px;
+  position: relative;
+  padding: 22px 18px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
 }
-.hero-image > img {
+
+/* Nút phóng to ở góc trên bên phải */
+.btn-expand-preview {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  min-height: unset;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e3db;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+  z-index: 3;
+}
+
+.btn-expand-preview:hover {
+  background: #fdfdfd;
+  border-color: #1b4332;
+  color: #1b4332;
+  transform: scale(1.04);
+}
+
+/* Các nút mũi tên điều hướng tròn có bóng */
+.gallery-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  min-height: unset;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e5e3db;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.15s ease;
+  z-index: 3;
+}
+
+.gallery-nav-arrow:hover {
+  background: #ffffff;
+  border-color: #1b4332;
+  color: #1b4332;
+  transform: translateY(-50%) scale(1.06);
+}
+
+.gallery-nav-arrow.prev {
+  left: 14px;
+}
+
+.gallery-nav-arrow.next {
+  right: 14px;
+}
+
+/* Vùng hiển thị thẻ trung tâm */
+.gallery-display-center {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-image-clickable {
+  width: 100%;
+  cursor: zoom-in;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-sample-img {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: 1024 / 650;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.hero-image-clickable:hover .card-sample-img {
+  transform: scale(1.01);
+}
+
+/* 3 Chấm Carousel dots ở đáy khung preview */
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.carousel-dot {
+  width: 8px !important;
+  height: 8px !important;
+  min-width: 8px !important;
+  min-height: 8px !important;
+  max-width: 8px !important;
+  max-height: 8px !important;
+  border-radius: 50% !important;
+  background: #d5d3ca;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  display: inline-block;
+  line-height: 0;
+  box-shadow: none !important;
+}
+
+.carousel-dot.active {
+  background: #1b4332 !important;
+  transform: scale(1.25);
+}
+
+/* =========================================================================
+   2. KHU VỰC "CHỌN ẢNH MẪU"
+   ========================================================================= */
+.gallery-sample-section {
+  margin-top: 16px;
+}
+
+.sample-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sample-section-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #151816;
+}
+
+.sample-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.sample-card-item {
+  position: relative;
+  border: 1.5px solid #d4cebe;
+  border-radius: 12px;
+  padding: 8px;
+  background: #fafaf8;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.sample-card-item:hover {
+  border-color: #1b4332;
+  transform: translateY(-1px);
+}
+
+.sample-card-item.active {
+  border: 2px solid #1b4332;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(27, 67, 50, 0.08);
+}
+
+.sample-check-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #1b4332;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  z-index: 2;
+}
+
+.sample-thumb-img-wrap {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sample-thumb-img-wrap img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1024 / 650;
   object-fit: cover;
-  object-position: center 64%;
+  display: block;
 }
-.gallery-toggle {
+
+.sample-caption {
+  font-size: 12px;
+  font-weight: 700;
+  color: #151816;
+  text-align: center;
+}
+
+/* Chuyển đổi chế độ xem */
+.gallery-mode-toggle {
   display: flex;
-  width: fit-content;
-  max-width: 100%;
-  gap: var(--space-1);
-  border: var(--border) solid var(--line);
-  border-radius: var(--radius);
-  padding: 4px;
-  margin-top: var(--space-2);
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1.5px solid #baa892;
 }
-.gallery-toggle button {
+
+.btn-mode-toggle {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1.5px solid #c9c0b0;
+  background: #fafaf8;
+  color: #151816;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-mode-toggle.active {
+  background: #1b4332;
+  color: #ffffff;
+  border-color: #1b4332;
+}
+
+/* =========================================================================
+   3. LIGHTBOX PHÓNG TO
+   ========================================================================= */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -44px;
+  right: 0;
+  background: transparent;
   border: 0;
-  background: var(--transparent);
-  border-radius: var(--radius);
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--font-sm);
+  color: #ffffff;
+  cursor: pointer;
+  padding: 4px;
 }
-.gallery-toggle button[aria-pressed='true'] {
-  background: var(--text);
-  color: var(--surface);
-}
-.intro {
-  color: var(--muted);
-}
-.price-row {
+
+.lightbox-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.25);
+  border: 0;
+  color: #ffffff;
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-2);
-  margin: var(--space-3) 0;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
 }
-.price-row strong {
-  font-size: var(--font-title);
+
+.lightbox-arrow:hover {
+  background: rgba(255, 255, 255, 0.45);
 }
-.price-row .note {
-  margin: 0;
+
+.lightbox-arrow.prev {
+  left: -24px;
+}
+
+.lightbox-arrow.next {
+  right: -24px;
+}
+
+.lightbox-img-box {
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-img-box img {
+  max-width: 100%;
+  max-height: 74vh;
+  object-fit: contain;
+}
+
+.lightbox-bar {
+  padding: 10px 16px;
+  color: #ffffff;
+  font-size: 13.5px;
+  text-align: center;
+  background: rgba(20, 20, 20, 0.95);
+}
+
+@media (max-width: 860px) {
+  .product-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .product-gallery-card {
+    position: static;
+  }
+  .gallery-preview-box {
+    min-height: 300px;
+  }
 }

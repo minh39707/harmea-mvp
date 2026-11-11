@@ -5,19 +5,20 @@ import { money } from '../../shared/format';
 
 export default function SuccessPage({
   receipt,
-  trackLink,
   setNotice,
   setError,
   setDraft,
+  setTrackOrderNumber,
   go
-}: Pick<Shop, 'receipt' | 'trackLink' | 'setNotice' | 'setError' | 'error' | 'setDraft' | 'go'>) {
+}: Pick<
+  Shop,
+  'receipt' | 'setNotice' | 'setError' | 'error' | 'setDraft' | 'setTrackOrderNumber' | 'go'
+>) {
   if (!receipt) return null;
   return (
     <section className="success">
       <h1>Đã nhận đơn</h1>
-      <p>
-        <strong>{receipt.orderNumber}</strong>
-      </p>
+      <p className="success-order-number">{receipt.orderNumber}</p>
       <div className="receipt-box">
         <div>
           <span>Trạng thái</span>
@@ -31,29 +32,31 @@ export default function SuccessPage({
           <span>Số lượng thẻ</span>
           <b>{receipt.quantity}</b>
         </div>
-        <label>
-          Liên kết theo dõi riêng
-          <input readOnly value={trackLink} onFocus={e => e.target.select()} />
-        </label>
         <button
           className="button secondary"
           onClick={async () => {
             try {
-              await navigator.clipboard.writeText(trackLink);
-              setNotice('Đã sao chép liên kết theo dõi.');
+              await navigator.clipboard.writeText(receipt.orderNumber);
+              setNotice('Đã sao chép mã đơn.');
             } catch {
-              setError('Hãy chọn và sao chép liên kết trong ô phía trên.');
+              setError(`Hãy sao chép mã đơn ${receipt.orderNumber} để lưu lại.`);
             }
           }}
         >
-          Sao chép liên kết
+          Sao chép mã đơn
         </button>
-        <a className="button primary" href={trackLink}>
-          Xem đơn thử →
-        </a>
+        <button
+          className="button primary"
+          onClick={() => {
+            setTrackOrderNumber(receipt.orderNumber);
+            go('tracking');
+          }}
+        >
+          Tra cứu tiến độ →
+        </button>
         <p className="note">
-          Demo, không thu tiền. Lưu liên kết trước khi đóng trang. Người có liên kết có thể xem tiến
-          độ; thông tin người nhận và thiết kế không được hiển thị công khai.
+          Demo, không thu tiền. Lưu mã đơn; tra cứu tại /track bằng mã đơn và số điện thoại đã nhập.
+          Thông tin người nhận và thiết kế không được hiển thị công khai.
         </p>
       </div>
       <button

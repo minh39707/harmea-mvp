@@ -1,7 +1,7 @@
 main {
   max-width: 1200px;
   margin: auto;
-  padding: var(--space-5) var(--space-3) var(--space-8);
+  padding: var(--space-5) var(--space-3) var(--space-4);
 }
 header {
   display: flex;
@@ -20,6 +20,36 @@ header {
   display: flex;
   align-items: center;
   gap: var(--space-1);
+}
+.brand-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: var(--transparent);
+  cursor: pointer;
+  text-decoration: none;
+}
+.brand-emblem-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 10px rgba(165, 129, 67, 0.25);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+.brand-btn:hover .brand-emblem-icon {
+  transform: rotate(25deg) scale(1.05);
+}
+.brand-text-logo {
+  font-family: var(--sans);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text);
+  line-height: 1;
 }
 .wordmark {
   font: 32px/1 var(--serif);

@@ -2,13 +2,13 @@ import { openDatabase } from '../apps/api/src/db.ts';
 const db = await openDatabase();
 try {
   const products = await db.query(
-    'SELECT id, name, unit_price_vnd, template_version, is_demo FROM products WHERE is_active = true'
+    'SELECT id, name, description, unit_price_vnd, template_version, is_active, is_demo, version FROM products WHERE is_active = true'
   );
   const migrations = await db.query('SELECT name FROM schema_migrations ORDER BY name');
   console.log(
     JSON.stringify(
       {
-        driver: process.env.DB_DRIVER ?? 'pglite',
+        driver: 'mysql',
         migrations: migrations.rows,
         products: products.rows
       },

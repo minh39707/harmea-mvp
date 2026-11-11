@@ -4,14 +4,12 @@ import OrderList from './OrderList';
 import OrderDetail from './OrderDetail';
 export default function Dashboard({
   route,
-  navigate,
-  onUnauthorized
+  navigate
 }: {
   route: AdminRoute;
   navigate: (route: AdminRoute) => void;
-  onUnauthorized: () => void;
 }) {
-  const orders = useAdminOrders(route, onUnauthorized);
+  const orders = useAdminOrders(route);
   return (
     <>
       {orders.error && (
@@ -25,11 +23,7 @@ export default function Dashboard({
         </p>
       )}
       {route.kind === 'detail' ? (
-        <OrderDetail
-          orders={orders}
-          back={() => navigate({ kind: 'list' })}
-          onUnauthorized={onUnauthorized}
-        />
+        <OrderDetail orders={orders} back={() => navigate({ kind: 'list' })} />
       ) : (
         <OrderList orders={orders} open={id => navigate({ kind: 'detail', id })} />
       )}
