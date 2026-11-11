@@ -2,7 +2,7 @@
 
 **Trạng thái:** code admin và dữ liệu diễn tập đã triển khai ngày 29/10/2026; chưa nghiệm thu UI/diễn tập 5–7 phút. **Dự kiến:** 1 giờ quản trị, cộng 0,5–2,5 giờ diễn tập/sửa lỗi. **Phụ thuộc:** A; kiểm tra toàn luồng cần B và C.
 
-Kết quả thực tế: [báo cáo D](../docs/qa/2026-10-29-task-d.md), 10 tests D qua với API/PGlite/tệp thật; regression A 25, B 8, C 13 qua. Có `/admin/login`, `/admin/orders`, chi tiết đơn và `npm run demo:seed`. Chưa có bằng chứng thao tác trình duyệt, mobile, PostgreSQL hoặc NFC; checklist nghiệm thu vẫn chờ. Code E Giai đoạn 2 là việc tiếp theo theo thứ tự đã chốt.
+Kết quả thực tế: [báo cáo D](../../docs/qa/2026-10-29-task-d.md), 10 tests D qua với API/PGlite/tệp thật; regression A 25, B 8, C 13 qua. Có `/admin/login`, `/admin/orders`, chi tiết đơn và `npm run demo:seed`. Chưa có bằng chứng thao tác trình duyệt, mobile, PostgreSQL hoặc NFC; checklist nghiệm thu vẫn chờ. Code E Giai đoạn 2 là việc tiếp theo theo thứ tự đã chốt.
 
 ## Phạm vi và quyền sửa
 
@@ -30,7 +30,7 @@ Các đường dẫn dự kiến phụ trách: `apps/web/src/features/admin/`, r
 ## Prompt giao việc
 
 ```text
-Triển khai task D trong tasks/D-admin-demo.md. Đọc AGENTS.md nếu có, README.md, docs/01-requirements.md, docs/02-architecture.md, docs/03-data-api.md, docs/04-acceptance-demo.md, contracts/openapi.json và kiểm tra mã hiện tại.
+Triển khai task D trong tasks/done/D-admin-demo.md. Đọc AGENTS.md nếu có, README.md, docs/01-requirements.md, docs/02-architecture.md, docs/03-data-api.md, docs/04-acceptance-demo.md, contracts/openapi.json và kiểm tra mã hiện tại.
 
 Làm admin tối thiểu: login/logout, danh sách/chi tiết đơn, xem ảnh riêng tư, đổi trạng thái đúng quy tắc và expectedVersion. Không thêm dashboard, thanh toán, vận chuyển thật hoặc quản lý nhiều sản phẩm. Nối vào API thật bằng cookie session; kiểm tra quyền ở API, không chỉ ẩn nút. Khi lỗi version, tải lại và cho người dùng xác nhận, không tự ghi đè.
 

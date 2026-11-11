@@ -1,6 +1,6 @@
 # F2 — Chuyển cơ sở dữ liệu sang MySQL 8.4
 
-**Trạng thái:** chưa làm. **Ước lượng:** 4–6 giờ. **Phụ thuộc:** F1.
+**Trạng thái:** đã triển khai và kiểm tra MySQL 8.4 native; còn nghiệm thu Docker và thao tác UI trực tiếp. Xem [báo cáo F2](../../docs/qa/2026-11-11-task-F2.md). **Ước lượng:** 4–6 giờ. **Phụ thuộc:** F1.
 
 ## Mục tiêu
 
@@ -68,9 +68,9 @@
 ## Prompt giao việc
 
 ```text
-Thực hiện task F2 trong tasks/F2-mysql.md. Đọc tasks/00-ROADMAP-v2.md, AGENTS.md, README.md, docs/02, docs/03, contracts/openapi.json, toàn bộ database/*.sql, apps/api/src/db.ts, scripts/migrate.ts, scripts/check-db.ts, scripts/setup.mjs và các test.
+Thực hiện task F2 trong tasks/done/F2-mysql.md. Đọc tasks/00-ROADMAP.md, AGENTS.md, README.md, docs/02, docs/03, contracts/openapi.json, toàn bộ database/*.sql, apps/api/src/db.ts, scripts/migrate.ts, scripts/check-db.ts, scripts/setup.mjs và các test.
 
 Chuyển ứng dụng từ PostgreSQL/PGlite sang MySQL 8.4 bằng mysql2 theo đúng phần "Thiết kế bắt buộc" của task. Giữ interface adapter và hành vi API. Viết schema MySQL mới tương đương 001–004 (không có demo_checkouts) và chuyển file cũ vào database/postgres-legacy/. Không thêm ORM. Không nới lỏng assertion của test hiện có. Test chạy trên MySQL thật với database tạm cho mỗi file test.
 
-Chạy docker compose db, migrate hai lần, db:check, typecheck, build, contract:check và toàn bộ test. Cập nhật README và docs. Viết báo cáo docs/qa/<ngày>-task-F2.md, commit trên nhánh feat/F2-mysql. Không push.
+Chạy docker compose db, migrate hai lần, db:check, typecheck, build, contract:check và toàn bộ test. Cập nhật README và docs. Viết báo cáo docs/qa/<ngày>-task-F2.md. Không commit, không tạo nhánh, không push: để thay đổi trong working tree cho Claude kiểm tra.
 ```

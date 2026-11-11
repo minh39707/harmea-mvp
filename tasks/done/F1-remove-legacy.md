@@ -1,6 +1,6 @@
 # F1 — Gỡ API legacy `/api/demo-*`
 
-**Trạng thái:** đã hoàn thành và kiểm tra ngày 11/11/2026 trên nhánh `feat/F1-remove-legacy`; xem [báo cáo F1](../docs/qa/2026-11-11-task-F1.md). **Ước lượng ban đầu:** 1 giờ. **Phụ thuộc:** F0.
+**Trạng thái:** đã hoàn thành và kiểm tra ngày 11/11/2026 trên nhánh `feat/F1-remove-legacy`; xem [báo cáo F1](../../docs/qa/2026-11-11-task-F1.md). **Ước lượng ban đầu:** 1 giờ. **Phụ thuộc:** F0.
 
 ## Lý do
 
@@ -25,7 +25,7 @@ Frontend đã dùng `/api/orders` và `/api/tracking/lookup` (task C). Module `c
 ## Prompt giao việc
 
 ```text
-Thực hiện task F1 trong tasks/F1-remove-legacy.md. Đọc tasks/00-ROADMAP-v2.md, AGENTS.md (bản v2 sau F0), README.md và docs/03-data-api.md.
+Thực hiện task F1 trong tasks/done/F1-remove-legacy.md. Đọc tasks/00-ROADMAP.md, AGENTS.md (bản v2 sau F0), README.md và docs/03-data-api.md.
 
 Gỡ hoàn toàn API legacy /api/demo-* (module checkout/ và tracking/ legacy, secret liên quan nếu không còn ai dùng, code frontend chết, smoke legacy). Giữ nguyên /api/orders, /api/tracking/lookup và orders/tracking.ts. Không sửa migration SQL cũ. Viết lại smoke test cho API canonical. Cập nhật contract, docs/03 và README.
 

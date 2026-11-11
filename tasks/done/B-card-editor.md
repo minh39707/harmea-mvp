@@ -2,7 +2,7 @@
 
 **Trạng thái:** đã triển khai editor/crop/PNG và đầu ra ảnh gốc; còn nghiệm thu tương tác trên trình duyệt. **Ước lượng ban đầu:** 2 giờ. Đầu ra phục vụ checkout ở task C.
 
-**Cập nhật 29/10/2026:** renderer SVG dùng chung cho preview và PNG, QA-06 đã có trong mẫu, ảnh gốc/PNG lưu riêng bằng IndexedDB theo từng snapshot giỏ. Đã chạy 8 tests editor, 25 tests API và kiểm tra trực quan PNG raster mẫu; browser host chưa khả dụng nên chưa đánh dấu thao tác upload/download/IndexedDB/responsive là PASS. Xem [báo cáo B](../docs/qa/2026-10-29-task-b.md).
+**Cập nhật 29/10/2026:** renderer SVG dùng chung cho preview và PNG, QA-06 đã có trong mẫu, ảnh gốc/PNG lưu riêng bằng IndexedDB theo từng snapshot giỏ. Đã chạy 8 tests editor, 25 tests API và kiểm tra trực quan PNG raster mẫu; browser host chưa khả dụng nên chưa đánh dấu thao tác upload/download/IndexedDB/responsive là PASS. Xem [báo cáo B](../../docs/qa/2026-10-29-task-b.md).
 
 ## Phạm vi và phụ thuộc
 
@@ -30,7 +30,7 @@ Các đường dẫn dự kiến phụ trách: `apps/web/src/features/editor/`, 
 ## Prompt giao việc
 
 ```text
-Triển khai task B trong tasks/B-card-editor.md. Đọc AGENTS.md nếu có, README.md, docs/01-requirements.md, docs/02-architecture.md, docs/03-data-api.md, docs/04-acceptance-demo.md và contracts/openapi.json trước khi viết; tận dụng khung React/TypeScript/Vite hiện tại.
+Triển khai task B trong tasks/done/B-card-editor.md. Đọc AGENTS.md nếu có, README.md, docs/01-requirements.md, docs/02-architecture.md, docs/03-data-api.md, docs/04-acceptance-demo.md và contracts/openapi.json trước khi viết; tận dụng khung React/TypeScript/Vite hiện tại.
 
 Làm công cụ cá nhân hóa một mẫu Harméa tối thiểu: ảnh, thông tin chữ, chữ ký dạng chữ, URL nhạc và bản xem trước PNG. Giữ đúng cấu hình template/crop của hợp đồng. Ưu tiên dữ liệu đúng và xuất ảnh ổn định, không thêm editor nhiều lớp, animation, thanh toán hoặc mẫu mới. Preview phục vụ kiểm tra thiết kế; không tuyên bố file in đã đạt chuẩn. Chỉ sửa phần frontend thuộc designer và phần nối cần thiết, không viết lại backend.
 

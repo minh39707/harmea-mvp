@@ -2,7 +2,7 @@
 
 **Trạng thái:** code cả hai giai đoạn đã triển khai; chưa nghiệm thu qua trình duyệt. **Nhánh:** `refactor/clean-layout`. **Dự kiến:** 4–6 giờ.
 
-**Cập nhật 29/10/2026:** đã triển khai Giai đoạn 1 (bước 1–3), giữ mốc smoke 30/22/8; sau A–D tiếp tục triển khai code Giai đoạn 2. Mốc trước/sau E2 là 30/26/4 và 56 tests A–D qua. Chưa kiểm tra bằng tay trên trình duyệt do browser host/native pipe không khả dụng; chưa nghiệm thu trực quan. Chi tiết: [báo cáo E1](../docs/qa/2026-10-29-clean-layout.md), [báo cáo E2](../docs/qa/2026-10-29-clean-layout-phase2.md). Các mục “Trạng thái hiện tại” và đường dẫn bên dưới mô tả mốc trước refactor để tham chiếu.
+**Cập nhật 29/10/2026:** đã triển khai Giai đoạn 1 (bước 1–3), giữ mốc smoke 30/22/8; sau A–D tiếp tục triển khai code Giai đoạn 2. Mốc trước/sau E2 là 30/26/4 và 56 tests A–D qua. Chưa kiểm tra bằng tay trên trình duyệt do browser host/native pipe không khả dụng; chưa nghiệm thu trực quan. Chi tiết: [báo cáo E1](../../docs/qa/2026-10-29-clean-layout.md), [báo cáo E2](../../docs/qa/2026-10-29-clean-layout-phase2.md). Các mục “Trạng thái hiện tại” và đường dẫn bên dưới mô tả mốc trước refactor để tham chiếu.
 
 Mục tiêu: code dễ đọc, chia đúng thư mục theo `docs/02-architecture.md`, giao diện gọn và tối giản hơn. **Hành vi nghiệp vụ và API giữ nguyên.** Đây không phải task sửa lỗi contract/admin (QA-01 đến QA-05 làm ở task khác).
 
@@ -194,7 +194,7 @@ Nguyên tắc: ít lớp trang trí hơn, mỗi màn hình một ý chính, mộ
 ## Prompt giao việc
 
 ```text
-Triển khai task E trong tasks/E-clean-layout.md trên nhánh refactor/clean-layout. Đọc AGENTS.md, README.md, docs/02-architecture.md, docs/QA-2026-10-29.md và toàn bộ task E trước khi sửa.
+Triển khai task E trong tasks/done/E-clean-layout.md trên nhánh refactor/clean-layout. Đọc AGENTS.md, README.md, docs/02-architecture.md, docs/QA-2026-10-29.md và toàn bộ task E trước khi sửa.
 
 Làm Giai đoạn 1 (bước 1 → 3), mỗi bước một commit, rồi bàn giao để thực hiện A → B → C → D. Chỉ bắt đầu Giai đoạn 2 sau khi D hoàn thành, trừ khi chủ dự án yêu cầu ưu tiên giao diện cho buổi trình bày sớm. QA-06 do task B sửa, QA-07 do task C sửa; E chỉ kiểm tra hồi quy.
 

@@ -1,10 +1,10 @@
 # F0 — Chốt phạm vi v2 trong tài liệu và hợp đồng
 
-**Trạng thái:** đã hoàn thành tài liệu và contract 0.3.0 ngày 11/11/2026, kiểm tra đã chạy. Endpoint v2 vẫn planned. Xem [báo cáo F0](../docs/qa/2026-11-11-task-F0.md). **Ước lượng ban đầu:** 1–2 giờ. **Phụ thuộc:** không.
+**Trạng thái:** đã hoàn thành tài liệu và contract 0.3.0 ngày 11/11/2026, kiểm tra đã chạy. Endpoint v2 vẫn planned. Xem [báo cáo F0](../../docs/qa/2026-11-11-task-F0.md). **Ước lượng ban đầu:** 1–2 giờ. **Phụ thuộc:** không.
 
 ## Mục tiêu
 
-Đưa các quyết định D1–D6 trong [00-ROADMAP-v2.md](00-ROADMAP-v2.md) vào tài liệu chuẩn, để các task sau không mâu thuẫn với `AGENTS.md`. Task này **chỉ sửa tài liệu và contract, không sửa code ứng dụng**.
+Đưa các quyết định D1–D6 trong [00-ROADMAP-v2.md](../00-ROADMAP.md) vào tài liệu chuẩn, để các task sau không mâu thuẫn với `AGENTS.md`. Task này **chỉ sửa tài liệu và contract, không sửa code ứng dụng**.
 
 ## Phạm vi file
 
@@ -19,7 +19,7 @@
    - Mốc demo cũ 28/10/2026 chuyển thành lịch sử. Mục tiêu mới là website hoàn chỉnh được đóng gói Docker (image + `compose.prod.yaml` + tài liệu bàn giao). Việc triển khai lên AWS do người vận hành khác đảm nhận.
    - Giữ nguyên toàn bộ quy tắc bảo mật hiện có: fragment tracking, allowlist, không public uploads, không log dữ liệu nhạy cảm, không localStorage cho session.
    - Bổ sung: mật khẩu hash bằng scrypt; session cookie HttpOnly + SameSite=Lax + Secure khi chạy HTTPS; phân quyền kiểm tra ở server; agent không viết hạ tầng hay thao tác lên cloud.
-   - Thêm câu: "Thứ tự công việc theo `tasks/00-ROADMAP-v2.md`."
+   - Thêm câu: "Thứ tự công việc theo `tasks/00-ROADMAP.md`."
 2. **docs/01-requirements.md**: thêm mục "Phạm vi v2" gồm FR mới:
    - FR-U1 đăng ký, FR-U2 đăng nhập/đăng xuất, FR-U3 đơn của tôi, FR-U4 hồ sơ và địa chỉ mặc định, FR-U5 quên mật khẩu.
    - FR-A1 quản lý sản phẩm (giá, mô tả, bật/tắt), FR-A2 quản lý user (khóa/mở, đổi role), FR-A3 thống kê và xuất CSV.
@@ -47,7 +47,7 @@
 ## Prompt giao việc
 
 ```text
-Thực hiện task F0 trong tasks/F0-scope-v2.md của dự án Harméa. Đọc tasks/00-ROADMAP-v2.md (quy tắc chung, quyết định D1–D6), AGENTS.md, README.md, docs/01–04 và contracts/openapi.json.
+Thực hiện task F0 trong tasks/done/F0-scope-v2.md của dự án Harméa. Đọc tasks/00-ROADMAP.md (quy tắc chung, quyết định D1–D6), AGENTS.md, README.md, docs/01–04 và contracts/openapi.json.
 
 Người dùng đã chấp thuận đổi phạm vi sang v2: MySQL thay PostgreSQL/PGlite, role user/admin, giữ đặt hàng không cần tài khoản, đầu ra là gói Docker bàn giao cho người vận hành (người khác lo phần AWS). Task này chỉ cập nhật tài liệu và contract (lên 0.3.0, endpoint mới ở trạng thái planned). Không sửa code ứng dụng, không đánh dấu endpoint planned là đã triển khai. Giữ nguyên mọi quy tắc bảo mật hiện có trong AGENTS.md.
 

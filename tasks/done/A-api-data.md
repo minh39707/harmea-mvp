@@ -2,7 +2,7 @@
 
 **Trạng thái:** đã triển khai backend và kiểm tra PGlite; còn kiểm tra PostgreSQL và tích hợp UI ở B–D. **Ước lượng ban đầu:** 2,5 giờ sau bước chuẩn bị.
 
-**Cập nhật 29/10/2026:** đã triển khai backend theo contract 0.2.0 giữ giỏ hàng; kiểm tra Express/PGlite/file thật qua `npm.cmd run test:api`. Chưa áp migration 004 vào DB local đang chạy, chưa kiểm tra PostgreSQL hoặc UI (B–D). Xem [báo cáo A](../docs/qa/2026-10-29-task-a.md).
+**Cập nhật 29/10/2026:** đã triển khai backend theo contract 0.2.0 giữ giỏ hàng; kiểm tra Express/PGlite/file thật qua `npm.cmd run test:api`. Chưa áp migration 004 vào DB local đang chạy, chưa kiểm tra PostgreSQL hoặc UI (B–D). Xem [báo cáo A](../../docs/qa/2026-10-29-task-a.md).
 
 ## Phạm vi và phụ thuộc
 
@@ -32,7 +32,7 @@ Các đường dẫn dự kiến phụ trách: `apps/api/src/modules/`, middlewa
 ## Prompt giao việc
 
 ```text
-Triển khai task A trong tasks/A-api-data.md của dự án Harméa. Trước khi sửa, đọc AGENTS.md nếu có, README.md, docs/01-requirements.md, docs/02-architecture.md, docs/03-data-api.md, docs/04-acceptance-demo.md và contracts/openapi.json; kiểm tra phần khung đã có.
+Triển khai task A trong tasks/done/A-api-data.md của dự án Harméa. Trước khi sửa, đọc AGENTS.md nếu có, README.md, docs/01-requirements.md, docs/02-architecture.md, docs/03-data-api.md, docs/04-acceptance-demo.md và contracts/openapi.json; kiểm tra phần khung đã có.
 
 Giữ phạm vi demo một người: một sản phẩm/mẫu, giữ giỏ hàng, mỗi đơn 1–10 thiết kế cùng mẫu, mỗi dòng 1–10 bản; khách không tài khoản/thanh toán. Chỉ làm backend và kiểm tra liên quan. Dùng adapter database, migration và cấu hình đã có; không đổi stack hoặc thêm ORM. Tuân thủ hợp đồng JSON/multipart, bảo vệ tệp riêng, snapshot bất biến, token tracking, quyền admin và state machine. Không trả dữ liệu giả thành kết quả đã lưu. Nếu hợp đồng mâu thuẫn, sửa nhất quán và ghi rõ ảnh hưởng thay vì âm thầm đổi tên trường.
 

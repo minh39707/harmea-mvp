@@ -1,6 +1,6 @@
 # Kế hoạch một người — demo Harméa ngày 28/10/2026
 
-> F0 — 11/11/2026: phần MVP bên dưới là lịch sử và mô tả bản code hiện tại, không phải giới hạn v2. Phạm vi hiện hành theo [roadmap v2](../tasks/00-ROADMAP-v2.md); ưu tiên khung chức năng, chỉnh giao diện sau. Các mục chưa kiểm tra vẫn chưa nghiệm thu.
+> F0 — 11/11/2026: phần MVP bên dưới là lịch sử và mô tả bản code hiện tại, không phải giới hạn v2. Phạm vi hiện hành theo [roadmap v2](../tasks/00-ROADMAP.md); ưu tiên khung chức năng, chỉnh giao diện sau. Các mục chưa kiểm tra vẫn chưa nghiệm thu.
 
 
 Mục tiêu của kế hoạch là hoàn thành một luồng có dữ liệu thật: khách tạo thiết kế → gửi đơn → quản trị viên xử lý → khách thấy trạng thái mới. Khung dự án và các hợp đồng trong bộ tài liệu là điểm bắt đầu; danh sách dưới đây **không phải các chức năng đã triển khai**. Xem trạng thái thực tế ở `README.md`.
@@ -41,10 +41,10 @@ Sau mỗi bước, tạo một commit với phần đã chạy được và ghi 
 
 | Thứ tự | Phiếu công việc | Phụ thuộc |
 |---|---|---|
-| A | [API, dữ liệu và quyền truy cập](../tasks/A-api-data.md) | Khung dự án, schema và hợp đồng API |
-| B | [Cá nhân hóa và bản xem trước](../tasks/B-card-editor.md) | Hợp đồng dữ liệu; có thể dùng fixture sản phẩm đúng hợp đồng trong lúc A chưa xong |
-| C | [Đặt hàng và tra cứu](../tasks/C-checkout-tracking.md) | A và đầu ra B |
-| D | [Quản trị, tích hợp và diễn tập](../tasks/D-admin-demo.md) | A; nghiệm thu toàn luồng cần B và C |
+| A | [API, dữ liệu và quyền truy cập](../tasks/done/A-api-data.md) | Khung dự án, schema và hợp đồng API |
+| B | [Cá nhân hóa và bản xem trước](../tasks/done/B-card-editor.md) | Hợp đồng dữ liệu; có thể dùng fixture sản phẩm đúng hợp đồng trong lúc A chưa xong |
+| C | [Đặt hàng và tra cứu](../tasks/done/C-checkout-tracking.md) | A và đầu ra B |
+| D | [Quản trị, tích hợp và diễn tập](../tasks/done/D-admin-demo.md) | A; nghiệm thu toàn luồng cần B và C |
 
 Mỗi phiếu có prompt để đưa cho một coding agent hoặc dùng làm checklist tự viết. Không chạy đồng thời các prompt trên cùng file. Agent được giao một phiếu vẫn phải đọc hợp đồng và kiểm tra mã hiện có trước khi sửa.
 
