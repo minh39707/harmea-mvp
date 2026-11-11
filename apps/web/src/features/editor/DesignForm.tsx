@@ -25,8 +25,8 @@ export default function DesignForm({
   editing,
   editingPosition,
   cart,
-  setEditing,
-  setEditingPosition,
+  edit,
+  startNewDesign,
   updateCrop,
   exportPreview,
   editorBusy,
@@ -47,8 +47,8 @@ export default function DesignForm({
   | 'editing'
   | 'editingPosition'
   | 'cart'
-  | 'setEditing'
-  | 'setEditingPosition'
+  | 'edit'
+  | 'startNewDesign'
   | 'updateCrop'
   | 'exportPreview'
   | 'editorBusy'
@@ -74,13 +74,11 @@ export default function DesignForm({
   function handleSelectCard(e: React.ChangeEvent<HTMLSelectElement>) {
     const val = e.target.value;
     if (val === 'new') {
-      setEditing(null);
-      setEditingPosition(null);
+      startNewDesign();
     } else {
-      const idx = cart.findIndex(item => item.id === val);
-      if (idx >= 0) {
-        setEditing(val);
-        setEditingPosition(idx + 1);
+      const item = cart.find(item => item.id === val);
+      if (item) {
+        void edit(item);
       }
     }
   }
@@ -121,6 +119,10 @@ export default function DesignForm({
             <span className="select-chevron-icon" aria-hidden="true">
               <IconChevronDown size={16} color="#444444" />
             </span>
+          </div>
+          <div className="card-two-sides-note">
+            <IconCard size={13} color="#1b4332" />
+            <span>Hai mặt thẻ được in đồng bộ cùng một thiết kế</span>
           </div>
           {editingMissing && (
             <p className="editor-warning" role="status">

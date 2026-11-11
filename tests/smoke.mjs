@@ -88,6 +88,22 @@ try {
     const missingAppUrl = await fetch(
       `http://127.0.0.1:${unconfiguredSeoServer.address().port}/robots.txt`
     );
+    check('production CSP restricts scripts/connections and supports local photo previews', () => {
+      const policy = missingAppUrl.headers.get('content-security-policy') ?? '';
+      for (const directive of [
+        "default-src 'self'",
+        "script-src 'self'",
+        "connect-src 'self'",
+        "img-src 'self' data: blob:",
+        "object-src 'none'",
+        "frame-ancestors 'none'",
+        "base-uri 'none'",
+        "form-action 'self'"
+      ])
+        assert.ok(policy.split('; ').includes(directive));
+      assert.equal(missingAppUrl.headers.get('x-content-type-options'), 'nosniff');
+      assert.equal(missingAppUrl.headers.get('referrer-policy'), 'no-referrer');
+    });
     check('production SEO endpoints require configured APP_URL', () => {
       assert.equal(missingAppUrl.status, 500);
     });

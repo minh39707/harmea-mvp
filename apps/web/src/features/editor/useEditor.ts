@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import type { Design, Item, Product, View, StateSetter } from '../../shared/types';
+import { blankDesign } from '../../shared/types';
 import { usePhotoAsset } from './usePhotoAsset';
 import { previewPng, downloadPng } from './export-preview';
 import { saveAssets, removeAssets } from './asset-store';
@@ -158,6 +159,7 @@ export function useEditor({
     setDraft(structuredClone(item.design));
     setQuantity(item.quantity);
     setEditing(item.id);
+    setEditingPosition?.(cart.findIndex(current => current.id === item.id) + 1);
     setGallery('preview');
     go('product');
     if (!assets.originalFor(item.design))
@@ -170,7 +172,19 @@ export function useEditor({
       100
     );
   }
+  function startNewDesign() {
+    if (editorBusy || locked.current) return;
+    assets.clearPhoto();
+    setDraft({ ...blankDesign });
+    setQuantity(1);
+    setEditing(null);
+    setEditingPosition?.(null);
+    setGallery('preview');
+    setError('');
+    setSaveStatus('');
+  }
   return {
+    startNewDesign,
     update,
     updateCrop,
     photo: assets.photo,

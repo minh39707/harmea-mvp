@@ -30,7 +30,7 @@ export default function Storefront({ routeName }: { routeName: RouteName | 'not-
         shop.view === 'success' && shop.receipt ? (
           <SuccessPage {...shop} />
         ) : (
-          <CheckoutPage {...shop} />
+          <CheckoutPage {...shop} cart={shop.checkoutCart} subtotal={shop.checkoutSubtotal} />
         );
       break;
     case 'tracking':

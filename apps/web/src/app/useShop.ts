@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Design, Item, Product, Receipt, PublicTracking, View } from '../shared/types';
 import type { StateSetter } from '../shared/types';
 import { blankDesign as blank } from '../shared/types';
@@ -42,6 +42,47 @@ export function useShop() {
     [confirmed, setConfirmed] = useState(false);
   const count = cart.reduce((n, i) => n + i.quantity, 0),
     subtotal = cart.reduce((n, i) => n + i.quantity * (product?.unitPriceVnd ?? 0), 0);
+
+  const [selectedItemIds, setSelectedItemIds] = useState<string[]>(() => loadCart().map(i => i.id));
+
+  const previousCartIds = useRef<string[]>(cart.map(i => i.id));
+  useEffect(() => {
+    const currentIds = cart.map(i => i.id);
+    const prevIds = previousCartIds.current;
+    previousCartIds.current = currentIds;
+
+    const newlyAdded = currentIds.filter(id => !prevIds.includes(id));
+    setSelectedItemIds(prev => {
+      const existing = prev.filter(id => currentIds.includes(id));
+      if (newlyAdded.length > 0) {
+        return [...existing, ...newlyAdded];
+      }
+      return existing;
+    });
+  }, [cart]);
+
+  const toggleSelectItem = useCallback((id: string) => {
+    setSelectedItemIds(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
+    setConfirmed(false);
+  }, []);
+
+  const selectAll = useCallback(
+    (select: boolean) => {
+      setSelectedItemIds(select ? cart.map(i => i.id) : []);
+      setConfirmed(false);
+    },
+    [cart]
+  );
+
+  const selectedItems = cart.filter(i => selectedItemIds.includes(i.id));
+  const selectedCount = selectedItems.reduce((n, i) => n + i.quantity, 0);
+  const selectedSubtotal = selectedItems.reduce(
+    (n, i) => n + i.quantity * (product?.unitPriceVnd ?? 0),
+    0
+  );
+
+  const checkoutCart = selectedItems;
+  const checkoutSubtotal = selectedSubtotal;
   const fetchProduct = () => {
     setLoadError('');
     api<Product>('/products/current')
@@ -143,13 +184,23 @@ export function useShop() {
     commitCart,
     go
   });
-  const { update, updateCrop, photo, photoStats, add, addAsNew, edit, exportPreview, saveStatus } =
-    editor;
+  const {
+    update,
+    updateCrop,
+    photo,
+    photoStats,
+    add,
+    addAsNew,
+    edit,
+    startNewDesign,
+    exportPreview,
+    saveStatus
+  } = editor;
   const editorBusy = editor.editorBusy;
   const { checkout, pendingRequestKey } = useCheckout({
     editorBusy,
     busy,
-    cart,
+    cart: checkoutCart,
     recipient,
     confirmed,
     setBusy,
@@ -167,6 +218,15 @@ export function useShop() {
     loadError,
     cart,
     setCart,
+    selectedItemIds,
+    setSelectedItemIds,
+    toggleSelectItem,
+    selectAll,
+    selectedItems,
+    selectedCount,
+    selectedSubtotal,
+    checkoutCart,
+    checkoutSubtotal,
     view,
     draft,
     setDraft,
@@ -211,6 +271,7 @@ export function useShop() {
     addAsNew,
     saveStatus,
     edit,
+    startNewDesign,
     checkout,
     lookup
   };

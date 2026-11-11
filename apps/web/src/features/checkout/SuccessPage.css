@@ -1,34 +1,228 @@
-.success,
-.tracking {
+/* ==========================================================================
+   Harméa — Trang Đặt Hàng & Thanh Toán Thành Công (Success Page)
+   ========================================================================== */
+
+.success {
   max-width: 640px;
-  margin: 0 auto;
-  background: var(--surface);
-  border: var(--border) solid var(--line);
-  border-radius: var(--radius);
-  padding: var(--space-4);
-  min-height: 0;
-  overflow-wrap: anywhere;
-}
-.receipt-box > div {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin: var(--space-2) 0;
-}
-.receipt-box > label {
-  margin: var(--space-3) 0 var(--space-2);
-}
-.receipt-box > .button {
-  margin-top: var(--space-2);
-}
-.success-order-number {
-  margin: var(--space-3) 0;
-  color: var(--ink);
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  margin: 24px auto 48px;
+  background: #ffffff;
+  border: 1.5px solid #d4cebe;
+  border-radius: 24px;
+  padding: 36px 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
   text-align: center;
+  animation: successFadeIn 0.3s ease;
 }
-.success > .text-button {
-  margin-top: var(--space-2);
+
+@keyframes successFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.success-badge-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(27, 67, 50, 0.1);
+  border: 2px solid #1b4332;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  color: #1b4332;
+}
+
+.success-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: #151816;
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.success-subtitle {
+  font-size: 14.5px;
+  color: #555d57;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   KHUNG BIÊN NHẬN (RECEIPT BOX)
+   ========================================================================== */
+.receipt-box {
+  background: #faf8f4;
+  border: 1.5px solid #baa892;
+  border-radius: 18px;
+  padding: 24px 22px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.receipt-order-header {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1.5px dashed #baa892;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.order-header-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7a6e5d;
+}
+
+.success-order-number {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #1b4332;
+}
+
+.receipt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #434945;
+  border-bottom: 1px solid rgba(186, 168, 146, 0.3);
+}
+
+.receipt-row:last-of-type {
+  border-bottom: none;
+}
+
+.receipt-row span {
+  font-weight: 500;
+}
+
+.receipt-row b {
+  font-weight: 700;
+  color: #151816;
+}
+
+.amount-highlight {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 800;
+  color: #1b4332;
+}
+
+.receipt-row .status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(27, 67, 50, 0.1);
+  color: #1b4332;
+  border: 1px solid rgba(27, 67, 50, 0.25);
+}
+
+/* ==========================================================================
+   NÚT THAO TÁC (ACTIONS)
+   ========================================================================== */
+.receipt-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1.5px solid #baa892;
+}
+
+.btn-copy-order,
+.btn-track-order {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-copy-order {
+  background: #ffffff;
+  border: 1.5px solid #1b4332;
+  color: #1b4332;
+}
+
+.btn-copy-order:hover {
+  background: rgba(27, 67, 50, 0.06);
+}
+
+.btn-track-order {
+  background: #1b4332;
+  border: 1.5px solid #1b4332;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(27, 67, 50, 0.2);
+}
+
+.btn-track-order:hover {
+  background: #143326;
+  border-color: #143326;
+  transform: translateY(-1px);
+}
+
+.success-note {
+  margin: 16px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #635b4d;
+  background: #ffffff;
+  border: 1px solid #d4cebe;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.success-note em {
+  font-style: normal;
+  font-weight: 700;
+  color: #1b4332;
+}
+
+.btn-back-home {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555d57;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  transition: color 0.15s ease;
+}
+
+.btn-back-home:hover {
+  color: #1b4332;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .success {
+    margin: 12px 10px 32px;
+    padding: 24px 16px;
+    border-radius: 18px;
+  }
+  .receipt-actions {
+    flex-direction: column;
+  }
 }

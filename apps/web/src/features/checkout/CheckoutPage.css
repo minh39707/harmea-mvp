@@ -1,14 +1,605 @@
-.checkbox {
-  flex-direction: row;
-  align-items: start;
-  gap: var(--space-2);
+/* ==========================================================================
+   Harméa — Trang Đặt Hàng & Thanh Toán QR (Checkout & QR Payment)
+   ========================================================================== */
+
+.checkout-page-wrapper {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 18px 20px 48px;
+  animation: checkoutFadeIn 0.25s ease;
 }
-.checkbox input {
-  margin-top: 4px;
+
+@keyframes checkoutFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.checkout-fields > .note {
+
+.btn-back-cart {
+  margin-bottom: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #555d57;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.btn-back-cart:hover {
+  color: #1b4332;
+}
+
+/* ==========================================================================
+   1. STEPPER BAR (2 BƯỚC: THÔNG TIN -> QUÉT MÃ QR)
+   ========================================================================== */
+.checkout-stepper-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px auto 26px;
+  max-width: 600px;
+}
+
+.stepper-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1.5px solid #d4cebe;
+  color: #555d57;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stepper-pill:hover:not(:disabled) {
+  border-color: #1b4332;
+  color: #1b4332;
+}
+
+.stepper-pill.active {
+  background: #1b4332;
+  border-color: #1b4332;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.22);
+}
+
+.stepper-pill.done {
+  background: rgba(27, 67, 50, 0.08);
+  border-color: #1b4332;
+  color: #1b4332;
+}
+
+.stepper-idx {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.stepper-pill.active .stepper-idx {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.stepper-pill.done .stepper-idx {
+  background: #1b4332;
+  color: #ffffff;
+}
+
+.stepper-connector {
+  flex: 1;
+  height: 2px;
+  max-width: 48px;
+  background: #baa892;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   2. KHỐI NHẬP LIỆU BƯỚC 1: THÔNG TIN GIAO HÀNG
+   ========================================================================== */
+.checkout-fields {
+  background: #ffffff;
+  border: 1.5px solid #d4cebe;
+  border-radius: 20px;
+  padding: 24px 26px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin: 0;
 }
-.request-reference {
-  overflow-wrap: anywhere;
+
+.step-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid #baa892;
+}
+
+.step-card-header h3 {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: #151816;
+  margin: 0;
+}
+
+.checkout-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #151816;
+}
+
+.checkout-fields input,
+.checkout-fields textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #c9c0b0;
+  border-radius: 10px;
+  background: #faf8f4;
+  font-size: 14px;
+  color: #151816;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.checkout-fields input:focus,
+.checkout-fields textarea:focus {
+  background: #ffffff;
+  border-color: #1b4332;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.12);
+}
+
+.checkout-fields .two-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.checkout-fields .checkbox {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #2b312d;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.checkout-fields .checkbox input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.checkout-fields > .note {
+  margin: 0;
+  font-size: 13px;
+  color: #555d57;
+}
+
+.pending-box {
+  background: #fff8e9;
+  border: 1px solid #d7ad68;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #795c2c;
+}
+
+/* ==========================================================================
+   3. KHỐI BƯỚC 2: QUÉT MÃ QR THANH TOÁN
+   ========================================================================== */
+.payment-qr-card {
+  background: #ffffff;
+  border: 1.5px solid #d4cebe;
+  border-radius: 20px;
+  padding: 26px 26px 30px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.payment-card-header h2 {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: #151816;
+  margin: 0;
+}
+
+.payment-subtitle {
+  font-size: 14px;
+  color: #434945;
+  line-height: 1.55;
+  margin: 0 0 18px;
+}
+
+.payment-amount-box {
+  background: rgba(27, 67, 50, 0.06);
+  border: 1.5px solid #baa892;
+  border-radius: 14px;
+  padding: 12px 18px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.amount-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #635b4d;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.amount-val {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 800;
+  color: #1b4332;
+  letter-spacing: -0.01em;
+}
+
+.payment-qr-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.payment-qr-frame {
+  background: #ffffff;
+  border: 2px solid #baa892;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.payment-qr-img {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
+}
+
+.qr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1b4332;
+  background: rgba(27, 67, 50, 0.08);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.payment-transfer-guide {
+  background: #faf8f4;
+  border: 1.5px solid #d4cebe;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.guide-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.guide-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #555d57;
+}
+
+.guide-val-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guide-val {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #151816;
+}
+
+.guide-val.highlight {
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+  color: #1b4332;
+  background: rgba(27, 67, 50, 0.08);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.btn-copy-small {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #ffffff;
+  border: 1px solid #baa892;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1b4332;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-copy-small:hover {
+  background: #f4efe6;
+  border-color: #9c8974;
+}
+
+.guide-hint-text {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #727a75;
+  line-height: 1.45;
+  font-style: italic;
+}
+
+.payment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-confirm-paid {
+  width: 100%;
+  height: 50px;
+  background: #1b4332;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-confirm-paid:hover:not(:disabled) {
+  background: #143527;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(27, 67, 50, 0.3);
+}
+
+.btn-confirm-paid:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-back-info {
+  background: none;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #555d57;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  text-decoration: underline;
+}
+
+.btn-back-info:hover {
+  color: #1b4332;
+}
+
+/* ==========================================================================
+   4. CỘT PHẢI: ORDER SUMMARY & RECAP
+   ========================================================================= */
+.order-summary {
+  background: #ffffff;
+  border: 1.5px solid #d4cebe;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 24px;
+}
+
+.order-summary h3 {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: #151816;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid #baa892;
+}
+
+.recipient-recap-box {
+  background: #faf8f4;
+  border: 1.5px solid #d4cebe;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.recap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.recap-header strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: #151816;
+}
+
+.btn-edit-recap {
+  background: none;
+  border: none;
+  color: #1b4332;
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.recap-item {
+  display: flex;
+  gap: 6px;
+  color: #383e3b;
+  margin-bottom: 2px;
+}
+
+.recap-item b {
+  color: #151816;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.summary-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.summary-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #2b312d;
+}
+
+.summary-divider {
+  border: none;
+  height: 1.5px;
+  background: #baa892;
+  margin: 14px 0;
+}
+
+.order-summary .sum {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+
+.order-summary .sum span {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #555d57;
+}
+
+.order-summary .sum strong {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 800;
+  color: #1b4332;
+}
+
+.btn-proceed-payment,
+.btn-paid-aside {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background: #1b4332;
+  color: #ffffff;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.2);
+}
+
+.btn-proceed-payment:hover:not(:disabled),
+.btn-paid-aside:hover:not(:disabled) {
+  background: #143527;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(27, 67, 50, 0.26);
+}
+
+.btn-proceed-payment:disabled,
+.btn-paid-aside:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.summary-footer-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #727a75;
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 860px) {
+  .checkout-fields .two-fields {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .order-summary {
+    position: static;
+  }
 }

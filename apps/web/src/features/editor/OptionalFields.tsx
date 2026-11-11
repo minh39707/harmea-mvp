@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Shop } from '../../app/useShop';
-import CropControls from './CropControls';
 import SignaturePad from './SignaturePad';
+import CropControls from './CropControls';
 import {
   IconImage,
   IconPhotoAdd,
@@ -16,10 +16,8 @@ import {
 } from '../../shared/ui/Icons';
 import { formatImageBytes } from './photo-processing';
 
-type OptionalFieldsProps = Pick<
-  Shop,
-  'draft' | 'update' | 'photo' | 'photoStats' | 'updateCrop'
-> & {
+type OptionalFieldsProps = Pick<Shop, 'draft' | 'update' | 'photo' | 'photoStats'> & {
+  updateCrop?: Shop['updateCrop'];
   setGallery?: (gallery: 'sample' | 'preview') => void;
 };
 
@@ -75,7 +73,9 @@ export default function OptionalFields({
           <div className="dropzone-content">
             <IconPhotoAdd size={28} color="#1b4332" />
             <div className="dropzone-text-group">
-              <span className="dropzone-main-text">Chọn ảnh từ máy</span>
+              <span className="dropzone-main-text">
+                {draft.photo ? 'Đổi ảnh khác' : 'Chọn ảnh từ máy'}
+              </span>
               <span className="dropzone-sub-text">JPG / PNG, tối đa 15 MiB</span>
             </div>
           </div>
@@ -93,20 +93,24 @@ export default function OptionalFields({
         )}
 
         {draft.photo && (
-          <div className="photo-selected-actions">
-            <button
-              type="button"
-              className="btn-remove-photo"
-              onClick={() => {
-                update('photo', '');
-              }}
-            >
-              <IconTrash size={14} />
-              <span>Bỏ ảnh đã chọn</span>
-            </button>
-            <CropControls draft={draft} onChange={updateCrop} />
+          <div className="photo-preview-item">
+            <img src={draft.photo} alt="Ảnh đã chọn" className="photo-thumb-img" />
+            <div className="photo-info-group">
+              <span className="photo-status-text">Đã tải ảnh lên</span>
+              <button
+                type="button"
+                className="btn-remove-photo"
+                onClick={() => {
+                  update('photo', '');
+                }}
+              >
+                <IconTrash size={13} />
+                <span>Bỏ ảnh này</span>
+              </button>
+            </div>
           </div>
         )}
+        {draft.photo && updateCrop && <CropControls draft={draft} onChange={updateCrop} />}
       </div>
 
       {/* 5. KHU VỰC THÔNG TIN BỔ SUNG (ACCORDION CÓ MŨI TÊN THU GỌN / MỞ RỘNG) */}

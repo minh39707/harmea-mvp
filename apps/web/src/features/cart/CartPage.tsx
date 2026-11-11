@@ -2,6 +2,7 @@ import type { Shop } from '../../app/useShop';
 import Card from '../editor/CardPreview';
 import Quantity from '../../shared/ui/Quantity';
 import { blankDesign as blank } from '../../shared/types';
+import type { Item } from '../../shared/types';
 import { money, colorLabel } from '../../shared/format';
 import { hasLowPrintResolution } from '../editor/photo-processing';
 import {
@@ -14,20 +15,9 @@ import {
   IconShield,
   IconCheck
 } from '../../shared/ui/Icons';
+import './CartPage.css';
 
-export default function CartPage({
-  cart,
-  go,
-  edit,
-  setCart,
-  product,
-  setDraft,
-  setEditing,
-  setEditingPosition,
-  setQuantity,
-  count,
-  subtotal
-}: Pick<
+type CartPageProps = Pick<
   Shop,
   | 'cart'
   | 'go'
@@ -40,8 +30,40 @@ export default function CartPage({
   | 'setQuantity'
   | 'count'
   | 'subtotal'
->) {
+> & {
+  selectedItemIds?: string[];
+  toggleSelectItem?: (id: string) => void;
+  selectAll?: (select: boolean) => void;
+  selectedItems?: Item[];
+  selectedCount?: number;
+  selectedSubtotal?: number;
+};
+
+export default function CartPage({
+  cart,
+  go,
+  edit,
+  setCart,
+  product,
+  setDraft,
+  setEditing,
+  setEditingPosition,
+  setQuantity,
+  count,
+  subtotal,
+  selectedItemIds = cart.map(i => i.id),
+  toggleSelectItem,
+  selectAll,
+  selectedItems = cart.filter(i => selectedItemIds.includes(i.id)),
+  selectedCount = selectedItems.reduce((n, i) => n + i.quantity, 0),
+  selectedSubtotal = selectedItems.reduce(
+    (n, i) => n + i.quantity * (product?.unitPriceVnd ?? 50000),
+    0
+  )
+}: CartPageProps) {
   const unitPrice = product?.unitPriceVnd ?? 50000;
+  const isAllSelected = cart.length > 0 && selectedItems.length === cart.length;
+  const isSomeSelected = selectedItems.length > 0 && selectedItems.length < cart.length;
 
   const handleAddNewDesign = () => {
     setDraft({ ...blank });
@@ -79,12 +101,59 @@ export default function CartPage({
       ) : (
         <div className="cart-layout">
           <div className="cart-items-column">
+            {/* Thanh công cụ chọn thẻ mua (Toolbar) */}
+            <div className="cart-selection-bar">
+              <div className="selection-bar-left">
+                <label className="select-all-label">
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    ref={el => {
+                      if (el) el.indeterminate = isSomeSelected;
+                    }}
+                    onChange={() => selectAll?.(!isAllSelected)}
+                    className="sr-only-input"
+                  />
+                  <span
+                    className={`custom-checkbox-box ${isAllSelected ? 'checked' : isSomeSelected ? 'partial' : ''}`}
+                  >
+                    {isAllSelected && <IconCheck size={13} strokeWidth={3} />}
+                    {isSomeSelected && <span className="partial-bar" />}
+                  </span>
+                  <span className="select-all-title">Chọn tất cả ({cart.length} thiết kế)</span>
+                </label>
+                <span className="selection-stats-pill">
+                  Đã chọn: <strong>{selectedCount}</strong> / {count} thẻ
+                </span>
+              </div>
+
+              <div className="selection-bar-right">
+                <button
+                  type="button"
+                  className="btn-select-chip"
+                  onClick={() => selectAll?.(true)}
+                  disabled={isAllSelected}
+                >
+                  Chọn tất cả
+                </button>
+                <button
+                  type="button"
+                  className="btn-select-chip"
+                  onClick={() => selectAll?.(false)}
+                  disabled={selectedItemIds.length === 0}
+                >
+                  Bỏ chọn
+                </button>
+              </div>
+            </div>
+
             <div className="cart-items-list">
               {cart.map((item, index) => {
                 const colorKey = item.design.color || 'cream';
                 const itemTotal = unitPrice * item.quantity;
                 const displayName = item.design.fullName?.trim() || 'Thẻ Harméa';
                 const musicText = item.design.musicUrl?.trim();
+                const isSelected = selectedItemIds.includes(item.id);
                 const lowPrintResolution =
                   Boolean(item.design.photo) &&
                   hasLowPrintResolution(
@@ -94,13 +163,34 @@ export default function CartPage({
                   );
 
                 return (
-                  <article className={`cart-item-card color-${colorKey}`} key={item.id}>
-                    <div className="cart-item-header-mobile">
-                      <span className="cart-item-order">Thẻ #{index + 1}</span>
-                      <span className={`color-pill ${colorKey}`}>
-                        <span className="color-swatch-dot" />
-                        {colorLabel(item.design.color)}
-                      </span>
+                  <article
+                    className={`cart-item-card color-${colorKey} ${isSelected ? 'is-selected' : 'is-unselected'}`}
+                    key={item.id}
+                  >
+                    {/* Header chọn thẻ mua & màu sắc thẻ */}
+                    <div className="cart-item-select-bar">
+                      <label className="item-select-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelectItem?.(item.id)}
+                          className="sr-only-input"
+                        />
+                        <span className={`custom-checkbox-box ${isSelected ? 'checked' : ''}`}>
+                          {isSelected && <IconCheck size={13} strokeWidth={3} />}
+                        </span>
+                        <span className="item-select-label-text">
+                          {isSelected ? 'Đã chọn mua thẻ này' : 'Chọn thẻ này để mua'}
+                        </span>
+                      </label>
+
+                      <div className="item-meta-tags">
+                        <span className={`color-pill ${colorKey}`}>
+                          <span className="color-swatch-dot" />
+                          {colorLabel(item.design.color)}
+                        </span>
+                        <span className="cart-item-order">#{index + 1}</span>
+                      </div>
                     </div>
 
                     <div className="cart-item-body">
@@ -121,11 +211,6 @@ export default function CartPage({
                       <div className="cart-copy">
                         <div className="cart-copy-meta">
                           <h3 className="cart-item-name">{displayName}</h3>
-                          <span className={`color-pill ${colorKey}`}>
-                            <span className="color-swatch-dot" />
-                            {colorLabel(item.design.color)}
-                          </span>
-                          <span className="cart-item-order desktop-only">#{index + 1}</span>
                         </div>
 
                         {musicText ? (
@@ -216,12 +301,16 @@ export default function CartPage({
 
             <div className="summary-rows">
               <div className="summary-row">
-                <span className="row-label">Số lượng thẻ</span>
-                <span className="row-val">{count} thẻ</span>
+                <span className="row-label">Thẻ chọn mua</span>
+                <span className="row-val">
+                  <strong>{selectedCount}</strong> / {count} thẻ
+                </span>
               </div>
               <div className="summary-row">
-                <span className="row-label">Tổng tiền thẻ</span>
-                <span className="row-val">{money(subtotal)}</span>
+                <span className="row-label">Tổng tiền thẻ đã chọn</span>
+                <span className="row-val">
+                  <strong>{money(selectedSubtotal)}</strong>
+                </span>
               </div>
               <div className="summary-row">
                 <span className="row-label">Phí vận chuyển</span>
@@ -232,17 +321,21 @@ export default function CartPage({
             <div className="summary-divider" />
 
             <div className="summary-total-row">
-              <span className="total-label">Tạm tính:</span>
-              <strong className="total-val">{money(subtotal)}</strong>
+              <span className="total-label">Tổng thanh toán:</span>
+              <strong className="total-val">{money(selectedSubtotal)}</strong>
             </div>
 
             <button
               className="btn-checkout-primary"
-              disabled={!product || product.isActive === false || cart.length === 0}
+              disabled={!product || product.isActive === false || selectedItems.length === 0}
               onClick={() => go('checkout')}
               type="button"
             >
-              {product?.isActive === false ? 'Tạm ngừng nhận đơn' : 'Tiến hành đặt hàng →'}
+              {product?.isActive === false
+                ? 'Tạm ngừng nhận đơn'
+                : selectedItems.length === 0
+                  ? 'Vui lòng chọn thẻ muốn mua'
+                  : `Tiến hành đặt hàng (${selectedCount} thẻ) →`}
             </button>
 
             <div className="summary-trust-badges">

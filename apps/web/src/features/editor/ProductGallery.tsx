@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Shop } from '../../app/useShop';
 import Card from './CardPreview';
+import { colorLabel } from '../../shared/format';
 import {
   IconExpand,
   IconChevronLeft,
   IconChevronRight,
   IconImage,
   IconCheck,
-  IconClose
+  IconClose,
+  IconCard
 } from '../../shared/ui/Icons';
 
 export const COLOR_SAMPLES = [
@@ -63,12 +65,14 @@ export default function ProductGallery({
     if (!isLightboxOpen) return;
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') setIsLightboxOpen(false);
-      if (e.key === 'ArrowRight') handleNextPhoto();
-      if (e.key === 'ArrowLeft') handlePrevPhoto();
+      if (gallery === 'sample') {
+        if (e.key === 'ArrowRight') handleNextPhoto();
+        if (e.key === 'ArrowLeft') handlePrevPhoto();
+      }
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isLightboxOpen, handleNextPhoto, handlePrevPhoto]);
+  }, [isLightboxOpen, gallery, handleNextPhoto, handlePrevPhoto]);
 
   function selectPhoto(index: number) {
     setActivePhotoIndex(index);
@@ -86,22 +90,39 @@ export default function ProductGallery({
           type="button"
           className="btn-expand-preview"
           onClick={() => setIsLightboxOpen(true)}
-          title="Phóng to xem ảnh chi tiết"
+          title={
+            gallery === 'preview'
+              ? 'Phóng to kiểm tra chi tiết thiết kế thẻ'
+              : 'Phóng to xem ảnh mẫu chi tiết'
+          }
           aria-label="Phóng to ảnh"
         >
           <IconExpand size={16} />
         </button>
 
-        {/* Nút mũi tên chuyển ảnh trước (tròn, bóng nhẹ) */}
-        <button
-          type="button"
-          className="gallery-nav-arrow prev"
-          onClick={handlePrevPhoto}
-          aria-label="Ảnh trước"
-          title="Xem ảnh mẫu trước"
-        >
-          <IconChevronLeft size={18} />
-        </button>
+        {/* Nút mũi tên chuyển ảnh (chỉ hiển thị khi xem ảnh mẫu) */}
+        {gallery === 'sample' && (
+          <>
+            <button
+              type="button"
+              className="gallery-nav-arrow prev"
+              onClick={handlePrevPhoto}
+              aria-label="Ảnh trước"
+              title="Xem ảnh mẫu trước"
+            >
+              <IconChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              className="gallery-nav-arrow next"
+              onClick={handleNextPhoto}
+              aria-label="Ảnh sau"
+              title="Xem ảnh mẫu tiếp theo"
+            >
+              <IconChevronRight size={18} />
+            </button>
+          </>
+        )}
 
         {/* Vùng hiển thị thẻ chính giữa */}
         <div className="gallery-display-center">
@@ -114,38 +135,45 @@ export default function ProductGallery({
               <img src={activePhoto.src} alt={activePhoto.title} className="card-sample-img" />
             </div>
           ) : (
-            <Card design={draft} guides={guides} />
+            <div
+              className="hero-card-clickable"
+              onClick={() => setIsLightboxOpen(true)}
+              title="Nhấn để phóng to kiểm tra chi tiết tiến trình thiết kế thẻ của bạn"
+            >
+              <Card design={draft} guides={guides} />
+              <div className="card-zoom-hint">
+                <IconExpand size={13} />
+                <span>Phóng to kiểm tra</span>
+              </div>
+            </div>
           )}
         </div>
 
-        {/* Nút mũi tên chuyển ảnh sau (tròn, bóng nhẹ) */}
-        <button
-          type="button"
-          className="gallery-nav-arrow next"
-          onClick={handleNextPhoto}
-          aria-label="Ảnh sau"
-          title="Xem ảnh mẫu tiếp theo"
-        >
-          <IconChevronRight size={18} />
-        </button>
-
-        {/* 3 chấm chuyển trang (carousel dots) ở đáy khung preview */}
-        <div className="carousel-dots" role="tablist" aria-label="Danh sách ảnh mẫu">
-          {COLOR_SAMPLES.map((photo, idx) => {
-            const isDotActive = gallery === 'sample' && activePhotoIndex === idx;
-            return (
-              <button
-                key={photo.id}
-                type="button"
-                role="tab"
-                aria-selected={isDotActive}
-                className={`carousel-dot ${isDotActive ? 'active' : ''}`}
-                onClick={() => selectPhoto(idx)}
-                title={`Chuyển đến mẫu ${photo.label}`}
-              />
-            );
-          })}
+        {/* Ghi chú 2 mặt thẻ giống nhau */}
+        <div className="card-two-sides-pill">
+          <IconCard size={14} color="#1b4332" />
+          <span>Hai mặt thẻ được in đồng bộ giống nhau</span>
         </div>
+
+        {/* 3 chấm chuyển trang (carousel dots) ở đáy khung preview khi ở tab mẫu */}
+        {gallery === 'sample' && (
+          <div className="carousel-dots" role="tablist" aria-label="Danh sách ảnh mẫu">
+            {COLOR_SAMPLES.map((photo, idx) => {
+              const isDotActive = activePhotoIndex === idx;
+              return (
+                <button
+                  key={photo.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isDotActive}
+                  className={`carousel-dot ${isDotActive ? 'active' : ''}`}
+                  onClick={() => selectPhoto(idx)}
+                  title={`Chuyển đến mẫu ${photo.label}`}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* 2. KHU VỰC "CHỌN ẢNH MẪU" DƯỚI KHUNG PREVIEW */}
@@ -200,15 +228,23 @@ export default function ProductGallery({
       </div>
 
       {gallery === 'preview' && (
-        <div className="artwork-info">
-          <label>
-            <input type="checkbox" checked={guides} onChange={e => setGuides(e.target.checked)} />
-            <span>Hiện đường cắt và vùng an toàn (chỉ để đối chiếu)</span>
-          </label>
+        <div className="artwork-info-wrap">
+          <div className="card-both-sides-tip">
+            <span className="tip-bullet" />
+            <span>
+              Quy cách in: <strong>2 mặt thẻ in cùng một thiết kế giống nhau</strong>
+            </span>
+          </div>
+          <div className="artwork-info">
+            <label>
+              <input type="checkbox" checked={guides} onChange={e => setGuides(e.target.checked)} />
+              <span>Hiện đường cắt và vùng an toàn (chỉ để đối chiếu)</span>
+            </label>
+          </div>
         </div>
       )}
 
-      {/* 4. LIGHTBOX XEM ẢNH TO CHI TIẾT */}
+      {/* 4. LIGHTBOX XEM ẢNH / THIẾT KẾ TO CHI TIẾT */}
       {isLightboxOpen && (
         <div
           className="lightbox-overlay"
@@ -221,25 +257,66 @@ export default function ProductGallery({
               className="lightbox-close"
               onClick={() => setIsLightboxOpen(false)}
               aria-label="Đóng"
+              title="Đóng (Esc)"
             >
-              <IconClose size={20} />
+              <IconClose size={22} />
             </button>
-            <button className="lightbox-arrow prev" onClick={handlePrevPhoto} aria-label="Trước">
-              ‹
-            </button>
-            <div className="lightbox-img-box">
-              <img src={activePhoto.src} alt={activePhoto.title} />
-              <div className="lightbox-bar">
-                <strong>{activePhoto.title}</strong>
-                <span> • {activePhoto.artist}</span>
-                <span className="lightbox-counter">
-                  ({activePhotoIndex + 1}/{COLOR_SAMPLES.length})
-                </span>
+
+            {gallery === 'sample' ? (
+              <>
+                <button
+                  className="lightbox-arrow prev"
+                  onClick={handlePrevPhoto}
+                  aria-label="Trước"
+                  title="Mẫu trước"
+                >
+                  ‹
+                </button>
+                <div className="lightbox-img-box">
+                  <img src={activePhoto.src} alt={activePhoto.title} />
+                  <div className="lightbox-bar">
+                    <strong>{activePhoto.title}</strong>
+                    <span> • {activePhoto.artist}</span>
+                    <span className="lightbox-counter">
+                      ({activePhotoIndex + 1}/{COLOR_SAMPLES.length})
+                    </span>
+                  </div>
+                </div>
+                <button
+                  className="lightbox-arrow next"
+                  onClick={handleNextPhoto}
+                  aria-label="Sau"
+                  title="Mẫu sau"
+                >
+                  ›
+                </button>
+              </>
+            ) : (
+              <div className="lightbox-preview-card-box">
+                <div className="lightbox-card-render-wrap">
+                  <Card design={draft} guides={guides} />
+                </div>
+                <div className="lightbox-preview-bar">
+                  <div className="lightbox-preview-info">
+                    <strong className="lightbox-card-title">
+                      {draft.fullName?.trim() || 'Thẻ Harméa cá nhân'}
+                    </strong>
+                    <span className="lightbox-card-meta">
+                      Màu {colorLabel(draft.color)} • 2 mặt thẻ in giống nhau • Chuẩn kích thước thẻ
+                      ATM (86 × 54 mm)
+                    </span>
+                  </div>
+                  <label className="lightbox-guides-toggle">
+                    <input
+                      type="checkbox"
+                      checked={guides}
+                      onChange={e => setGuides(e.target.checked)}
+                    />
+                    <span>Hiện đường cắt & vùng an toàn</span>
+                  </label>
+                </div>
               </div>
-            </div>
-            <button className="lightbox-arrow next" onClick={handleNextPhoto} aria-label="Sau">
-              ›
-            </button>
+            )}
           </div>
         </div>
       )}

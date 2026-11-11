@@ -126,6 +126,16 @@
   font-size: 12.5px;
 }
 
+.card-two-sides-note {
+  margin: 8px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1b4332;
+}
+
 /* 2. Màu thiết kế */
 .swatch-group {
   display: flex;
@@ -264,19 +274,44 @@
   margin-top: 6px;
 }
 
-.photo-selected-actions {
+.photo-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1.5px solid #d4cebe;
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-top: 10px;
+}
+
+.photo-thumb-img {
+  width: 44px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #baa892;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.photo-info-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 4px;
+}
+
+.photo-status-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1b4332;
 }
 
 .btn-remove-photo {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   align-self: flex-start;
-  padding: 6px 12px;
+  padding: 4px 10px;
   background: #fff5f5;
   border: 1px solid #fecaca;
   border-radius: 6px;
