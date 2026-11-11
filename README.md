@@ -2,10 +2,15 @@
 
 Bản demo local và tài liệu triển khai cho **một người**; mốc demo ban đầu 28/10/2026. API A và code editor/checkout/tracking/admin B–D đã triển khai theo hợp đồng canonical. Nghiệm thu qua trình duyệt và diễn tập toàn luồng còn chờ. Không có thanh toán.
 
+## Đang chuyển sang v2
+
+Phạm vi v2 đã chốt trong [roadmap](tasks/00-ROADMAP-v2.md): MySQL 8.4, tài khoản user/admin, vẫn cho khách đặt hàng, email và gói Docker production bàn giao cho người vận hành. Ưu tiên hoàn thành khung chức năng; giao diện có thể chỉnh sau. F0 chỉ cập nhật tài liệu và contract **0.3.0**; endpoint mới có `x-status: planned`, chưa có backend. Code hiện tại vẫn dùng PostgreSQL/PGlite và admin env; hướng dẫn bên dưới dành cho bản đang chạy, F2/F3 sẽ thay thế. F8 thanh toán và G1b S3 chưa được chọn. Agent không thao tác lên tài khoản AWS.
+
 ## Đã có / cần làm tiếp
 
 | Đã triển khai / chuẩn bị | Cần làm tiếp |
 |---|---|
+| F0: phạm vi v2 và OpenAPI 0.3.0; xem [báo cáo](docs/qa/2026-11-11-task-F0.md) | F1 gỡ legacy → F2 MySQL → F3 auth/roles; F4–G3 và H theo roadmap |
 | UI tối giản E2: sản phẩm, cá nhân hóa, giỏ hàng, checkout, success và tracking | Kiểm tra thao tác trình duyệt tại 375/768/1440 px |
 | Frontend C dùng `/api/orders` multipart và `/api/tracking/lookup` | Đơn legacy không tự vào admin mới; các route demo còn giữ để tương thích/lịch sử |
 | Editor B và checkout C giữ ảnh gốc/PNG/crop từng dòng; backend lưu snapshot | Kiểm tra upload/IndexedDB/Canvas/clipboard thực trên trình duyệt |
@@ -42,7 +47,7 @@ Admin D tại `/admin/login` dùng cookie HttpOnly, không lưu session/mật kh
 1. [Requirement và phạm vi](docs/01-requirements.md).
 2. [Kiến trúc và quyết định kỹ thuật](docs/02-architecture.md).
 3. [Dữ liệu, API và quy tắc tích hợp](docs/03-data-api.md); hợp đồng máy đọc được: [OpenAPI](contracts/openapi.json).
-4. [Kế hoạch 8–10 giờ dự kiến cho một người](docs/05-solo-plan.md).
+4. [Roadmap v2](tasks/00-ROADMAP-v2.md) là thứ tự hiện hành; [kế hoạch MVP cũ](docs/05-solo-plan.md) chỉ để tham khảo lịch sử.
 5. Code E cả hai giai đoạn và A–D đã triển khai; phần tiếp theo là nghiệm thu UI và diễn tập khi browser khả dụng. Xem các báo cáo [E1](docs/qa/2026-10-29-clean-layout.md), [A](docs/qa/2026-10-29-task-a.md), [B](docs/qa/2026-10-29-task-b.md), [C](docs/qa/2026-10-29-task-c.md), [D](docs/qa/2026-10-29-task-d.md), [E2](docs/qa/2026-10-29-clean-layout-phase2.md).
 6. Dùng [checklist demo](docs/04-acceptance-demo.md) để nghiệm thu.
 
@@ -124,6 +129,6 @@ Lệnh seed tạo hai đơn hư cấu: một `completed`, một `cancelled`, b�
 
 ## Cách đưa cho coding agent hoặc tự triển khai
 
-Mở thư mục này làm project. Đọc `AGENTS.md`, rồi dùng nguyên prompt trong `tasks/A-api-data.md`. Chỉ giao task B/C/D sau khi đạt điều kiện phụ thuộc. Từng task có phạm vi file và tiêu chí Done. Không yêu cầu agent làm tất cả đồng thời trên cùng checkout.
+Mở thư mục này làm project. Đọc `AGENTS.md` và `tasks/00-ROADMAP-v2.md`, giao từng task theo phụ thuộc. A–E là các task MVP đã triển khai, không phải thứ tự làm tiếp. Từng task có phạm vi file và tiêu chí Done. Không yêu cầu agent làm tất cả đồng thời trên cùng checkout.
 
-Giữ giỏ hàng theo quyết định trong task E; hợp đồng/docs/task A/C đã đồng bộ thành 1–10 thiết kế cùng sản phẩm/mẫu, mỗi dòng 1–10 bản. Multipart dùng payload + photo_i/preview_i, tổng ≤16 MiB. Không thêm payment, nhiều mẫu, cloud hoặc microservices. Thời lượng trong kế hoạch là ước lượng, không phải phần đã hoàn thành hoặc cam kết thời gian.
+Giữ giỏ hàng theo quyết định trong task E; hợp đồng/docs/task A/C đã đồng bộ thành 1–10 thiết kế cùng sản phẩm/mẫu, mỗi dòng 1–10 bản. Multipart dùng payload + photo_i/preview_i, tổng ≤16 MiB. Không tự thêm payment, S3, nhiều mẫu hoặc microservices. Docker/CI/hồ sơ bàn giao thuộc G1–G3; người vận hành khác lo server AWS. Thời lượng trong kế hoạch là ước lượng, không phải phần đã hoàn thành hoặc cam kết thời gian.

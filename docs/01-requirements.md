@@ -1,5 +1,8 @@
 # Harméa MVP — yêu cầu và phạm vi
 
+> F0 — 11/11/2026: phần MVP bên dưới là lịch sử và mô tả bản code hiện tại, không phải giới hạn v2. Phạm vi hiện hành theo [roadmap v2](../tasks/00-ROADMAP-v2.md); ưu tiên khung chức năng, chỉnh giao diện sau. Các mục chưa kiểm tra vẫn chưa nghiệm thu.
+
+
 Ngày lập: 27/10/2026 · Mốc demo: 28/10/2026 · Nhân lực: 1 người.
 
 Đây là đặc tả để triển khai. Các chức năng bên dưới chưa được coi là đã làm hoặc đã kiểm thử chỉ vì tài liệu tồn tại. Xem README của dự án để biết trạng thái thực tế của khung mã nguồn.
@@ -164,3 +167,44 @@ URL nhạc chỉ nhận HTTPS, không có thông tin đăng nhập hoặc cổng
 ## 8. Quy tắc khi phạm vi thay đổi
 
 Chỉ thêm chức năng sau khi vòng demo bắt buộc ở `04-acceptance-demo.md` chạy thành công. Nếu thiếu thời gian, giảm trang trí, số mẫu và hiệu ứng trước; không bỏ việc lưu dữ liệu, quyền quản trị hoặc tính đúng đắn của đơn. Phải ghi rõ phần còn giả lập và phần đã kiểm thử trong buổi demo.
+
+## 9. Phạm vi v2 — hiện hành từ F0, 11/11/2026
+
+Mục này thay thế các giới hạn MVP lịch sử ở mục 1–8: tài khoản khách, nhiều admin, email và chuẩn bị production nay thuộc kế hoạch. Chúng chưa được triển khai chỉ vì có đặc tả. Nghiệm thu đầy đủ nằm ở H, không yêu cầu hoàn tất nghiệm thu MVP cũ để bắt đầu roadmap v2. Ưu tiên khung chức năng theo plan, tinh chỉnh giao diện sau.
+
+### Quyết định D1–D6
+
+- Stack đích React/TypeScript/Vite + Express/TypeScript + MySQL 8.4 qua mysql2, không ORM hoặc framework UI/router mới. F2 tạo DB mới, không chuyển dữ liệu demo cũ. README giữ cách chạy hiện tại tới F2.
+- Một sản phẩm/mẫu, giỏ hàng, 1–10 thiết kế mỗi đơn, 1–10 bản mỗi thiết kế; snapshot bất biến. Giá do server tính, phí ship chưa biết vẫn null.
+- Khách vẫn đặt không cần tài khoản. Đơn tạo khi đã đăng nhập gắn user_id; không tự gắn đơn khách cũ theo email/số điện thoại.
+- Một bảng users với role user/admin, có thể nhiều admin; session trong DB qua cookie HttpOnly, SameSite=Lax, Secure khi HTTPS. Mật khẩu scrypt, không lưu phiên trong web storage; phân quyền server-side.
+- Đầu ra là image Docker + compose.prod.yaml + hồ sơ bàn giao. Stack mẫu Caddy + app + MySQL, uploads trên volume bền; người vận hành có thể dùng proxy/DB bên ngoài. Hạ tầng, DNS, TLS, backup storage và giám sát AWS do người vận hành khác lo. Agent không viết runbook/script hạ tầng AWS.
+- Thanh toán F8 do người dùng chọn, S3 G1b chỉ khi người vận hành yêu cầu; cả hai chưa được chọn. Không có trạng thái thanh toán trong luồng mặc định.
+
+### Vai trò và quyền v2
+
+| Vai trò | Quyền | Giới hạn |
+|---|---|---|
+| Khách | Xem sản phẩm, thiết kế, giỏ, đặt đơn không cần tài khoản | Không liệt kê đơn hoặc tải ảnh riêng tư |
+| Người có link tracking | Tiến độ/lịch sử qua fragment + POST body | Không PII, ảnh, URL nhạc, ghi chú nội bộ |
+| User đã đăng nhập | Quyền khách; hồ sơ/địa chỉ, đổi mật khẩu, đơn của mình | Không đọc đơn/tệp user khác hay gọi admin API |
+| Admin | Quản lý đơn/tệp, sản phẩm, user, thống kê, CSV và audit | Không sửa snapshot đơn; không tự khóa/hạ role hay làm còn 0 admin active |
+
+### Yêu cầu mới (planned)
+
+| Mã | Yêu cầu | Task / nghiệm thu dự kiến |
+|---|---|---|
+| FR-U1 | Đăng ký email, mật khẩu 8–128 ký tự, tên hiển thị | F3/F4; email trùng 409, đăng ký chỉ tạo role user |
+| FR-U2 | Đăng nhập/đăng xuất user/admin, cookie session, rate limit | F3/F4; cookie cũ hết quyền sau logout, user gọi admin bị 403 |
+| FR-U3 | Danh sách/chi tiết đơn của tôi theo user_id | F3/F4; đơn user khác trả 404 |
+| FR-U4 | Hồ sơ, điện thoại, địa chỉ mặc định và đổi mật khẩu | F3/F4; checkout prefill, đổi mật khẩu hủy phiên khác |
+| FR-U5 | Quên/đặt lại mật khẩu | F5; forgot luôn 204, token hash một lần 30 phút, reset hủy mọi phiên |
+| FR-A1 | Quản lý giá, tên, mô tả, bật/tắt sản phẩm với version | F6; đơn cũ giữ giá, tắt bán chặn đơn mới |
+| FR-A2 | Tìm/lọc user, khóa/mở, đổi role | F6; khóa hủy phiên, không thể còn 0 admin active khi request song song |
+| FR-A3 | Thống kê, CSV và nhật ký quản trị | F6; SQL tổng hợp, CSV UTF-8 BOM chống công thức, audit cùng transaction |
+| FR-C1 | Landing, thiết kế, giới thiệu, NFC, FAQ, chính sách, liên hệ, 404 và SEO | F7; không thư viện router mới; nội dung nháp đánh dấu cần xác nhận |
+| FR-N1 | Email xác nhận đơn, đổi trạng thái, đặt lại mật khẩu | F5; outbox cùng transaction, local ghi tệp riêng, SMTP không chặn request đơn |
+
+Ngoài phạm vi v2: nhiều mẫu thẻ, cổng thanh toán thẻ, tự động tính phí vận chuyển với hãng ship, đa ngôn ngữ; editor tự do, file in chuẩn và ghi NFC trong browser. F8 chỉ làm khi người dùng chọn; G1b chỉ khi người vận hành yêu cầu. Chính sách và giá thương mại cần người dùng duyệt trước vận hành thật.
+
+Quy tắc snapshot, upload/decode/giới hạn tài nguyên, tracking allowlist, state machine và transaction ở mục 4–6 tiếp tục áp dụng. Checklist v2 ở docs/04 và task H chưa chạy thì không ghi PASS.

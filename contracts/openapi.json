@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Harméa MVP API contract",
-    "version": "0.2.0",
-    "description": "Harméa local cart MVP: one product/template, 1–10 designs per order, each 1–10 copies. No payment/customer account. Canonical orders use multipart; legacy demo routes retained temporarily until task C."
+    "title": "Harméa API contract",
+    "version": "0.3.0",
+    "description": "F0 v2 scope: one product/template, cart with 1–10 designs and 1–10 copies each. Current MVP operations remain implemented; new auth/me/admin operations are planned and NOT implemented. Target: MySQL 8.4, guest checkout plus user/admin roles, email and a Docker image/Compose/operator handoff package (AWS infrastructure is outside agent scope). Payment requires user selection; S3 requires an operator request. Neither is selected. contract:check validates this document only, not runtime implementation."
   },
   "servers": [
     {
@@ -33,7 +33,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/products/current": {
@@ -62,7 +63,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/orders": {
@@ -275,7 +277,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/tracking/lookup": {
@@ -355,7 +358,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/admin/session": {
@@ -363,7 +367,7 @@
         "x-implementation-status": "implemented",
         "operationId": "loginAdmin",
         "summary": "Đăng nhập một tài khoản quản trị cấu hình ngoài mã nguồn.",
-        "description": "So sánh password với ADMIN_PASSWORD_HASH. Thành công sinh session32bytes, lưu SHA256 và hạn8h; rotate session khi login. Kiểm tra Origin và rate limit đăng nhập.",
+        "description": "So sánh password với ADMIN_PASSWORD_HASH. Thành công sinh session32bytes, lưu SHA256 và hạn8h; rotate session khi login. Kiểm tra Origin và rate limit đăng nhập.\nDeprecated MVP operation, still implemented. Removal: F3 replaces env-admin authentication.",
         "requestBody": {
           "required": true,
           "content": {
@@ -480,7 +484,9 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented",
+        "deprecated": true
       },
       "delete": {
         "x-implementation-status": "implemented",
@@ -525,7 +531,10 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented",
+        "deprecated": true,
+        "description": "Deprecated MVP operation, still implemented. Removal: F3 replaces env-admin authentication."
       },
       "get": {
         "operationId": "getAdminSession",
@@ -537,6 +546,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "Authenticated session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSession"
+                }
+              }
+            }
+          },
           "400": {
             "description": "JSON hoặc cấu trúc request không hợp lệ.",
             "content": {
@@ -596,18 +615,11 @@
                 }
               }
             }
-          },
-          "200": {
-            "description": "Authenticated session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AdminSession"
-                }
-              }
-            }
           }
-        }
+        },
+        "x-status": "implemented",
+        "deprecated": true,
+        "description": "Deprecated MVP operation, still implemented. Removal: F3 replaces env-admin authentication."
       }
     },
     "/api/admin/orders": {
@@ -700,7 +712,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/admin/orders/{id}": {
@@ -775,7 +788,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/admin/orders/{id}/status": {
@@ -900,7 +914,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/admin/orders/{id}/items/{itemId}/assets/{kind}": {
@@ -1003,7 +1018,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/demo-checkouts": {
@@ -1012,7 +1028,7 @@
         "deprecated": true,
         "x-implementation-status": "legacy",
         "summary": "Temporary pre-task-C demo client compatibility.",
-        "description": "Uses isolated demo_checkouts table, not admin orders. No production/state workflow. Checkout JSON requestKey/confirmed/items/recipient with embedded JPEG data URLs; repeat request replays token. See historical E1 QA. Retire only after client migration.",
+        "description": "Uses isolated demo_checkouts table, not admin orders. No production/state workflow. Checkout JSON requestKey/confirmed/items/recipient with embedded JPEG data URLs; repeat request replays token. See historical E1 QA. Retire only after client migration.\nDeprecated MVP operation, still implemented. Removal: F1 removes legacy routes; frontend already uses canonical orders/tracking.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1084,7 +1100,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/demo-tracking": {
@@ -1093,7 +1110,7 @@
         "deprecated": true,
         "x-implementation-status": "legacy",
         "summary": "Temporary pre-task-C demo client compatibility.",
-        "description": "Uses isolated demo_checkouts table, not admin orders. No production/state workflow. Checkout JSON requestKey/confirmed/items/recipient with embedded JPEG data URLs; repeat request replays token. See historical E1 QA. Retire only after client migration.",
+        "description": "Uses isolated demo_checkouts table, not admin orders. No production/state workflow. Checkout JSON requestKey/confirmed/items/recipient with embedded JPEG data URLs; repeat request replays token. See historical E1 QA. Retire only after client migration.\nDeprecated MVP operation, still implemented. Removal: F1 removes legacy routes; frontend already uses canonical orders/tracking.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1165,6 +1182,1260 @@
               }
             }
           }
+        },
+        "x-status": "implemented"
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F3",
+        "operationId": "registerUser",
+        "summary": "Register a user; never create an admin",
+        "description": "PLANNED F3: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registered; Set-Cookie harmea_session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSession"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/session": {
+      "post": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F3",
+        "operationId": "loginUser",
+        "summary": "Login with email/password; rotate session",
+        "description": "PLANNED F3: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated; Set-Cookie harmea_session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F3",
+        "operationId": "getUserSession",
+        "summary": "Read active session",
+        "description": "PLANNED F3: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User and expiry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F3",
+        "operationId": "logoutUser",
+        "summary": "Revoke session and clear cookie",
+        "description": "PLANNED F3: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Session revoked"
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/password/forgot": {
+      "post": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F5",
+        "operationId": "forgotPassword",
+        "summary": "Request reset without revealing account existence",
+        "description": "PLANNED F5: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 254
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Same response for existing and absent accounts"
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/password/reset": {
+      "post": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F5",
+        "operationId": "resetPassword",
+        "summary": "Reset using a one-time token; revoke all sessions",
+        "description": "PLANNED F5: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordReset"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Password reset; sessions revoked"
+          },
+          "400": {
+            "description": "Malformed input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/password": {
+      "put": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F3",
+        "operationId": "changePassword",
+        "summary": "Change password; revoke other sessions",
+        "description": "PLANNED F3: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Changed; current session retained"
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F3",
+        "operationId": "getProfile",
+        "summary": "Read own profile",
+        "description": "PLANNED F3: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Own profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F3",
+        "operationId": "updateProfile",
+        "summary": "Update own profile and default address",
+        "description": "PLANNED F3: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/orders": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F3",
+        "operationId": "listOwnOrders",
+        "summary": "List orders attached to the current user",
+        "description": "PLANNED F3: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Own orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOrderPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/orders/{id}": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F3",
+        "operationId": "getOwnOrder",
+        "summary": "Read own order; return 404 for other users",
+        "description": "PLANNED F3: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Own order allowlist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOrderDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found (also returned for another user’s order)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/products": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "listAdminProducts",
+        "summary": "List the single product, including inactive",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "maxItems": 1,
+                  "items": {
+                    "$ref": "#/components/schemas/AdminProduct"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/products/{id}": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "getAdminProduct",
+        "summary": "Read product for administration",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminProduct"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found (also returned for another user’s order)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "updateAdminProduct",
+        "summary": "Change product using expectedVersion; preserve old order snapshots",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminProductUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminProduct"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found (also returned for another user’s order)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "listAdminUsers",
+        "summary": "Search and paginate users",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 254
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "user",
+                "admin"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "disabled"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users/{id}": {
+      "patch": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "updateAdminUser",
+        "summary": "Change user role/status; preserve at least one active admin",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminUserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user; disabled user sessions revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found (also returned for another user’s order)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/stats": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "getAdminStats",
+        "summary": "Aggregate order statistics without claiming paid revenue",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminStats"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/orders.csv": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "exportAdminOrders",
+        "summary": "Export CSV UTF-8 BOM with formula protection; no music URLs/tokens",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrderStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Streamed CSV UTF-8 with BOM; formula-prefixed cells escaped",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/audit-log": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "listAuditLog",
+        "summary": "Read paginated administration audit log",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "targetType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -1175,6 +2446,12 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "harmea_admin"
+      },
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "harmea_session",
+        "description": "PLANNED F3: HttpOnly; SameSite=Lax; Path=/; Secure over HTTPS. SHA-256 token persisted in DB, never raw token. User 30 days, admin 8 hours."
       }
     },
     "schemas": {
@@ -2043,6 +3320,777 @@
           "shippingFeeVnd",
           "isTest",
           "createdAt"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "displayName",
+          "role",
+          "createdAt"
+        ]
+      },
+      "MeProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\+?[0-9]{8,15}$"
+          },
+          "defaultAddress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Recipient"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "displayName",
+          "role",
+          "createdAt",
+          "phone",
+          "defaultAddress"
+        ]
+      },
+      "AuthSession": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "user",
+          "expiresAt"
+        ]
+      },
+      "RegisterInput": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "writeOnly": true
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "displayName"
+        ],
+        "description": "PLANNED F3: normalize email by trim/lowercase. Unknown fields including role are ignored; registration always creates role=user. Only User allowlist is returned."
+      },
+      "LoginInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "ProfileUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\+?[0-9]{8,15}$"
+          },
+          "defaultAddress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Recipient"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [],
+        "minProperties": 1
+      },
+      "PasswordChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "writeOnly": true
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "PasswordReset": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 1,
+            "writeOnly": true
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ]
+      },
+      "MeOrderSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderNumber": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "designCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "subtotalVnd": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "shippingFeeVnd": {
+            "type": "null"
+          },
+          "currency": {
+            "type": "string",
+            "const": "VND"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "orderNumber",
+          "status",
+          "quantity",
+          "designCount",
+          "subtotalVnd",
+          "shippingFeeVnd",
+          "currency",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "MeOrderPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeOrderSummary"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ]
+      },
+      "MeOrderItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "design": {
+            "$ref": "#/components/schemas/Design"
+          }
+        },
+        "required": [
+          "id",
+          "position",
+          "quantity",
+          "design"
+        ]
+      },
+      "MeOrderDetail": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderNumber": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "designCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "subtotalVnd": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "shippingFeeVnd": {
+            "type": "null"
+          },
+          "currency": {
+            "type": "string",
+            "const": "VND"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/Recipient"
+          },
+          "productSnapshot": {
+            "$ref": "#/components/schemas/Product"
+          },
+          "unitPriceVnd": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "templateVersion": {
+            "type": "string"
+          },
+          "trackingCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicStatusEvent"
+            }
+          },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/components/schemas/MeOrderItem"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "orderNumber",
+          "status",
+          "quantity",
+          "designCount",
+          "subtotalVnd",
+          "shippingFeeVnd",
+          "currency",
+          "createdAt",
+          "updatedAt",
+          "recipient",
+          "productSnapshot",
+          "unitPriceVnd",
+          "templateVersion",
+          "trackingCode",
+          "history",
+          "items"
+        ],
+        "description": "PLANNED F3: owner-only allowlist, no internal notes, cancellationReason, actor, tokens/hashes or filesystem keys. Owner asset endpoint not specified yet; never expose admin-only asset URLs to a normal user."
+      },
+      "AdminProduct": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "unitPriceVnd": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 10000000
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "templateVersion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "unitPriceVnd",
+          "isActive",
+          "version",
+          "templateVersion"
+        ]
+      },
+      "AdminProductUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "unitPriceVnd": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 10000000
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "expectedVersion"
+        ],
+        "minProperties": 2
+      },
+      "AdminUser": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "disabled"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "displayName",
+          "role",
+          "createdAt",
+          "status"
+        ]
+      },
+      "AdminUserPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminUser"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ]
+      },
+      "AdminUserUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "disabled"
+            ]
+          }
+        },
+        "required": [],
+        "minProperties": 1
+      },
+      "AdminStats": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ordersByStatus": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "pending": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "confirmed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "producing": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "shipping": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "completed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "cancelled": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "pending",
+              "confirmed",
+              "producing",
+              "shipping",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "subtotalVnd": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "cardCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "newUserCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ordersByDay": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "orderCount": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "date",
+                "orderCount"
+              ]
+            }
+          }
+        },
+        "required": [
+          "ordersByStatus",
+          "subtotalVnd",
+          "cardCount",
+          "newUserCount",
+          "ordersByDay"
+        ],
+        "description": "PLANNED F6: subtotalVnd sums non-cancelled merchandise subtotals only, not verified paid revenue; dates use UTC boundaries."
+      },
+      "AuditEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actorUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "targetType": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "changes": {
+            "type": "object",
+            "description": "Allowlisted changes only; no credentials, session/tracking tokens or music URLs."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "actorUserId",
+          "action",
+          "targetType",
+          "targetId",
+          "changes",
+          "createdAt"
+        ]
+      },
+      "AuditPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditEntry"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
         ]
       }
     }

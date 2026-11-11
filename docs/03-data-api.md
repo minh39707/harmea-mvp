@@ -1,6 +1,6 @@
-# Dữ liệu và hợp đồng API — giỏ hàng
+# Dữ liệu và hợp đồng API — v0.3.0
 
-Nguồn chuẩn: `contracts/openapi.json` phiên bản 0.2.0 và `database/*.sql`. Quyết định 29/10/2026 giữ giỏ hàng thay phạm vi một thiết kế/không giỏ hàng ban đầu. Không thanh toán, không tài khoản khách, không cloud.
+Nguồn chuẩn: `contracts/openapi.json` phiên bản **0.3.0**. F0 ngày 11/11/2026 chỉ bổ sung đặc tả, không thay API hiện có. Mục 1–5 mô tả runtime MVP hiện tại (PostgreSQL/PGlite, admin env); mục 6 mô tả đích v2 chưa triển khai. Các giới hạn MVP lịch sử không giới hạn v2.
 
 ## 1. Mô hình dữ liệu
 
@@ -29,7 +29,7 @@ Migration 004 thêm order_items, nới quantity header đến 100 và backfill �
 | GET `/api/admin/orders/{id}` | Admin | Đã có snapshots/items/lịch sử |
 | PATCH `/api/admin/orders/{id}/status` | Admin | Đã có expectedVersion/state machine |
 | GET `/api/admin/orders/{id}/items/{itemId}/assets/{kind}` | Admin | Đã có photo/preview từng dòng |
-| POST `/api/demo-checkouts`, `/api/demo-tracking` | Legacy public | Tạm giữ cho frontend trước C; không thuộc luồng admin mới |
+| POST `/api/demo-checkouts`, `/api/demo-tracking` | Legacy public | Deprecated, gỡ ở F1; frontend hiện không dùng |
 
 Code UI checkout/tracking/admin đã nối API canonical ở C–D. API/client frontend đã kiểm tra bằng Express/PGlite/file thật; chưa nghiệm thu thao tác trình duyệt, IndexedDB/Canvas/clipboard hoặc PostgreSQL. Frontend không còn gọi route demo; route legacy vẫn giữ riêng, không tự promote đơn cũ. D có `npm run test:admin` và `npm run demo:seed`; xem báo cáo `docs/qa/2026-10-29-task-d.md`.
 
@@ -92,3 +92,28 @@ Error envelope `{ "error": { "code": "...", "message": "..." } }`. Thiếu phiê
 Dừng API trước khi migrate PGlite; không mở hai process cùng DATA_DIR. Migration 004 không tự áp vào database đang chạy; dữ liệu local hiện có chưa được thay đổi trong phiên phát triển A. Sau khi dừng API, chạy `npm.cmd run db:migrate`, `db:check`, rồi khởi động lại.
 
 DB và filesystem không cùng transaction. Nhánh lỗi dọn file vừa ghi; process chết giữa ghi file và commit có thể để tệp mồ côi, chưa có job quét. Chưa nghiệm thu PostgreSQL server, tải public lớn hoặc khôi phục power loss. Route demo legacy giữ hành vi cũ (ảnh nén trong JSON, replay token), client đã chuyển ở C; không dùng kết quả legacy để tuyên bố API canonical đã được nghiệm thu qua UI.
+
+## 6. Phần mở rộng v2 — planned
+
+Operation mới dùng x-status: planned và x-implementation-status: planned; description ghi rõ chưa triển khai. Operation hiện có là implemented; admin session cũ và demo routes có deprecated=true nhưng vẫn chạy tới F1/F3. contract:check chỉ validate OpenAPI, không kiểm tra code/endpoint hoặc biến planned thành implemented.
+
+| API | Quyền đích | Task |
+|---|---|---|
+| POST /api/auth/register; POST/GET/DELETE /api/auth/session | Public login/register; session khi cần | F3 |
+| GET/PATCH /api/me; PUT /api/me/password | User hoặc admin đăng nhập | F3 |
+| GET /api/me/orders; GET /api/me/orders/{id} | Chủ đơn, đơn khác trả 404 | F3 |
+| POST /api/auth/password/forgot; POST /api/auth/password/reset | Public, rate limit/token | F5 |
+| GET /api/admin/products; GET/PATCH /api/admin/products/{id} | Admin | F6 |
+| GET /api/admin/users; PATCH /api/admin/users/{id} | Admin | F6 |
+| GET /api/admin/stats; GET /api/admin/orders.csv | Admin | F6 |
+| GET /api/admin/audit-log | Admin | F6 |
+
+F0 thống nhất GET danh sách và GET chi tiết sản phẩm, bổ sung API đọc audit log cho UI F6. JSON dùng camelCase theo API hiện có (unitPriceVnd, isActive, expectedVersion); SQL dùng snake_case. Contract planned phải cập nhật cùng code/tests khi triển khai.
+
+F2 tạo schema MySQL mới tương đương orders/items/events/catalog, không demo_checkouts hoặc chuyển đơn cũ. Giữ transaction/checksum/snapshot/giới hạn multipart. F3 thêm users, sessions, orders.user_id nullable và actor_user_id trên **order_status_events** (tên bảng hiện có; không có order_status_history). F5 thêm password_resets/email_outbox; F6 thêm admin_audit_log và version sản phẩm.
+
+User chỉ gồm id/email/displayName/role/createdAt, không password/hash. MeProfile thêm phone/defaultAddress theo schema Recipient. MeOrderSummary có số thiết kế/thẻ, tiền hàng, trạng thái và thời gian; MeOrderDetail dùng allowlist chủ đơn, không note nội bộ/actor/lý do hủy/token hash/key hoặc path tệp. F0 chưa định nghĩa endpoint ảnh chủ đơn; UI không được dùng endpoint ảnh admin.
+
+Cookie đích harmea_session (HttpOnly, SameSite=Lax, Path=/, Secure khi HTTPS), user 30 ngày/admin 8 giờ. Scheme adminCookie đại diện runtime hiện tại; sessionCookie là planned. Guard của endpoint admin hiện có chỉ chuyển ở F3.
+
+Đăng ký không cấp quyền admin; email trim/lowercase. Forgot luôn 204; reset token hash một lần, hạn 30 phút, fragment /reset-password#token. FR-N1 dùng outbox cùng transaction, local log mặc định. F8/G1b chưa chọn nên không thêm endpoint thanh toán/S3.

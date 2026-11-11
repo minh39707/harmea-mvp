@@ -1,5 +1,8 @@
 # Harméa MVP — nghiệm thu và kịch bản demo
 
+> F0 — 11/11/2026: phần MVP bên dưới là lịch sử và mô tả bản code hiện tại, không phải giới hạn v2. Phạm vi hiện hành theo [roadmap v2](../tasks/00-ROADMAP-v2.md); ưu tiên khung chức năng, chỉnh giao diện sau. Các mục chưa kiểm tra vẫn chưa nghiệm thu.
+
+
 Mốc dự kiến: 28/10/2026. Tài liệu này là checklist thực hiện; mọi mục bên dưới khởi tạo ở trạng thái **chưa chạy**, không phải báo cáo đạt kiểm thử.
 
 Cập nhật 29/10/2026: API task A đã có integration tests riêng; xem docs/qa/2026-10-29-task-a.md. Checklist UI bên dưới vẫn chưa chạy. Phạm vi giữ giỏ: 1–10 thiết kế cùng mẫu, mỗi dòng 1–10 bản; kiểm tra thêm một đơn có hai thiết kế và ảnh/preview riêng từng dòng.
@@ -95,3 +98,24 @@ Phần mô phỏng / chưa làm:
 ```
 
 Giữ bằng chứng trong thư mục làm việc local, không đưa PII/token vào Git. Báo cáo kết quả đo được, không đánh dấu đạt dựa trên việc đã đọc code.
+
+## Nghiệm thu v2 — planned, mọi mục chưa chạy
+
+Checklist chi tiết theo [task H](../tasks/H-acceptance-v2.md). F0 không nghiệm thu chức năng v2; báo cáo H sẽ được liên kết ở đây khi thực sự chạy.
+
+- [ ] Khách: hai thiết kế, crop/ba màu, giỏ, checkout không tài khoản, tracking đúng và riêng tư.
+- [ ] User: đăng ký/login, đơn của tôi, hồ sơ/địa chỉ, đổi mật khẩu, logout/relogin.
+- [ ] Forgot/reset một lần, hết hạn bị từ chối, reset hủy phiên cũ.
+- [ ] Email xác nhận/đổi trạng thái qua outbox, rollback không sinh thư, log không lộ bí mật.
+- [ ] Admin: lọc/phân trang, tệp riêng tư, trạng thái/lý do hủy, hai tab xung đột version.
+- [ ] Giá mới không đổi snapshot; tắt sản phẩm chặn đơn mới.
+- [ ] Khóa user hủy phiên; hai request đồng thời không thể làm còn 0 admin active.
+- [ ] Stats đúng fixture, CSV tiếng Việt/BOM/chống công thức, audit rollback cùng thao tác.
+- [ ] User gọi admin trả 403, chưa login trả 401; user A không xem đơn/tệp B.
+- [ ] Cookie HTTPS HttpOnly/Secure/SameSite=Lax, không session trong web storage; uploads không public; log không bí mật.
+- [ ] Trang nội dung/404, back/forward, OG, responsive 375/768/1440 trên Chrome và browser khác; ghi điểm Lighthouse thực đo.
+- [ ] Docker down/up giữ DB/tệp; readiness/health, HTTPS/header, MySQL không public port; backup/restore diễn tập.
+- [ ] 20 lượt đặt đơn liên tiếp và kiểm tra kết nối DB.
+- [ ] Hồ sơ bàn giao có checklist server cho người vận hành; nghiệm thu local ghi tag/digest image. Agent không truy cập tài khoản cloud.
+
+F8 chỉ khi người dùng chọn, G1b chỉ khi người vận hành yêu cầu. Chính sách/giá/nội dung nháp cần duyệt trước production; kiểm thử local không chứng minh đã triển khai AWS.

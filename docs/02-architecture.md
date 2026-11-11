@@ -1,43 +1,36 @@
-# Kiến trúc MVP và các quyết định
+# Kiến trúc Harméa v2 — đích triển khai
 
-## 1. Mục tiêu và ranh giới
+F0 ngày 11/11/2026: đây là kiến trúc đích theo D1–D6, chưa phải stack đã triển khai. Code hiện tại vẫn là MVP PostgreSQL/PGlite + admin env; README giữ cách chạy tới F2/F3. F0 không cài dependency, đổi DB hoặc sửa code ứng dụng.
 
-Một người cần demo sớm nên dùng **một backend chia module**. Frontend React và backend Express nằm trong một npm workspace. Database PostgreSQL lưu dữ liệu có quan hệ; tệp ảnh ở kho riêng trên máy. Không có microservices, broker, queue hoặc cloud trong P0.
+## 1. Luồng production dự kiến (G1–G3)
 
 ```mermaid
 flowchart LR
-    G[Khách trên trình duyệt] --> W[React / Vite]
-    A[Quản trị viên] --> W
-    W -->|HTTP cùng origin qua proxy /api| API[Express API]
-    API --> C[Catalog]
-    API --> O[Orders / Tracking]
-    API --> AD[Admin / Session]
-    C --> DB[(PostgreSQL)]
-    O --> DB
-    AD --> DB
-    O --> F[Kho ảnh riêng storage/uploads]
-    AD --> F
+    B[Browser: React] -->|HTTPS| C[Caddy]
+    C --> A[Express: apps/web/dist và /api]
+    A --> D[(MySQL 8.4)]
+    A --> U[Volume uploads bền, riêng tư]
+    A --> O[Email outbox trong MySQL]
+    O --> W[Worker cùng tiến trình API]
+    W --> M[Mailer: local log hoặc SMTP]
 ```
 
-Task A đã triển khai API catalog/orders/tracking/admin với kiểm thử PGlite; B–D đã nối editor, checkout, tracking và admin vào API canonical. Nghiệm thu thao tác trình duyệt còn chờ; không tự chuyển đơn legacy thành orders.
+Một backend chia module, không microservices/broker. Gói bàn giao gồm image Docker, compose.prod.yaml và tài liệu; Caddy/app/MySQL là stack mẫu local. Caddy public 80/443, app/MySQL nội bộ; DB/uploads lưu volume. Người vận hành khác lo server/cloud/DNS/TLS/backup storage/giám sát; không thuộc roadmap. Gói Docker cần cho phép dùng proxy/DB bên ngoài. F8/G1b chưa chọn.
 
-## 2. Stack và lựa chọn vận hành
+## 2. Stack và lộ trình
 
-| Quyết định | Lý do / giới hạn |
-|---|---|
-| React + TypeScript + Vite | Form, preview và nhiều luồng màn hình chung một bộ công cụ; user đã chọn stack |
-| Express 5 + TypeScript | HTTP API gọn, dễ chia router/service/repository |
-| SQL PostgreSQL, thư viện pg | Schema rõ; không cần học/thêm ORM trước demo |
-| Docker Compose PostgreSQL 18 | User có thể chạy Docker; Compose chỉ dựng DB, ứng dụng Node chạy trên máy |
-| PGlite dự phòng | PostgreSQL nhúng lưu đĩa, không yêu cầu Docker; chỉ một process cho một thư mục DB |
-| File local riêng tư | Đủ demo một máy; không để dưới public hoặc dùng Vite assets cho ảnh khách |
-| Một admin cấu hình bằng env | Chưa có quản lý nhân viên; mật khẩu scrypt, phiên ngẫu nhiên lưu hash trong DB |
+| Thành phần | Đích v2 | Trạng thái tại F0 |
+|---|---|---|
+| Web | React/TypeScript/Vite, router History API ở F7 | Giữ UI/tokens hiện tại, chỉnh thiết kế sau |
+| API | Express/TypeScript, Node 24 | Giữ module hiện có |
+| DB | MySQL 8.4, mysql2, SQL tham số qua db.ts | F2 mới chuyển, không chuyển dữ liệu demo cũ |
+| Auth | users + sessions, role user/admin | F3 mới thay admin env |
+| Mail | nodemailer, outbox + retry | F5 planned |
+| Runtime | Docker Compose Caddy + app + MySQL | G1 planned, G3 hồ sơ bàn giao Docker |
 
-Docker và PGlite dùng chung SQL/adapter interface nhưng **không cùng dữ liệu**. PGlite chỉ là phương án chạy local, không mặc định tương đương PostgreSQL server về tải, đồng thời, extensions hoặc vận hành production. Adapter `postgres` cần kiểm tra thực khi Docker sẵn sàng.
+Không thêm ORM/framework/UI/router. F2 lưu nguyên migration cũ vào database/postgres-legacy và tạo bộ MySQL mới có checksum. Không sửa migration đã áp dụng. Tests nghiệp vụ từ F2 chạy MySQL thật, DB thử tách biệt; kết quả PGlite không chứng minh MySQL/Docker.
 
-Nguồn kỹ thuật đã đối chiếu: [Vite](https://vite.dev/guide/), [Express](https://expressjs.com/en/starter/installing/), [PGlite](https://pglite.dev/docs/), [PostgreSQL Docker image](https://hub.docker.com/_/postgres). Phiên bản dependency thực nằm trong package-lock.json; dùng npm ci để tái lập.
-
-## 3. Cấu trúc và trách nhiệm
+## 3. Cấu trúc hiện tại, sẽ mở rộng theo task
 
 ```text
 apps/
@@ -45,13 +38,13 @@ apps/
   api/src/
     app.ts             HTTP app, middleware và routes
     server.ts          bootstrap/listen
-    db.ts              adapter PGlite / pg + transaction
+    db.ts              adapter hiện tại; F2 chuyển mysql2 + transaction
     modules/           catalog, orders, tracking, admin — task A
 database/              SQL migrations + fake demo seed
 contracts/openapi.json API contract, chưa phải server sinh tự động
 scripts/               setup, migration, kiểm tra DB/contract
 docs/                  requirement, kiến trúc, kế hoạch, nghiệm thu
-tasks/                 bốn phiếu triển khai tuần tự
+tasks/                 roadmap v2, F0–H; A–E là lịch sử
 tests/                 smoke API với database thử riêng
 docs/qa/               báo cáo và bằng chứng kiểm tra
 storage/               dữ liệu local, ignored, không đưa vào ZIP
@@ -78,25 +71,23 @@ Filesystem và DB không có chung transaction: process chết giữa bước 4/
 
 Preview client gửi chỉ là proof trực quan; admin phải đối chiếu với ảnh/cấu hình trước in. Không xem preview là bằng chứng chống giả mạo hay file in chính xác màu/kích thước.
 
-## 5. Auth, tracking và trạng thái
 
-- Admin password trong `.env` là scrypt salt/hash; dùng timingSafeEqual khi so sánh. Setup sinh mật khẩu local trong `.local-admin.txt`; module login có ở A, UI quản trị D tại `/admin/login`. Hash sai/chưa cấu hình trả 503, không có mật khẩu mặc định.
-- Login tạo session random, lưu SHA-256; expiry 8 giờ. Cookie `harmea_admin`: HttpOnly, SameSite=Lax; Secure khi HTTPS. Logout xóa DB session và cookie. Không session trong localStorage.
-- Kiểm tra Origin với APP_ORIGIN cho request browser làm thay đổi dữ liệu; kết hợp session và rate limit cho admin. Không bật CORS `*` kèm credentials. Vite proxy giữ API cùng origin ở browser.
-- Tracking token trong fragment không đi vào HTTP request trang; frontend POST body tới lookup. Không ghi token/body trong access log; Referrer-Policy no-referrer. API công khai chỉ chọn các trường cho phép, không spread bản ghi DB.
-- Cập nhật trạng thái dùng expectedVersion + UPDATE có điều kiện; cùng transaction với event. Cập nhật thành công tăng version đúng một lần; xung đột 409, client tải lại.
-- `producing -> shipping` là admin ghi nhận đã kiểm tra thành phẩm/NFC; website không kiểm chứng phần cứng.
+## 5. Auth/Session v2 (F3)
 
-## 6. Những màn hình cần triển khai
+- users có email chuẩn hóa, password_hash scrypt, display_name, phone, default_address, role user/admin, status active/disabled. Có thể nhiều admin; đăng ký công khai chỉ tạo user.
+- sessions lưu SHA-256 token ngẫu nhiên 32 byte, không raw token. Cookie harmea_session: HttpOnly, SameSite=Lax, Path=/, Secure khi HTTPS; user 30 ngày/admin 8 giờ. Không session trong localStorage/sessionStorage.
+- loadSession kiểm tra hạn và user active; requireAuth trả 401, requireRole('admin') trả 403 cho user thường. Mọi admin API/tệp có guard; đơn user khác trả 404. Khách vẫn tạo đơn với user_id NULL.
+- Login xoay token, logout thu hồi; đổi mật khẩu hủy phiên khác, reset hủy mọi phiên. Rate limit và Origin guard tiếp tục áp dụng. Không log mật khẩu/cookie/token/body/URL nhạc.
+- admin_sessions và harmea_admin là cơ chế MVP hiện còn hoạt động, deprecated và chỉ gỡ ở F3.
 
-| Route dự kiến | Mục đích |
-|---|---|
-| `/` | Giới thiệu ngắn, sản phẩm và CTA tạo thẻ |
-| `/customize` | Form + preview một mẫu |
-| `/checkout` | Người nhận, số lượng, xác nhận thiết kế và gửi |
-| `/order-success` | Kết quả vừa tạo và link theo dõi; không hứa phục hồi token khi reload |
-| `/track#token` | Tiến độ công khai, nút làm mới |
-| `/admin/login` | Đăng nhập quản trị |
-| `/admin/orders`, `/admin/orders/:id` | Danh sách, chi tiết, ảnh, cập nhật trạng thái |
+## 6. Mailer (F5) và Storage
 
-Đây là ranh giới chức năng, chưa phải thiết kế giao diện hoặc yêu cầu phải tạo tám page components độc lập. Có thể gộp customize/checkout thành hai bước trong một trang để kịp demo.
+Outbox ghi cùng transaction với đơn/trạng thái; worker trong API gửi nền, retry tối đa 5 lần có backoff. Driver log ghi .eml riêng tại storage/outbox, không in nội dung. SMTP chỉ dùng khi cấu hình gửi thật. Reset dùng /reset-password#token, hash một lần, hạn 30 phút. Tracking token thô chỉ đưa vào email xác nhận ban đầu; outbox/tệp thư chứa bí mật phải giữ riêng tư, không log/commit.
+
+Uploads ngoài public, key do server tạo, stream qua API sau xác thực. DB/filesystem không có transaction chung; dọn tệp khi request lỗi, còn giới hạn orphan khi crash. S3 chỉ khi người vận hành yêu cầu G1b: bucket private, IAM role, server stream sau xác thực.
+
+## 7. Giao diện và nghiệm thu
+
+F4: /login, /register, /account, /account/orders, /account/orders/:id. F5 thêm /forgot-password và /reset-password. F7 chuyển editor về /design, thêm landing/nội dung/404. Admin giữ /admin/login, /admin/orders. Đây là route đích, chưa cam kết route đã tồn tại.
+
+Ưu tiên khung chức năng theo roadmap, tái sử dụng UI hiện tại. G1 hoàn thiện Docker sau F7, G2 CI/registry, G3 hồ sơ bàn giao và script backup/restore ở mức ứng dụng. H nghiệm thu đúng image Docker local để bàn giao; người vận hành tự thử trên server. Agent không viết runbook/script hạ tầng AWS. Chưa chạy không ghi PASS.

@@ -1,5 +1,8 @@
 # Kế hoạch một người — demo Harméa ngày 28/10/2026
 
+> F0 — 11/11/2026: phần MVP bên dưới là lịch sử và mô tả bản code hiện tại, không phải giới hạn v2. Phạm vi hiện hành theo [roadmap v2](../tasks/00-ROADMAP-v2.md); ưu tiên khung chức năng, chỉnh giao diện sau. Các mục chưa kiểm tra vẫn chưa nghiệm thu.
+
+
 Mục tiêu của kế hoạch là hoàn thành một luồng có dữ liệu thật: khách tạo thiết kế → gửi đơn → quản trị viên xử lý → khách thấy trạng thái mới. Khung dự án và các hợp đồng trong bộ tài liệu là điểm bắt đầu; danh sách dưới đây **không phải các chức năng đã triển khai**. Xem trạng thái thực tế ở `README.md`.
 
 Ước lượng **8–10 giờ tập trung**, phụ thuộc tốc độ tích hợp và lỗi phát sinh; không phải cam kết hoàn thành. Chưa có giờ demo cụ thể. Nếu thời gian còn ít hơn, giảm trang trí và thao tác phụ, giữ các điều kiện nghiệm thu cốt lõi.
