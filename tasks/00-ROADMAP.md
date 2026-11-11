@@ -47,7 +47,7 @@ F2 ✔ Chuyển sang MySQL (xong, chưa commit)
      ├─ R3 Admin mở rộng: sản phẩm/giá, thống kê, xuất CSV
      └─ R4 Router, trang nội dung, SEO
          └─ R5 (tùy chọn) Thanh toán chuyển khoản VietQR
-G1 ✔ Đóng gói Docker runtime (Docker Engine chưa chạy; mục build/runtime chờ nghiệm thu)
+G1 ✔ Đóng gói Docker runtime (CI Linux và Docker local đã qua; xem kết quả H)
  ├─ G1b (tùy chọn) Lưu upload trên S3
  └─ G2 CI + smoke /health + đẩy image lên Docker Hub
      └─ G3 DEPLOY.md + script sinh .env production + backup/restore
@@ -62,11 +62,11 @@ H  Nghiệm thu toàn bộ
 | 03 | R3 | [03-R3-admin-products-stats.md](03-R3-admin-products-stats.md) | 3–4 giờ | R1 | Đã triển khai; integration MySQL qua, còn browser QA ([báo cáo](../docs/qa/2026-11-11-task-R3.md)) |
 | 04 | R4 | [04-R4-content-seo.md](04-R4-content-seo.md) | 3–4 giờ | R1 | Đã triển khai; browser QA còn chờ ([báo cáo](../docs/qa/2026-11-11-task-R4.md)) |
 | 05 | R5 (tùy chọn) | [05-R5-payment-vietqr-optional.md](05-R5-payment-vietqr-optional.md) | 3 giờ | R4 | Chờ người dùng quyết định |
-| 06 | G1 | [06-G1-docker.md](06-G1-docker.md) | 3–4 giờ | R1 | Đã triển khai; chưa nghiệm thu Docker build/runtime do Engine chưa chạy ([báo cáo](../docs/qa/2026-11-11-task-G1.md)) |
-| 07 | G1b (tùy chọn) | [07-G1b-s3-storage-optional.md](07-G1b-s3-storage-optional.md) | 2–3 giờ | G1 | Người dùng đã chọn; đã triển khai driver, còn nghiệm thu MinIO/Docker ([báo cáo](../docs/qa/2026-11-11-task-G1b.md)) |
-| 08 | G2 | [08-G2-ci-dockerhub.md](08-G2-ci-dockerhub.md) | 1,5–2 giờ | G1 | Đã viết workflow/smoke; chưa chạy GitHub/Docker ([báo cáo](../docs/qa/2026-11-11-task-G2.md)) |
-| 09 | G3 | [09-G3-deploy-handoff.md](09-G3-deploy-handoff.md) | 1,5–2 giờ | G2 | Đã viết bàn giao/env/backup-restore; chờ diễn tập Docker ([báo cáo](../docs/qa/2026-11-11-task-G3.md)) |
-| 10 | H | [10-H-acceptance.md](10-H-acceptance.md) | 3–4 giờ | tất cả | Chưa làm |
+| 06 | G1 | [06-G1-docker.md](06-G1-docker.md) | 3–4 giờ | R1 | CI Linux và Docker local đã qua; xem [H](../docs/qa/2026-11-11-acceptance.md) |
+| 07 | G1b (tùy chọn) | [07-G1b-s3-storage-optional.md](07-G1b-s3-storage-optional.md) | 2–3 giờ | G1 | MinIO/S3 đã qua CI và local; AWS thật chưa kiểm tra ([H](../docs/qa/2026-11-11-acceptance.md)) |
+| 08 | G2 | [08-G2-ci-dockerhub.md](08-G2-ci-dockerhub.md) | 1,5–2 giờ | G1 | CI/release xanh; image v1 đã phát hành. H phát hiện lỗi cần sửa trước bàn giao ([H](../docs/qa/2026-11-11-acceptance.md)) |
+| 09 | G3 | [09-G3-deploy-handoff.md](09-G3-deploy-handoff.md) | 1,5–2 giờ | G2 | Backup/restore qua CI Linux; persistence Docker local qua; chưa chạy server ([H](../docs/qa/2026-11-11-acceptance.md)) |
+| 10 | H | [10-H-acceptance.md](10-H-acceptance.md) | 3–4 giờ | tất cả | H-fix đã sửa findings, browser local PASS; chờ thủ công/review/release và nghiệm thu digest v1.1.0 ([H-fix](../docs/qa/2026-11-11-task-H-fix.md)) |
 
 Thời lượng chỉ là ước lượng.
 

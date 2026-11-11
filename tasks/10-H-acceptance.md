@@ -1,6 +1,6 @@
 # H — Nghiệm thu toàn bộ
 
-**Trạng thái:** chưa làm. **Ước lượng:** 3–4 giờ. **Phụ thuộc:** R1–R4, G1–G3 (R5 và G1b nếu đã làm).
+**Trạng thái:** `v1` đã nghiệm thu và có findings. [H-fix](H-fix.md) đã sửa CSP/H-02/H-03/H-04, browser candidate local PASS. **Chờ ảnh điện thoại thật/Excel, review/commit, phát hành và nghiệm thu digest `v1.1.0` trước bàn giao.** Xem [H gốc](../docs/qa/2026-11-11-acceptance.md) và [H-fix](../docs/qa/2026-11-11-task-H-fix.md). **Phụ thuộc:** R1–R4, G1–G3 (R5 và G1b nếu đã làm).
 
 ## Mục tiêu
 

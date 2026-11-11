@@ -1,5 +1,15 @@
 # Changelog
 
+## [v1.1.0]
+
+Có migration: không.
+
+- Bảo mật: thêm Content-Security-Policy ở production (script/connect chỉ cùng origin, chặn object và nhúng iframe, cho phép ảnh data/blob của editor); có smoke regression.
+- Editor: dropdown chọn thẻ đã lưu khôi phục đúng nội dung, ảnh và crop; “Thẻ mới” xóa bản nháp cũ.
+- Giỏ hàng: chọn từng thẻ để đặt (ví dụ 3/4), thẻ chưa chọn giữ lại trong giỏ; không chọn thẻ nào thì không gửi được đơn.
+- Mobile 375 px: sửa tràn chiều ngang ở trang chủ, giỏ hàng và URL nhạc dài.
+- Checkout vẫn là đặt đơn demo trực tiếp, không thu tiền. Không đổi API, contract hay schema; `v1` giữ nguyên.
+
 ## [v1]
 
 Có migration: có (bản phát hành đầu tiên; DB mới cần chạy các migration 001–006 bằng lệnh migrate của ứng dụng).

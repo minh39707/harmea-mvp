@@ -1,0 +1,147 @@
+{
+  "base": "http://127.0.0.1:3187",
+  "image": "harmea-web:h-csp",
+  "imageId": "sha256:b2c1ef341e3a3d61c6dd8cb4af43057c2b0ab94afdc56528021cfa446fa9fffa",
+  "checks": [
+    "chrome: four distinct cards, same synthetic EXIF6 image with two crops, three colors",
+    "chrome: reload preserves four crops, editing card two leaves others intact, second tab updates",
+    "chrome: UI checkout four cards, success receipt and real clipboard copy",
+    "chrome: checkout to tracking UI with +84 phone",
+    "chrome: content, policy routes, 404, browser back/forward",
+    "msedge: four distinct cards, same synthetic EXIF6 image with two crops, three colors",
+    "msedge: reload preserves four crops, editing card two leaves others intact, second tab updates",
+    "msedge: UI checkout four cards, success receipt and real clipboard copy",
+    "msedge: checkout to tracking UI with +84 phone",
+    "msedge: content, policy routes, 404, browser back/forward"
+  ],
+  "failures": [
+    "chrome: selecting saved card in editor dropdown does not restore its fields/photo",
+    "chrome: released v1 has no cart selection, cannot checkout 3/4 while retaining fourth card",
+    "msedge: selecting saved card in editor dropdown does not restore its fields/photo",
+    "msedge: released v1 has no cart selection, cannot checkout 3/4 while retaining fourth card"
+  ],
+  "browsers": [
+    {
+      "channel": "chrome",
+      "version": "157.0.8103.40",
+      "headless": true
+    },
+    {
+      "channel": "msedge",
+      "version": "157.0.4341.46",
+      "headless": true
+    }
+  ],
+  "layouts": [
+    {
+      "channel": "chrome",
+      "label": "home",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "channel": "chrome",
+      "label": "home",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "channel": "chrome",
+      "label": "home",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "channel": "chrome",
+      "label": "design",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "channel": "chrome",
+      "label": "design",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "channel": "chrome",
+      "label": "design",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "channel": "chrome",
+      "label": "cart",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "channel": "chrome",
+      "label": "cart",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "channel": "chrome",
+      "label": "cart",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "channel": "msedge",
+      "label": "home",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "channel": "msedge",
+      "label": "home",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "channel": "msedge",
+      "label": "home",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "channel": "msedge",
+      "label": "design",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "channel": "msedge",
+      "label": "design",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "channel": "msedge",
+      "label": "design",
+      "width": 1440,
+      "scrollWidth": 1440
+    },
+    {
+      "channel": "msedge",
+      "label": "cart",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "channel": "msedge",
+      "label": "cart",
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "channel": "msedge",
+      "label": "cart",
+      "width": 1440,
+      "scrollWidth": 1440
+    }
+  ],
+  "externalRequests": [],
+  "checkedAt": "2026-11-11T13:17:14.627Z"
+}

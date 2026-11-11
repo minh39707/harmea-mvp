@@ -1,8 +1,10 @@
 # Bàn giao ứng dụng Harméa
 
-**Chưa chạy trên server người vận hành. Docker/MinIO và GitHub Actions còn chờ nghiệm thu.** Chưa có tag image/digest được xác nhận ở H. Người phụ trách gửi riêng image version/digest, Compose, tài liệu/scripts và `.env` thật qua kênh an toàn; loại `.env`, storage, backup, node_modules và cache khỏi Git/ZIP.
+**Chưa chạy trên server người vận hành.** CI/release `v1`, Docker local và MinIO đã chạy. Findings của H đã sửa; **candidate H-fix local PASS, chưa phát hành `v1.1.0`**. Chờ ảnh điện thoại thật/Excel, review/commit và nghiệm thu đúng digest release mới trước bàn giao. Xem [H gốc](docs/qa/2026-11-11-acceptance.md) và [H-fix](docs/qa/2026-11-11-task-H-fix.md). Người phụ trách gửi riêng image version/digest, Compose, tài liệu/scripts và `.env` thật qua kênh an toàn; loại `.env`, storage, backup, node_modules và cache khỏi Git/ZIP.
 
 **1. Image.** `<dockerhub-user>/harmea-web:vN` hoặc `:vN.M.K`, platform `linux/amd64`; triển khai bằng version cụ thể. Ghi digest thật sau H, không dùng riêng `latest`. Release cần `DOCKERHUB_USERNAME` (secret hoặc repo variable), `DOCKERHUB_TOKEN` (secret Read & Write) và section version có dòng migration trong CHANGELOG. Workflow smoke image trước push, không tự deploy.
+
+Image đã kiểm tra: `hainam164/harmea-web:v1`, commit `7fde77f`, digest `sha256:eb683458f154e5209bf2a6a7100de8bbd7481fe5391079f24549a0b49c5fd035`. Đây là bản có các lỗi H nêu trên, chưa phải xác nhận sẵn sàng mở bán. Giữ nguyên tag/digest này; sau review sửa lỗi, phát hành version mới và chạy lại H trên đúng digest mới.
 
 **2. Kết nối.** Service/container `app`, cổng nội bộ `3000`, proxy của người vận hành gọi `app:3000` qua network external `web` đã được chuẩn bị. Compose chính không publish app/DB; DB chỉ nối `backend` internal. Proxy, DNS và hạ tầng do người vận hành quản lý; tài liệu không chứa Caddyfile hay runbook AWS.
 
@@ -50,7 +52,7 @@ Nếu DB cũ hoãn migration 005, giữ app dừng, chạy `docker compose run -
 
 **6. Cập nhật/rollback.** Backup → dừng app → đổi `APP_IMAGE` trong env → pull → nếu CHANGELOG có migration thì migrate khi app dừng → up `--no-build --wait app` → kiểm tra `/ready`. Chỉ quay tag cũ khi schema/data tương thích; migration không tự rollback. Nếu cần quay schema, chọn image/env của snapshot rồi restore; restore thay thế toàn bộ DB và dữ liệu local.
 
-**7. Dữ liệu.** Giữ volumes `mysql_data` và `uploads` (`/app/storage`, gồm ảnh JPEG/PNG). R2 đo ảnh đơn lẻ 18.151–435.603 byte, chưa gồm preview; **chưa có số trung bình mỗi đơn**. Một đơn có 1–10 thiết kế, mỗi thiết kế một cặp ảnh; cần H đo dung lượng đơn thực. Xem [R2](docs/qa/2026-11-11-task-R2.md).
+**7. Dữ liệu.** Giữ volumes `mysql_data` và `uploads` (`/app/storage`, gồm ảnh JPEG/PNG). H local đo 23 đơn giả/29 thiết kế, 58 ảnh, tổng 6.910.774 byte (khoảng 300.468 byte/đơn); fixture gồm ảnh màu tổng hợp và preview. Đây không phải trung bình ảnh khách thật, không dùng để dự báo dung lượng production. Một đơn có 1–10 thiết kế, mỗi thiết kế một cặp ảnh. Xem [R2](docs/qa/2026-11-11-task-R2.md) và [H](docs/qa/2026-11-11-acceptance.md).
 
 **8. Backup/restore.** Cần Linux, Bash/coreutils, Docker/Compose; Node và tar chạy trong image app, không cần Node/MySQL CLI trên host. Chọn nơi lưu riêng ngoài repo:
 
@@ -63,10 +65,10 @@ Backup dừng app trong lúc dump DB và tar local, rồi trả về trạng th�
 
 **9. Domain.** Giữ APP_URL đúng origin public; Origin browser không khớp bị 403 và robots/sitemap sẽ sai domain nếu cấu hình sai. App không có cookie phiên.
 
-**10. Tài nguyên.** CPU/RAM và image size thực tế: **chưa đo**, chờ H/CI có Engine. Đo bằng `docker stats --no-stream` khi diễn tập H; không coi buffer pool 1G là số RAM đã nghiệm thu.
+**10. Tài nguyên.** Image `v1` inspect: 413.396.711 byte. Ba mẫu `docker stats --no-stream` trước/sau 10/sau 20 đơn trên Docker Desktop WSL2 (32 CPU, RAM Docker 15,51 GiB, MySQL buffer pool 128M): app 39,94–67,82 MiB, CPU 0,01–0,03%; MySQL 451–451,6 MiB, CPU 0,42–4,58%. Đây là mẫu tức thời giữa các lượt, không phải đỉnh CPU/RAM hay tải đồng thời, không đại diện EC2. 20 request tạo đơn tuần tự đều 201, 85–122 ms; pool còn 1 kết nối sleep trước và sau (observer thêm 1 query). Chưa chứng minh không rò bộ nhớ khi chạy lâu. Bằng chứng JSON trong báo cáo H.
 
 **11. Sau khi chạy.** Kiểm tra public `/health` 200 và `/ready` 200; admin tắt trả 404 hoặc được proxy bảo vệ khi bật; DB không có port public; `.env` riêng quyền 600 và secret đã sinh ngẫu nhiên. Diễn tập backup → xóa dữ liệu stack thử riêng → restore → đơn/ảnh còn nguyên trước bàn giao.
 
 **12. S3 tùy chọn.** Người vận hành cung cấp bucket private/Block Public Access/SSE-S3, IAM role dùng được từ container (app chạy trong Docker nên instance cần IMDSv2 hop limit ít nhất 2; nếu là 1 thì app không lấy được credentials và `/ready` trả 503), quyền đọc/ghi/xóa `uploads/` và ListBucket cho việc phân biệt 404. Đây là điều kiện dịch vụ ứng dụng cần, không phải hướng dẫn tạo AWS. `/ready` phát sinh PUT/DELETE mỗi lần probe; chi phí chưa đo. Để chuyển ảnh: dừng app, cấu hình bucket/region trong env nhưng giữ driver local; chạy `docker compose run --rm --no-deps app node scripts/migrate-uploads-to-s3.mjs --dry-run` rồi lệnh thật, đối chiếu checksum, sau đó mới đổi `STORAGE_DRIVER=s3` và bật app. Giữ bản local cho tới khi xác nhận xong; script không xóa nguồn.
 
-Các lệnh Docker/backup/restore trong tài liệu **chưa chạy trên stack local hoặc server** do Engine chưa hoạt động. CI G3 đã thêm diễn tập trên project tạm, nhưng workflow cũng chưa chạy trên GitHub. Kết quả kiểm tra code và các phần đã chạy nằm trong [báo cáo G3](docs/qa/2026-11-11-task-G3.md).
+Release [43024206582](https://github.com/minh39707/harmea-mvp/actions/runs/43024206582) đã qua toàn bộ test, MinIO, Docker smoke và backup → xóa volumes project tạm → restore → đối chiếu đơn/hash ảnh trên đúng image trước push. Local H đã pull đúng digest, migrate 001–006, kiểm tra health/admin gate, SIGTERM và down/up giữ dữ liệu. Backup/restore Bash đã nghiệm thu qua CI Linux; chưa chạy lại Bash backup trên Windows/Ubuntu local (WSL chưa bật Docker integration). **Chưa có lệnh nào chạy trên server người vận hành.** Báo cáo G1–G3 giữ kết quả lịch sử; [H](docs/qa/2026-11-11-acceptance.md) ghi kết quả mới.
