@@ -53,6 +53,7 @@ export type AdminEvent = {
   occurredAt: string;
 };
 export type AdminDetail = AdminSummary & {
+  customerPaymentReportedAt: string | null;
   productSnapshot: Product;
   recipient: { name: string; phone: string; address: string };
   note: string;

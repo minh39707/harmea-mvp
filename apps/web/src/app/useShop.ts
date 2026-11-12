@@ -206,6 +206,7 @@ export function useShop() {
     setBusy,
     setError,
     setReceipt,
+    setTrackPhone,
     setCart,
     setRecipient,
     setConfirmed,

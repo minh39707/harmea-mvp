@@ -189,26 +189,26 @@
 }
 
 .custom-checkbox-box.checked {
-  background: #1b4332;
-  border-color: #1b4332;
+  background: var(--brand);
+  border-color: var(--brand);
 }
 
 .custom-checkbox-box.partial {
-  background: rgba(27, 67, 50, 0.08);
-  border-color: #1b4332;
+  background: rgba(var(--brand-rgb), 0.08);
+  border-color: var(--brand);
 }
 
 .partial-bar {
   width: 9px;
   height: 2.5px;
-  background: #1b4332;
+  background: var(--brand);
   border-radius: 2px;
 }
 
 .selection-stats-pill {
   font-size: 12.5px;
-  color: #1b4332;
-  background: rgba(27, 67, 50, 0.08);
+  color: var(--brand);
+  background: rgba(var(--brand-rgb), 0.08);
   padding: 4px 12px;
   border-radius: 999px;
   font-weight: 600;
@@ -234,8 +234,8 @@
 
 .btn-select-chip:hover:not(:disabled) {
   background: #ffffff;
-  border-color: #1b4332;
-  color: #1b4332;
+  border-color: var(--brand);
+  color: var(--brand);
 }
 
 .btn-select-chip:disabled {
@@ -265,8 +265,8 @@
 }
 
 .cart-item-card.is-selected {
-  border-color: #1b4332;
-  box-shadow: 0 4px 18px rgba(27, 67, 50, 0.1);
+  border-color: var(--brand);
+  box-shadow: 0 4px 18px rgba(var(--brand-rgb), 0.1);
   background: #ffffff;
 }
 
@@ -311,7 +311,7 @@
 }
 
 .cart-item-card.is-selected .item-select-label-text {
-  color: #1b4332;
+  color: var(--brand);
 }
 
 .item-meta-tags {
@@ -634,8 +634,8 @@
 }
 
 .free-badge {
-  color: #2e7d32;
-  background: #e8f5e9;
+  color: var(--brand);
+  background: var(--brand-soft);
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 4px;
@@ -668,7 +668,7 @@
 
 .btn-checkout-primary {
   width: 100%;
-  background: #1b4332;
+  background: var(--brand);
   color: #ffffff;
   border: none;
   padding: 15px 20px;
@@ -681,11 +681,11 @@
   justify-content: center;
   gap: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.2);
+  box-shadow: 0 4px 14px rgba(var(--brand-rgb), 0.2);
 }
 
 .btn-checkout-primary:hover:not(:disabled) {
-  background: #143326;
+  background: var(--brand-hover);
   transform: translateY(-1px);
 }
 

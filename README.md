@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/minh39707/harmea-mvp/actions/workflows/ci.yml/badge.svg)](https://github.com/minh39707/harmea-mvp/actions/workflows/ci.yml)
 
-Website demo đặt một sản phẩm NFC Music Card. Phạm vi hiện tại là MySQL 8.4, giỏ hàng, checkout khách không tài khoản và tra cứu đơn bằng mã đơn + số điện thoại. Không có đăng nhập khách/admin, thanh toán, email hoặc tự động giao hàng. Xem [roadmap](tasks/00-ROADMAP.md) và [yêu cầu](docs/01-requirements.md).
+Website đặt một sản phẩm NFC Music Card. Phạm vi hiện tại là MySQL 8.4, giỏ hàng, checkout khách không tài khoản và tra cứu đơn bằng mã đơn + số điện thoại. Sau khi lưu đơn, khách thấy QR chuyển khoản tĩnh và có thể báo “Tôi đã chuyển khoản”; cửa hàng xem xác nhận trong chi tiết đơn admin và tự đối chiếu giao dịch. Không có đăng nhập khách/admin, tự động đối soát, email hoặc tự động giao hàng. Xem [roadmap](tasks/00-ROADMAP.md) và [yêu cầu](docs/01-requirements.md).
+
+Thay đổi local sau v1.1.0: theme navy, giá sản phẩm 89.000đ qua migration `007_product_price_89000.sql`, nhạc nền MP3 tự host khi bấm badge “Chạm là phát nhạc”. Nhạc không tự phát sau reload, dừng ở `/track` và `/admin`; bật/tắt lưu on/off trong localStorage. Chưa phát hành các thay đổi này lên Docker Hub.
 
 ## Trạng thái roadmap
 
@@ -18,7 +20,7 @@ Website demo đặt một sản phẩm NFC Music Card. Phạm vi hiện tại l�
 | G3 — bàn giao | Backup/xóa volumes/restore đã qua trong CI release; persistence local qua. Chưa triển khai server; xem [H](docs/qa/2026-11-11-acceptance.md) |
 | G1b — storage local/S3 | MinIO/S3 đã qua trên CI và Docker local; chưa kiểm tra AWS thật |
 | H — nghiệm thu cuối | Browser trên đúng digest `v1.1.0` PASS (12 checks, 18 layout); người dùng chưa thử ảnh điện thoại thật/Excel, chưa nghiệm thu server ([báo cáo release](docs/qa/2026-11-11-release-v1.1.0.md)) |
-| R5 thanh toán | Tùy chọn, tạm bỏ qua theo yêu cầu người dùng |
+| R5 thanh toán | 12/11: bản rút gọn theo yêu cầu mới — QR tĩnh từ Downloads, khách tự báo chuyển khoản, lưu MySQL và hiển thị admin. Không tự đánh dấu đã nhận tiền. Xem [báo cáo](docs/qa/2026-11-12-qr-local.md) |
 
 Task F3/F4 cũ đã hủy; báo cáo của chúng được giữ làm lịch sử. UI storefront hiện có tiếp tục được dùng và có thể chỉnh sau.
 

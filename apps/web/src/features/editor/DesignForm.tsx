@@ -86,18 +86,18 @@ export default function DesignForm({
   return (
     <form id="personalize" className="product-form-card" onSubmit={add} aria-busy={editorBusy}>
       <fieldset className="form-fieldset" disabled={editorBusy}>
-        {/* 1. THẺ THIẾT KẾ & GIÁ THẺ (50.000 ₫) */}
+        {/* 1. THẺ THIẾT KẾ & GIÁ THẺ */}
         <div className="field-section">
           <div className="section-label-row card-title-price-row">
             <div className="label-with-icon">
-              <IconCard size={17} color="#1b4332" />
+              <IconCard size={17} color="var(--brand)" />
               <label htmlFor="card-select" className="section-title">
                 Thẻ thiết kế
               </label>
             </div>
             <div className="card-price-badge" title="Giá trải nghiệm demo">
               <span className="price-value">
-                {product ? money(product.unitPriceVnd) : '50.000 ₫'}
+                {product ? money(product.unitPriceVnd) : '89.000 ₫'}
               </span>
               <span className="price-unit">/ thẻ</span>
             </div>
@@ -121,7 +121,7 @@ export default function DesignForm({
             </span>
           </div>
           <div className="card-two-sides-note">
-            <IconCard size={13} color="#1b4332" />
+            <IconCard size={13} color="var(--brand)" />
             <span>Hai mặt thẻ được in đồng bộ cùng một thiết kế</span>
           </div>
           {editingMissing && (
@@ -134,7 +134,7 @@ export default function DesignForm({
         {/* 2. MÀU THIẾT KẾ (3 MẪU TRÒN KEM, XANH, HỒNG VỚI VÒNG XANH VÀ DẤU TÍCH CHO MÀU ĐANG CHỌN) */}
         <div className="field-section">
           <div className="section-label-row">
-            <IconPalette size={17} color="#1b4332" />
+            <IconPalette size={17} color="var(--brand)" />
             <span className="section-title">Màu thiết kế</span>
           </div>
           <div className="swatch-group" role="radiogroup" aria-label="Chọn màu thẻ">
@@ -158,7 +158,7 @@ export default function DesignForm({
                 >
                   {isSelected && (
                     <span className="swatch-checkmark" aria-hidden="true">
-                      <IconCheck size={16} strokeWidth={2.5} color="#1b4332" />
+                      <IconCheck size={16} strokeWidth={2.5} color="var(--brand)" />
                     </span>
                   )}
                 </button>
@@ -171,7 +171,7 @@ export default function DesignForm({
         <div className="two-col-inputs">
           <div className="input-group">
             <div className="section-label-row">
-              <IconUser size={17} color="#1b4332" />
+              <IconUser size={17} color="var(--brand)" />
               <label htmlFor="card-full-name" className="section-title">
                 Tên trên thẻ *
               </label>
@@ -189,7 +189,7 @@ export default function DesignForm({
 
           <div className="input-group">
             <div className="section-label-row">
-              <IconLink size={17} color="#1b4332" />
+              <IconLink size={17} color="var(--brand)" />
               <label htmlFor="card-music-url" className="section-title">
                 Link bài hát / playlist *
               </label>
@@ -223,7 +223,7 @@ export default function DesignForm({
           </p>
         )}
 
-        {/* 6. HÀNG HÀNH ĐỘNG: SỐ LƯỢNG [- 1 +] & NÚT LƯU VÀO GIỎ (#1b4332) */}
+        {/* 6. HÀNG HÀNH ĐỘNG: SỐ LƯỢNG [- 1 +] & NÚT LƯU VÀO GIỎ (var(--brand)) */}
         <div className="action-bar-row">
           <Quantity value={quantity} onChange={setQuantity} />
           {editing && !editingMissing ? (

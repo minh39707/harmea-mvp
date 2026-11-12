@@ -11,7 +11,7 @@ const notFound = () =>
 
 export function orderTrackingRouter(db: Database, limiter = new TrackingLookupLimiter()) {
   const router = express.Router();
-  router.post('/tracking/lookup', async (req, res) => {
+  router.post(['/tracking/lookup', '/tracking/payment-confirm'], async (req, res) => {
     const body =
       req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
     const orderNumber =
@@ -62,6 +62,30 @@ export function orderTrackingRouter(db: Database, limiter = new TrackingLookupLi
       throw notFound();
     }
 
+    if (req.path === '/tracking/payment-confirm') {
+      const report = await db.transaction(async tx => {
+        const order = (await tx.query('SELECT status FROM orders WHERE id=? FOR UPDATE', [row!.id]))
+          .rows[0];
+        if (order?.status === 'cancelled')
+          throw new InputError(
+            'Đơn đã hủy không thể xác nhận chuyển khoản.',
+            'ORDER_CANCELLED',
+            409
+          );
+        // The report row is the immutable audit event. Retries keep its original timestamp.
+        await tx.query(
+          'INSERT INTO order_payment_reports(order_id) VALUES(?) ON DUPLICATE KEY UPDATE order_id=order_id',
+          [row!.id]
+        );
+        return (
+          await tx.query('SELECT reported_at FROM order_payment_reports WHERE order_id=?', [
+            row!.id
+          ])
+        ).rows[0]!;
+      });
+      res.json({ orderNumber: row!.order_number, reportedAt: report.reported_at });
+      return;
+    }
     const history = (await getHistory(db, String(row!.id))).rows;
     res.json({
       orderNumber: row!.order_number,

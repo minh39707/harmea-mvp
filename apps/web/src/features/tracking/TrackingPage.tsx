@@ -69,7 +69,7 @@ export default function TrackingPage({
       {/* 2. FORM TRA CỨU CARD */}
       <div className="tracking-card">
         <div className="tracking-card-header">
-          <IconSearch size={18} color="#1b4332" />
+          <IconSearch size={18} color="var(--brand)" />
           <span className="tracking-card-title">Thông tin tra cứu</span>
         </div>
 
@@ -83,7 +83,7 @@ export default function TrackingPage({
           <div className="tracking-inputs-grid">
             <div className="tracking-field">
               <label htmlFor="track-order-num" className="field-label-row">
-                <IconDocument size={16} color="#1b4332" />
+                <IconDocument size={16} color="var(--brand)" />
                 <span>Mã đơn hàng *</span>
               </label>
               <input
@@ -101,7 +101,7 @@ export default function TrackingPage({
 
             <div className="tracking-field">
               <label htmlFor="track-phone-num" className="field-label-row">
-                <IconSmartphoneNfc size={16} color="#1b4332" />
+                <IconSmartphoneNfc size={16} color="var(--brand)" />
                 <span>Số điện thoại đặt hàng *</span>
               </label>
               <input
@@ -134,12 +134,12 @@ export default function TrackingPage({
 
         <div className="tracking-guarantees">
           <div className="guarantee-item">
-            <IconShield size={15} color="#1b4332" />
+            <IconShield size={15} color="var(--brand)" />
             <span>Bảo mật dữ liệu 100%</span>
           </div>
           <span className="guarantee-divider">•</span>
           <div className="guarantee-item">
-            <IconSparkle size={15} color="#1b4332" />
+            <IconSparkle size={15} color="var(--brand)" />
             <span>Cập nhật tiến độ tức thì</span>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function TrackingPage({
           {/* Lịch sử cập nhật tiến độ */}
           <div className="history-section">
             <div className="history-section-title">
-              <IconClock size={16} color="#1b4332" />
+              <IconClock size={16} color="var(--brand)" />
               <span>Nhật ký hành trình đơn hàng</span>
             </div>
 

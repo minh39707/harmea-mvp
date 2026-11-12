@@ -4,6 +4,12 @@ OpenAPI chuẩn tại [`contracts/openapi.json`](../contracts/openapi.json), phi
 
 ## Schema MySQL hiện tại
 
+Cập nhật 12/11/2026: migration `008_customer_payment_reports.sql` thêm `order_payment_reports(order_id, reported_at)`. Mỗi đơn có tối đa một sự kiện khách tự báo chuyển khoản; thời gian đầu tiên được giữ nguyên khi gửi lại. Bản ghi này không phải bằng chứng nhận tiền và không thay đổi version/trạng thái/lịch sử sản xuất hay doanh thu.
+
+`POST /api/tracking/payment-confirm` đã triển khai, nhận `{ orderNumber, phone }` trong body và trả `{ orderNumber, reportedAt }`. Dùng cùng HMAC, timing-safe comparison và bộ giới hạn thử sai với `/tracking/lookup`; sai thông tin trả 404 chung, bị khóa trả 429. Trong transaction, khóa đơn để kiểm tra hủy rồi ghi sự kiện; đơn hủy trả 409. Chi tiết admin thêm `customerPaymentReportedAt` (timestamp hoặc null), nằm sau admin gate. API lookup công khai giữ nguyên allowlist.
+
+Trang thành công dùng tổng tiền snapshot từ response tạo đơn và ảnh tĩnh `/images/payment-qr.png` do người dùng cung cấp từ Downloads. Ảnh QR không tự điền số tiền/nội dung theo đơn; UI hướng dẫn khách nhập. SĐT cho bước báo chuyển khoản chỉ được giữ trong React memory, không lưu browser storage. Reload làm mất receipt; khách vẫn tra cứu tiến độ bằng mã đơn + SĐT. Chưa có QR/báo chuyển khoản trong trang tra cứu sau reload.
+
 | Bảng | Nội dung chính |
 |---|---|
 | `products` | Một sản phẩm hiện hành, tên/mô tả, giá, template version, trạng thái bật/tắt và version |
@@ -18,6 +24,8 @@ Không có bảng `users`, `sessions`, `admin_sessions`; `orders` không có `us
 `orders.recipient_snapshot` giữ SĐT và địa chỉ cần cho giao hàng. `lookup_phone_hash` là HMAC-SHA256 của SĐT chuẩn hóa với secret `LOOKUP_SECRET`; không lưu thêm bản thô để tra cứu. `tracking_token_hash` đã bị gỡ sau khi backfill.
 
 Migration 004 thêm hash nullable và xóa auth schema; `scripts/backfill-lookup.mjs` xử lý đơn cũ; migration 005 đặt `lookup_phone_hash NOT NULL` và xóa unique index/cột token. Migration 006 thêm mô tả/version sản phẩm và bảng `product_price_history`. Nếu migration cuối của R1 được hoãn do còn hash NULL, chạy `npm run db:backfill-lookup`, sau đó `npm run db:migrate`.
+
+Migration 007 cập nhật sản phẩm hiện hành thành 89.000đ, tăng version và ghi `product_price_history` trong cùng transaction nếu giá thay đổi. Không cập nhật snapshot hay giá của đơn đã gửi; các file migration 001–006 giữ nguyên checksum.
 
 ## Quy tắc số điện thoại và mã đơn
 

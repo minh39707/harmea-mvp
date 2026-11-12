@@ -52,6 +52,12 @@ export default function OrderDetail({ orders, back }: { orders: AdminOrders; bac
               <dd>{money(order.subtotalVnd)} · phí giao hàng chưa bao gồm</dd>
               <dt>Mã vận đơn</dt>
               <dd>{order.trackingCode || 'Chưa nhập'}</dd>
+              <dt>Xác nhận chuyển khoản của khách</dt>
+              <dd>
+                {order.customerPaymentReportedAt
+                  ? `Khách báo đã chuyển khoản lúc ${date(order.customerPaymentReportedAt)}. Cần đối chiếu sao kê.`
+                  : 'Khách chưa báo chuyển khoản.'}
+              </dd>
               {order.cancellationReason && (
                 <>
                   <dt>Lý do hủy nội bộ</dt>

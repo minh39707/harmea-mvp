@@ -54,7 +54,7 @@ export default function OptionalFields({
       {/* 4. KHUNG TẢI ẢNH CỦA BẠN (DASHED DROPZONE THEO MOCKUP) */}
       <div className="field-section photo-upload-section">
         <div className="section-label-row">
-          <IconImage size={17} color="#1b4332" />
+          <IconImage size={17} color="var(--brand)" />
           <span className="section-title">Ảnh của bạn *</span>
         </div>
 
@@ -71,7 +71,7 @@ export default function OptionalFields({
             }}
           />
           <div className="dropzone-content">
-            <IconPhotoAdd size={28} color="#1b4332" />
+            <IconPhotoAdd size={28} color="var(--brand)" />
             <div className="dropzone-text-group">
               <span className="dropzone-main-text">
                 {draft.photo ? 'Đổi ảnh khác' : 'Chọn ảnh từ máy'}
@@ -122,7 +122,7 @@ export default function OptionalFields({
           aria-expanded={isAccordionOpen}
         >
           <div className="accordion-title-left">
-            <IconDocument size={17} color="#1b4332" />
+            <IconDocument size={17} color="var(--brand)" />
             <span className="accordion-title">Thông tin bổ sung</span>
           </div>
           <span className="accordion-chevron">
@@ -139,7 +139,7 @@ export default function OptionalFields({
             {/* Ô 1: Chữ ký tay của bạn */}
             <div className="accordion-cell">
               <div className="cell-label-row">
-                <IconPen size={16} color="#1b4332" />
+                <IconPen size={16} color="var(--brand)" />
                 <span className="cell-label">Chữ ký tay của bạn</span>
               </div>
               {draft.signatureData ? (
@@ -176,7 +176,7 @@ export default function OptionalFields({
                   className="btn-draw-signature"
                   onClick={() => setIsPadOpen(true)}
                 >
-                  <IconPen size={15} color="#1b4332" />
+                  <IconPen size={15} color="var(--brand)" />
                   <span>Bấm để vẽ chữ ký tay</span>
                 </button>
               )}
@@ -185,7 +185,7 @@ export default function OptionalFields({
             {/* Ô 2: Địa điểm (Place of issue) */}
             <div className="accordion-cell">
               <div className="cell-label-row">
-                <IconMapPin size={16} color="#1b4332" />
+                <IconMapPin size={16} color="var(--brand)" />
                 <span className="cell-label">Địa điểm (Place of issue)</span>
               </div>
               <input
@@ -200,7 +200,7 @@ export default function OptionalFields({
             {/* Ô 3: Ngày kỷ niệm (Date of issue) */}
             <div className="accordion-cell">
               <div className="cell-label-row">
-                <IconCalendar size={16} color="#1b4332" />
+                <IconCalendar size={16} color="var(--brand)" />
                 <span className="cell-label">Ngày kỷ niệm (Date of issue)</span>
               </div>
               <input
@@ -214,7 +214,7 @@ export default function OptionalFields({
             {/* Ô 4: Ngày sinh (Date of birth) */}
             <div className="accordion-cell">
               <div className="cell-label-row">
-                <IconCalendar size={16} color="#1b4332" />
+                <IconCalendar size={16} color="var(--brand)" />
                 <span className="cell-label">Ngày sinh (Date of birth)</span>
               </div>
               <input

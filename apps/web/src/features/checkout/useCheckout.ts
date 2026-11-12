@@ -13,6 +13,7 @@ type CheckoutState = {
   setBusy: StateSetter<boolean>;
   setError: StateSetter<string>;
   setReceipt: StateSetter<Receipt | null>;
+  setTrackPhone: StateSetter<string>;
   setCart: StateSetter<Item[]>;
   setRecipient: StateSetter<Recipient>;
   setConfirmed: StateSetter<boolean>;
@@ -27,6 +28,7 @@ export function useCheckout({
   setBusy,
   setError,
   setReceipt,
+  setTrackPhone,
   setCart,
   setRecipient,
   setConfirmed,
@@ -59,6 +61,7 @@ export function useCheckout({
       const result = await attempt.current!.submit(prepared, customer, confirmed);
       if (!result) return;
       setReceipt(result.receipt);
+      setTrackPhone(customer.phone);
       setCart(old =>
         old.filter(
           item =>

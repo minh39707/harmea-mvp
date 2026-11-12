@@ -4,6 +4,7 @@ import { statusLabels } from '../../shared/order-status';
 import { money } from '../../shared/format';
 import { IconCheck, IconCopy, IconSearch } from '../../shared/ui/Icons';
 import './SuccessPage.css';
+import PaymentPanel from './PaymentPanel';
 
 export default function SuccessPage({
   receipt,
@@ -11,19 +12,27 @@ export default function SuccessPage({
   setError,
   setDraft,
   setTrackOrderNumber,
+  trackPhone,
   go
 }: Pick<
   Shop,
-  'receipt' | 'setNotice' | 'setError' | 'error' | 'setDraft' | 'setTrackOrderNumber' | 'go'
+  | 'receipt'
+  | 'setNotice'
+  | 'setError'
+  | 'error'
+  | 'setDraft'
+  | 'setTrackOrderNumber'
+  | 'trackPhone'
+  | 'go'
 >) {
   if (!receipt) return null;
   return (
     <section className="success">
       <div className="success-badge-circle">
-        <IconCheck size={32} strokeWidth={2.5} color="#1b4332" />
+        <IconCheck size={32} strokeWidth={2.5} color="var(--brand)" />
       </div>
       <h1 className="success-title">Đã nhận đơn</h1>
-      <p className="success-subtitle">Cửa hàng đã ghi nhận đơn thử của bạn. Demo không thu tiền.</p>
+      <p className="success-subtitle">Cửa hàng đã ghi nhận đơn của bạn.</p>
 
       <div className="receipt-box">
         <div className="receipt-order-header">
@@ -36,7 +45,7 @@ export default function SuccessPage({
           <b className="status-badge">{statusLabels[receipt.status]}</b>
         </div>
         <div className="receipt-row">
-          <span>Tiền sản phẩm (demo):</span>
+          <span>Tiền sản phẩm:</span>
           <strong className="amount-highlight">{money(receipt.subtotalVnd)}</strong>
         </div>
         <div className="receipt-row">
@@ -74,10 +83,17 @@ export default function SuccessPage({
         </div>
 
         <p className="note success-note">
-          Vui lòng lưu lại mã đơn hàng. Đây là đơn demo, chưa thu tiền hoặc giao hàng tự động. Tra
-          cứu tại mục <em>Tra cứu đơn</em> bằng mã đơn và số điện thoại đã nhập.
+          Vui lòng lưu lại mã đơn hàng. Tra cứu tại mục <em>Tra cứu đơn</em> bằng mã đơn và số điện
+          thoại đã nhập.
         </p>
       </div>
+
+      <PaymentPanel
+        key={receipt.id}
+        orderNumber={receipt.orderNumber}
+        amount={receipt.subtotalVnd}
+        phone={trackPhone}
+      />
 
       <button
         type="button"

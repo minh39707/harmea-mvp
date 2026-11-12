@@ -1,0 +1,44 @@
+.transfer-panel {
+  margin: 24px 0;
+  padding: 24px 16px;
+  border: 1px solid var(--brand);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.transfer-panel h2 {
+  margin-top: 0;
+}
+
+.transfer-amount {
+  display: block;
+  color: var(--brand);
+  font-size: 30px;
+}
+
+.transfer-qr {
+  display: block;
+  width: min(280px, 100%);
+  height: auto;
+  margin: 20px auto;
+  padding: 16px;
+  background: white;
+  box-sizing: border-box;
+}
+
+.transfer-reference {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--brand);
+}
+
+.transfer-panel .button {
+  width: 100%;
+  white-space: normal;
+}
+
+.transfer-reported {
+  padding: 12px;
+  background: rgba(var(--brand-rgb), 0.08);
+  border-radius: 8px;
+}

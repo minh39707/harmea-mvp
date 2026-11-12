@@ -78,8 +78,11 @@ function FaqPage() {
         </p>
       </details>
       <details>
-        <summary>Bản demo có thu tiền hoặc giao hàng không?</summary>
-        <p>Không. Website hiện không tích hợp thanh toán hoặc tự động giao hàng.</p>
+        <summary>Tôi thanh toán như thế nào?</summary>
+        <p>
+          Sau khi đặt đơn, quét mã QR và nhập đúng số tiền, mã đơn. Bấm “Tôi đã chuyển khoản” để báo
+          cửa hàng kiểm tra giao dịch. Giao hàng được cửa hàng xử lý riêng.
+        </p>
       </details>
       <details>
         <summary>Tôi tra cứu đơn như thế nào?</summary>
@@ -130,8 +133,8 @@ function ReturnsPage() {
         <strong>[CẦN XÁC NHẬN]</strong>.
       </p>
       <p>
-        Bản demo không xử lý thanh toán hay yêu cầu đổi trả thực tế. Vui lòng không coi phần này là
-        chính sách đã có hiệu lực.
+        Chính sách đổi trả đang chờ cửa hàng xác nhận. Vui lòng không coi phần này là chính sách đã
+        có hiệu lực.
       </p>
     </>
   );

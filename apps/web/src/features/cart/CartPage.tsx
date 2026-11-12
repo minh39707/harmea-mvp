@@ -57,11 +57,11 @@ export default function CartPage({
   selectedItems = cart.filter(i => selectedItemIds.includes(i.id)),
   selectedCount = selectedItems.reduce((n, i) => n + i.quantity, 0),
   selectedSubtotal = selectedItems.reduce(
-    (n, i) => n + i.quantity * (product?.unitPriceVnd ?? 50000),
+    (n, i) => n + i.quantity * (product?.unitPriceVnd ?? 89000),
     0
   )
 }: CartPageProps) {
-  const unitPrice = product?.unitPriceVnd ?? 50000;
+  const unitPrice = product?.unitPriceVnd ?? 89000;
   const isAllSelected = cart.length > 0 && selectedItems.length === cart.length;
   const isSomeSelected = selectedItems.length > 0 && selectedItems.length < cart.length;
 

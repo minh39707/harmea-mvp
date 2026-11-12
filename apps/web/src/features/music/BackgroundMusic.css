@@ -1,0 +1,68 @@
+.background-music {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 30;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.background-music-volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--brand);
+  box-shadow: 0 4px 16px rgba(var(--brand-rgb), 0.12);
+  font-size: 12px;
+}
+
+.background-music-volume input[type='range'] {
+  width: 112px;
+  margin: 0;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+
+.background-music-volume-value {
+  min-width: 3ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.background-music-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--brand);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--brand);
+  box-shadow: 0 4px 16px rgba(var(--brand-rgb), 0.16);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.background-music-toggle[aria-pressed='true'] {
+  background: var(--brand);
+  color: #fff;
+}
+
+.background-music-error {
+  max-width: 260px;
+  padding: 8px 12px;
+  margin: 6px 0 0;
+  background: var(--surface);
+  color: var(--danger);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 12px;
+}

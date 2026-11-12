@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: ['**']
+    # main runs this suite through deploy.yml before publishing and deploying.
+    branches-ignore: [main]
   pull_request:
   workflow_call:
 
@@ -49,7 +50,8 @@ jobs:
           (cd "$RUNNER_TEMP" && grep ' actionlint_1.7.12_linux_amd64.tar.gz$' actionlint-checksums.txt | sha256sum --check -)
           tar -xzf "$RUNNER_TEMP/actionlint_1.7.12_linux_amd64.tar.gz" -C "$RUNNER_TEMP" actionlint
           "$RUNNER_TEMP/actionlint"
-          shellcheck scripts/docker-smoke.sh deploy/*.sh
+          shellcheck scripts/docker-smoke.sh deploy/*.sh tests/remote-deploy.sh
+          bash tests/remote-deploy.sh
       - run: npm run format:check
       - run: npm run typecheck
       - run: npm run build

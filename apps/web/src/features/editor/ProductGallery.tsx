@@ -151,7 +151,7 @@ export default function ProductGallery({
 
         {/* Ghi chú 2 mặt thẻ giống nhau */}
         <div className="card-two-sides-pill">
-          <IconCard size={14} color="#1b4332" />
+          <IconCard size={14} color="var(--brand)" />
           <span>Hai mặt thẻ được in đồng bộ giống nhau</span>
         </div>
 
@@ -179,7 +179,7 @@ export default function ProductGallery({
       {/* 2. KHU VỰC "CHỌN ẢNH MẪU" DƯỚI KHUNG PREVIEW */}
       <div className="gallery-sample-section">
         <div className="sample-section-header">
-          <IconImage size={18} color="#1b4332" />
+          <IconImage size={18} color="var(--brand)" />
           <span className="sample-section-title">Chọn ảnh mẫu</span>
         </div>
 

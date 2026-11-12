@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+Có migration: có (`007_product_price_89000.sql`: giá sản phẩm 89.000đ; `008_customer_payment_reports.sql`: ghi nhận khách báo chuyển khoản; giữ snapshot đơn cũ).
+
+- Nhạc nền MP3 nội bộ chỉ tải/phát khi bấm; bật/tắt, lưu lựa chọn, âm lượng 35%, dừng ở tracking/admin.
+- Đổi các màu xanh lá của giao diện sang navy blue; giữ các màu thiết kế thẻ.
+- Checkout hiển thị QR người dùng cung cấp, số tiền snapshot và mã đơn; khách tự báo đã chuyển khoản, admin xem thời gian báo. Không tự xác minh giao dịch.
+- CI/CD: push vào `main` chạy CI, push image `sha-<12>`/`main` lên Docker Hub rồi SSH deploy production. Cần backup tay trước khi merge có migration; script giữ app dừng nếu migration lỗi vì DDL có thể đã áp một phần. Chỉ tự quay image cũ khi migration hoàn tất mà không có thay đổi mới và app mới không ready. `ci.yml` không chạy lặp trên `main`; release theo tag `v*` giữ nguyên.
+
 ## [v1.1.0]
 
 Có migration: không.

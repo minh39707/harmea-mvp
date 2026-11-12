@@ -1,5 +1,6 @@
 import type { Shop } from '../../app/useShop';
 import { money } from '../../shared/format';
+import type { BackgroundMusic } from '../music/useBackgroundMusic';
 import {
   IconVinyl,
   IconMusic,
@@ -12,10 +13,10 @@ import {
   IconStar
 } from '../../shared/ui/Icons';
 
-type HomeProps = Pick<Shop, 'go' | 'setDraft' | 'product'>;
+type HomeProps = Pick<Shop, 'go' | 'setDraft' | 'product'> & { music: BackgroundMusic };
 
-export default function HomePage({ go, setDraft, product }: HomeProps) {
-  const priceDisplay = product ? money(product.unitPriceVnd) : '50.000 ₫';
+export default function HomePage({ go, setDraft, product, music }: HomeProps) {
+  const priceDisplay = product ? money(product.unitPriceVnd) : '89.000 ₫';
 
   function chooseColorAndCustomize(color: 'cream' | 'blue' | 'rose') {
     setDraft(prev => ({ ...prev, color }));
@@ -142,15 +143,27 @@ export default function HomePage({ go, setDraft, product }: HomeProps) {
             </div>
 
             {/* Floating badge */}
-            <div className="hero-floating-badge">
+            <button
+              type="button"
+              className="hero-floating-badge"
+              onClick={() => void music.toggle()}
+              aria-pressed={music.playing || music.loading}
+              aria-label={music.playing ? 'Tắt nhạc nền từ thẻ trải nghiệm' : 'Chạm là phát nhạc'}
+            >
               <span className="badge-music-icon">
                 <IconMusic size={16} />
               </span>
-              <div>
-                <strong>Chạm là phát nhạc</strong>
+              <span>
+                <strong>
+                  {music.loading
+                    ? 'Đang tải nhạc…'
+                    : music.playing
+                      ? 'Đang phát • Bấm để tắt'
+                      : 'Chạm là phát nhạc'}
+                </strong>
                 <small>Tương thích iOS & Android</small>
-              </div>
-            </div>
+              </span>
+            </button>
           </div>
         </div>
       </section>

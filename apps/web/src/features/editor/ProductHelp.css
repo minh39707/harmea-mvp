@@ -22,11 +22,11 @@
   letter-spacing: 0.08em;
   padding: 6px 16px;
   border-radius: 999px;
-  background: rgba(27, 67, 50, 0.08);
-  color: #1b4332;
+  background: rgba(var(--brand-rgb), 0.08);
+  color: var(--brand);
   margin-bottom: 12px;
-  border: 1px solid rgba(27, 67, 50, 0.16);
-  box-shadow: 0 1px 3px rgba(27, 67, 50, 0.04);
+  border: 1px solid rgba(var(--brand-rgb), 0.16);
+  box-shadow: 0 1px 3px rgba(var(--brand-rgb), 0.04);
 }
 
 .section-pill::before {
@@ -34,8 +34,8 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #2e7d32;
-  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.25);
+  background: var(--brand);
+  box-shadow: 0 0 0 2px rgba(var(--brand-rgb), 0.25);
   display: inline-block;
 }
 
@@ -306,7 +306,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1b4332;
+  color: var(--brand);
 }
 
 .support-box-header h4 {
@@ -336,7 +336,7 @@
 }
 
 .check-icon {
-  color: #1b4332;
+  color: var(--brand);
   display: flex;
   align-items: center;
   justify-content: center;

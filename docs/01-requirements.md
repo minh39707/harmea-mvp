@@ -5,9 +5,10 @@ Cập nhật 11/11/2026 theo quyết định D2–D6 trong [roadmap](../tasks/00
 ## Phạm vi sản phẩm
 
 - Một sản phẩm/mẫu thẻ NFC Music Card; admin có thể chỉnh giá (1.000–10.000.000 VND), mô tả và trạng thái bán qua R3. Sản phẩm tắt hiển thị “Tạm ngừng nhận đơn”.
+- Giá sản phẩm theo yêu cầu mới ngày 11/11/2026: 89.000đ qua migration 007; đơn đã gửi giữ snapshot giá cũ.
 - Có giỏ hàng. Một đơn gồm 1–10 thiết kế; mỗi thiết kế đặt 1–10 bản. Giá do server lấy từ MySQL và lưu snapshot.
 - Khách không tạo tài khoản. Checkout nhận tên, số điện thoại và địa chỉ giao hàng; sau khi đặt đơn, khách lưu mã đơn.
-- Chưa có thanh toán, email, tự động sản xuất hoặc giao hàng. Giá demo và dữ liệu seed là giả.
+- Cập nhật 12/11/2026: hiển thị ảnh QR chuyển khoản người dùng cung cấp sau khi lưu đơn. Khách tự nhập số tiền/mã đơn và bấm “Tôi đã chuyển khoản”; server lưu lời xác nhận, admin xem để đối chiếu. Không tự động xác nhận đã nhận tiền, không đổi trạng thái sản xuất. Chưa có email, tự động sản xuất hoặc giao hàng.
 - Ảnh gốc và ảnh preview chỉ gửi server khi đặt hàng; ảnh đơn chỉ có thể tải qua API admin khi gate cho phép.
 
 ## Vai trò và dữ liệu truy cập

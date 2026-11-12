@@ -20,7 +20,7 @@ export default function Footer() {
         <Link to="/contact">Liên hệ</Link>
       </nav>
       <p className="footer-disclaimer">
-        Bản demo Harméa. Chưa tích hợp thanh toán hoặc tự động giao hàng.
+        Chuyển khoản bằng QR. Cửa hàng kiểm tra giao dịch và xử lý giao hàng.
       </p>
       <p className="footer-disclaimer">© {new Date().getFullYear()} Harméa</p>
     </footer>

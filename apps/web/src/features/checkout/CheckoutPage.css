@@ -35,7 +35,7 @@
 }
 
 .btn-back-cart:hover {
-  color: #1b4332;
+  color: var(--brand);
 }
 
 /* ==========================================================================
@@ -66,21 +66,21 @@
 }
 
 .stepper-pill:hover:not(:disabled) {
-  border-color: #1b4332;
-  color: #1b4332;
+  border-color: var(--brand);
+  color: var(--brand);
 }
 
 .stepper-pill.active {
-  background: #1b4332;
-  border-color: #1b4332;
+  background: var(--brand);
+  border-color: var(--brand);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.22);
+  box-shadow: 0 4px 14px rgba(var(--brand-rgb), 0.22);
 }
 
 .stepper-pill.done {
-  background: rgba(27, 67, 50, 0.08);
-  border-color: #1b4332;
-  color: #1b4332;
+  background: rgba(var(--brand-rgb), 0.08);
+  border-color: var(--brand);
+  color: var(--brand);
 }
 
 .stepper-idx {
@@ -101,7 +101,7 @@
 }
 
 .stepper-pill.done .stepper-idx {
-  background: #1b4332;
+  background: var(--brand);
   color: #ffffff;
 }
 
@@ -169,9 +169,9 @@
 .checkout-fields input:focus,
 .checkout-fields textarea:focus {
   background: #ffffff;
-  border-color: #1b4332;
+  border-color: var(--brand);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.12);
+  box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.12);
 }
 
 .checkout-fields .two-fields {
@@ -249,7 +249,7 @@
 }
 
 .payment-amount-box {
-  background: rgba(27, 67, 50, 0.06);
+  background: rgba(var(--brand-rgb), 0.06);
   border: 1.5px solid #baa892;
   border-radius: 14px;
   padding: 12px 18px;
@@ -271,7 +271,7 @@
   font-family: var(--serif);
   font-size: 30px;
   font-weight: 800;
-  color: #1b4332;
+  color: var(--brand);
   letter-spacing: -0.01em;
 }
 
@@ -308,8 +308,8 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: #1b4332;
-  background: rgba(27, 67, 50, 0.08);
+  color: var(--brand);
+  background: rgba(var(--brand-rgb), 0.08);
   padding: 4px 12px;
   border-radius: 999px;
 }
@@ -353,8 +353,8 @@
 
 .guide-val.highlight {
   font-family: 'SF Mono', Monaco, Consolas, monospace;
-  color: #1b4332;
-  background: rgba(27, 67, 50, 0.08);
+  color: var(--brand);
+  background: rgba(var(--brand-rgb), 0.08);
   padding: 3px 8px;
   border-radius: 6px;
 }
@@ -369,7 +369,7 @@
   border-radius: 6px;
   font-size: 12px;
   font-weight: 700;
-  color: #1b4332;
+  color: var(--brand);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -397,7 +397,7 @@
 .btn-confirm-paid {
   width: 100%;
   height: 50px;
-  background: #1b4332;
+  background: var(--brand);
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -405,7 +405,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.24);
+  box-shadow: 0 4px 16px rgba(var(--brand-rgb), 0.24);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -413,9 +413,9 @@
 }
 
 .btn-confirm-paid:hover:not(:disabled) {
-  background: #143527;
+  background: var(--brand-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(27, 67, 50, 0.3);
+  box-shadow: 0 6px 20px rgba(var(--brand-rgb), 0.3);
 }
 
 .btn-confirm-paid:disabled {
@@ -435,7 +435,7 @@
 }
 
 .btn-back-info:hover {
-  color: #1b4332;
+  color: var(--brand);
 }
 
 /* ==========================================================================
@@ -487,7 +487,7 @@
 .btn-edit-recap {
   background: none;
   border: none;
-  color: #1b4332;
+  color: var(--brand);
   font-weight: 700;
   font-size: 12.5px;
   cursor: pointer;
@@ -547,7 +547,7 @@
   font-family: var(--serif);
   font-size: 24px;
   font-weight: 800;
-  color: #1b4332;
+  color: var(--brand);
 }
 
 .btn-proceed-payment,
@@ -555,7 +555,7 @@
   width: 100%;
   height: 48px;
   border-radius: 12px;
-  background: #1b4332;
+  background: var(--brand);
   color: #ffffff;
   border: none;
   font-size: 15px;
@@ -566,14 +566,14 @@
   justify-content: center;
   gap: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.2);
+  box-shadow: 0 4px 14px rgba(var(--brand-rgb), 0.2);
 }
 
 .btn-proceed-payment:hover:not(:disabled),
 .btn-paid-aside:hover:not(:disabled) {
-  background: #143527;
+  background: var(--brand-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(27, 67, 50, 0.26);
+  box-shadow: 0 6px 18px rgba(var(--brand-rgb), 0.26);
 }
 
 .btn-proceed-payment:disabled,

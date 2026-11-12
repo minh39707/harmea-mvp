@@ -10,13 +10,15 @@ import SuccessPage from '../features/checkout/SuccessPage';
 import TrackingPage from '../features/tracking/TrackingPage';
 import { ContentPage, NotFoundPage } from '../features/content/ContentPages';
 import type { RouteName } from '../shared/router';
+import { useBackgroundMusic } from '../features/music/useBackgroundMusic';
 
 export default function Storefront({ routeName }: { routeName: RouteName | 'not-found' }) {
   const shop = useShop();
+  const music = useBackgroundMusic(routeName !== 'tracking' && routeName !== 'not-found');
   let page;
   switch (routeName) {
     case 'home':
-      page = <HomePage {...shop} />;
+      page = <HomePage {...shop} music={music} />;
       break;
     case 'design':
     case 'product-alias':
@@ -75,6 +77,8 @@ export default function Storefront({ routeName }: { routeName: RouteName | 'not-
         {page}
       </main>
       <Footer />
+      {music.audio}
+      {music.controls}
     </>
   );
 }

@@ -189,7 +189,7 @@ test('browser checkout coordinator against real Express, MySQL and image files',
       latestReceipt = result.receipt;
       assert.equal(await count(), before + 1);
       assert.equal(latestReceipt.quantity, 4);
-      assert.equal(latestReceipt.subtotalVnd, 200000);
+      assert.equal(latestReceipt.subtotalVnd, 356000);
       assert.deepEqual(requests[0].parts, [
         'payload',
         'photo_0',
@@ -395,6 +395,74 @@ test('browser checkout coordinator against real Express, MySQL and image files',
       assert.equal(requests.length, 0);
       assert.equal(await count(), before);
       assert.equal(attempt.pendingKey(), '');
+    });
+    await check(
+      'customer transfer report is private, durable and idempotent without changing order state',
+      async () => {
+        const payload = { orderNumber: latestReceipt.orderNumber, phone: recipient.phone };
+        await assert.rejects(
+          api('/tracking/payment-confirm', { ...payload, phone: '0911111111' }),
+          error => error instanceof ApiError && error.status === 404
+        );
+        const first = await api('/tracking/payment-confirm', payload);
+        assert.equal(first.orderNumber, latestReceipt.orderNumber);
+        assert.ok(Number.isFinite(Date.parse(first.reportedAt)));
+        const parallel = await Promise.all(
+          Array.from({ length: 3 }, () => api('/tracking/payment-confirm', payload))
+        );
+        assert.ok(parallel.every(report => report.reportedAt === first.reportedAt));
+        const events = (
+          await db.query('SELECT * FROM order_payment_reports WHERE order_id=?', [latestReceipt.id])
+        ).rows;
+        assert.equal(events.length, 1);
+        const detail = await (
+          await nativeFetch(base + `/api/admin/orders/${latestReceipt.id}`)
+        ).json();
+        assert.equal(detail.customerPaymentReportedAt, first.reportedAt);
+        assert.equal(detail.version, 1);
+        assert.equal(detail.status, 'pending');
+        assert.equal(detail.history.length, 1);
+        await stop();
+        await start();
+        assert.deepEqual(await api('/tracking/payment-confirm', payload), first);
+        // Wrong attempts share the lookup limiter with the report endpoint.
+        for (let i = 0; i < 5; i++) {
+          await assert.rejects(
+            api('/tracking/payment-confirm', { ...payload, phone: '0911111111' }),
+            error => error instanceof ApiError && error.status === 404
+          );
+        }
+        await assert.rejects(
+          api('/tracking/lookup', payload),
+          error => error instanceof ApiError && error.status === 429
+        );
+      }
+    );
+    await check('cancelled orders cannot report transfers', async () => {
+      const result = await checkoutAttempt(store()).submit(items(), recipient, true);
+      const order = result.receipt;
+      const response = await nativeFetch(base + `/api/admin/orders/${order.id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          expectedVersion: 1,
+          status: 'cancelled',
+          cancellationReason: 'QA cancellation'
+        })
+      });
+      assert.equal(response.status, 200);
+      await assert.rejects(
+        api('/tracking/payment-confirm', {
+          orderNumber: order.orderNumber,
+          phone: recipient.phone
+        }),
+        error => error instanceof ApiError && error.status === 409
+      );
+      assert.equal(
+        (await db.query('SELECT * FROM order_payment_reports WHERE order_id=?', [order.id])).rows
+          .length,
+        0
+      );
     });
     await check(
       'tracking refresh reads admin updates and refuses extra private response fields',

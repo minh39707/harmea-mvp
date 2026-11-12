@@ -148,29 +148,30 @@ test('R3 admin products, stats, CSV and gate work against MySQL', async t => {
           address: '@HYPERLINK("https://example.invalid", "x")'
         });
         assert.equal(oldOrder.response.status, 201, JSON.stringify(oldOrder.body));
-        assert.equal(oldOrder.body.unitPriceVnd, 50000);
+        assert.equal(oldOrder.body.unitPriceVnd, 89000);
 
         const listed = await requestJson(base, '/api/admin/products');
         assert.equal(listed.response.status, 200);
         assert.equal(listed.body.length, 1);
-        assert.equal(listed.body[0].version, 1);
+        assert.equal(listed.body[0].version, 2);
+        const baseVersion = listed.body[0].version;
         const changed = await patchProduct(oldProduct.id, {
-          expectedVersion: 1,
+          expectedVersion: baseVersion,
           name: 'Harméa NFC Music Card',
           description: 'Mô tả sản phẩm R3',
           unitPriceVnd: 60000
         });
         assert.equal(changed.response.status, 200, JSON.stringify(changed.body));
-        assert.equal(changed.body.version, 2);
+        assert.equal(changed.body.version, baseVersion + 1);
         assert.equal(changed.body.unitPriceVnd, 60000);
 
         const stale = await patchProduct(oldProduct.id, {
-          expectedVersion: 1,
+          expectedVersion: baseVersion,
           unitPriceVnd: 70000
         });
         assert.equal(stale.response.status, 409);
         const invalidPrice = await patchProduct(oldProduct.id, {
-          expectedVersion: 2,
+          expectedVersion: baseVersion + 1,
           unitPriceVnd: 999
         });
         assert.equal(invalidPrice.response.status, 422);
@@ -181,11 +182,14 @@ test('R3 admin products, stats, CSV and gate work against MySQL', async t => {
         );
         assert.deepEqual(
           history.rows.map(row => [Number(row.old_price), Number(row.new_price)]),
-          [[50000, 60000]]
+          [
+            [50000, 89000],
+            [89000, 60000]
+          ]
         );
         const oldDetail = await requestJson(base, `/api/admin/orders/${oldOrder.body.id}`);
-        assert.equal(oldDetail.body.unitPriceVnd, 50000);
-        assert.equal(oldDetail.body.productSnapshot.unitPriceVnd, 50000);
+        assert.equal(oldDetail.body.unitPriceVnd, 89000);
+        assert.equal(oldDetail.body.productSnapshot.unitPriceVnd, 89000);
 
         const current = (await requestJson(base, '/api/products/current')).body;
         assert.equal(current.name, 'Harméa NFC Music Card');
@@ -199,21 +203,21 @@ test('R3 admin products, stats, CSV and gate work against MySQL', async t => {
         await db.exec(`CREATE TRIGGER fail_r3_price_history BEFORE INSERT ON product_price_history
         FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='forced test failure'`);
         const failed = await patchProduct(oldProduct.id, {
-          expectedVersion: 2,
+          expectedVersion: baseVersion + 1,
           unitPriceVnd: 70000
         });
         assert.equal(failed.response.status, 500);
         await db.exec('DROP TRIGGER fail_r3_price_history');
         const afterRollback = (await requestJson(base, '/api/admin/products')).body[0];
         assert.equal(afterRollback.unitPriceVnd, 60000);
-        assert.equal(afterRollback.version, 2);
+        assert.equal(afterRollback.version, baseVersion + 1);
         assert.equal(
           (
             await db.query('SELECT id FROM product_price_history WHERE product_id=?', [
               oldProduct.id
             ])
           ).rows.length,
-          1
+          2
         );
 
         await setDate(oldOrder.body.id, '2026-11-10 16:30:00.000');
@@ -280,7 +284,7 @@ test('R3 admin products, stats, CSV and gate work against MySQL', async t => {
         assert.equal(allDates.response.status, 200);
         assert.equal(allDates.body.ordersByStatus.pending, 2);
         assert.equal(allDates.body.ordersByStatus.cancelled, 1);
-        assert.equal(allDates.body.subtotalVnd, 160000);
+        assert.equal(allDates.body.subtotalVnd, 238000);
         assert.equal(allDates.body.cardCount, 3);
         assert.deepEqual(allDates.body.ordersByDay, [
           { date: '2026-11-10', orderCount: 2 },
@@ -289,7 +293,7 @@ test('R3 admin products, stats, CSV and gate work against MySQL', async t => {
 
         const boundary = (await requestJson(base, '/api/admin/stats?from=2026-11-10&to=2026-11-10'))
           .body;
-        assert.equal(boundary.subtotalVnd, 100000);
+        assert.equal(boundary.subtotalVnd, 178000);
         assert.equal(boundary.cardCount, 2);
         assert.deepEqual(boundary.ordersByDay, [{ date: '2026-11-10', orderCount: 2 }]);
         const invalidRange = await requestJson(

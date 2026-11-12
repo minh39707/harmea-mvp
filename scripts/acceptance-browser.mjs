@@ -18,7 +18,7 @@ const [runtime] = JSON.parse(
 );
 assert.equal(runtime.Config.Labels['com.docker.compose.project'], 'harmea-h-20261111');
 const suffix = process.env.HARMEA_H_REPORT_SUFFIX ?? '';
-assert.ok(['', '-csp', '-h-fix', '-v1.1.0'].includes(suffix));
+assert.ok(['', '-csp', '-h-fix', '-v1.1.0', '-navy-music'].includes(suffix));
 if (process.env.HARMEA_H_EXPECTED_DIGEST) {
   const [image] = JSON.parse(
     execFileSync('docker', ['image', 'inspect', runtime.Image], { encoding: 'utf8' })
@@ -201,7 +201,7 @@ for (const channel of ['chrome', 'msedge']) {
       window.dispatchEvent(new PopStateEvent('popstate'));
     });
     assert.equal(
-      await page.getByRole('button', { name: 'Xác nhận đặt thử →', exact: true }).isDisabled(),
+      await page.getByRole('button', { name: 'Đặt đơn và xem mã QR →', exact: true }).isDisabled(),
       true
     );
     await page.getByRole('button', { name: '← Quay lại giỏ hàng', exact: true }).click();
@@ -215,7 +215,7 @@ for (const channel of ['chrome', 'msedge']) {
       .getByLabel('Địa chỉ nhận hàng chi tiết *', { exact: true })
       .fill('Địa chỉ giả browser H, không giao hàng');
     await page.getByRole('checkbox').check();
-    await page.getByRole('button', { name: 'Xác nhận đặt thử →', exact: true }).click();
+    await page.getByRole('button', { name: 'Đặt đơn và xem mã QR →', exact: true }).click();
     await page.getByRole('heading', { name: 'Đã nhận đơn', exact: true }).waitFor();
     const orderNumber = (await page.locator('.success-order-number').innerText()).trim();
     assert.match(orderNumber, /^HM-[0-9A-F]{16}$/);

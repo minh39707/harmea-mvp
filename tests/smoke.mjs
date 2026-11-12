@@ -94,6 +94,7 @@ try {
         "default-src 'self'",
         "script-src 'self'",
         "connect-src 'self'",
+        "media-src 'self'",
         "img-src 'self' data: blob:",
         "object-src 'none'",
         "frame-ancestors 'none'",

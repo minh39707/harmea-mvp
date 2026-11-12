@@ -1198,6 +1198,66 @@
           }
         }
       }
+    },
+    "/api/tracking/payment-confirm": {
+      "post": {
+        "x-implementation-status": "implemented",
+        "operationId": "reportCustomerTransfer",
+        "summary": "Record the customer declaration that a transfer was made.",
+        "description": "Static QR is displayed after checkout. This endpoint verifies order number and phone using the shared lookup rate limiter. It records an immutable, idempotent declaration event; it does not mark the order as paid or change production status. Cancelled orders return 409.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackingLookup"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Customer declaration recorded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerPaymentReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ORDER_NOT_FOUND; không tiết lộ có đơn hay không.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Order is cancelled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Quá nhiều yêu cầu; thử lại sau.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1914,6 +1974,14 @@
             "items": {
               "$ref": "#/components/schemas/AdminOrderItem"
             }
+          },
+          "customerPaymentReportedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Customer declaration only; funds have not been verified."
           }
         },
         "required": [
@@ -1936,7 +2004,8 @@
           "trackingCode",
           "cancellationReason",
           "history",
-          "items"
+          "items",
+          "customerPaymentReportedAt"
         ]
       },
       "AdminOrderPage": {
@@ -2407,6 +2476,23 @@
           "safeAreaMm"
         ],
         "description": "Product snapshot embedded in an order; it does not change after the order is created."
+      },
+      "CustomerPaymentReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderNumber": {
+            "type": "string"
+          },
+          "reportedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "orderNumber",
+          "reportedAt"
+        ]
       }
     }
   }

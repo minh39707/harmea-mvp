@@ -217,7 +217,7 @@ export default function SignaturePad({
         {/* Header với label bảng ghi và nút đóng X */}
         <div className="signature-modal-header">
           <h3 id="signature-dialog-title">
-            <IconPen size={18} color="#1b4332" />
+            <IconPen size={18} color="var(--brand)" />
             <span>Bảng ghi chữ ký tay</span>
           </h3>
           <button

@@ -116,6 +116,9 @@ export function detailResponse(v: unknown): AdminDetail {
     !['name', 'phone', 'address'].every(k => typeof recipient[k] === 'string') ||
     typeof product.name !== 'string' ||
     typeof r.note !== 'string' ||
+    (r.customerPaymentReportedAt !== undefined &&
+      r.customerPaymentReportedAt !== null &&
+      !date(r.customerPaymentReportedAt)) ||
     typeof r.templateVersion !== 'string' ||
     !Number.isInteger(r.unitPriceVnd) ||
     !Array.isArray(r.items) ||

@@ -40,10 +40,10 @@ export default function CheckoutPage({
       <form className="checkout-layout" onSubmit={checkout} aria-busy={busy}>
         <fieldset className="checkout-fields" disabled={busy}>
           <div className="step-card-header">
-            <IconUser size={18} color="#1b4332" />
+            <IconUser size={18} color="var(--brand)" />
             <h3>Thông tin người nhận</h3>
           </div>
-          <p className="note">Hãy dùng thông tin giả khi thử quy trình này.</p>
+          <p className="note">Kiểm tra thông tin để cửa hàng liên hệ và xử lý đơn.</p>
           <div className="two-fields">
             <label>
               Họ tên người nhận *
@@ -143,10 +143,10 @@ export default function CheckoutPage({
                   ? 'Tạm ngừng nhận đơn'
                   : pendingRequestKey
                     ? 'Thử gửi lại cùng nội dung →'
-                    : 'Xác nhận đặt thử →'}
+                    : 'Đặt đơn và xem mã QR →'}
           </button>
           <p className="note summary-footer-note">
-            Demo, không thu tiền và không giao hàng tự động.
+            Mã QR chuyển khoản sẽ hiển thị sau khi đơn được lưu.
           </p>
         </aside>
       </form>

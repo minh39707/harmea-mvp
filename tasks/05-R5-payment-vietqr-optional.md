@@ -1,6 +1,6 @@
 # R5 — (Tùy chọn) Thanh toán chuyển khoản VietQR, admin xác nhận
 
-**Trạng thái:** chưa làm, **chỉ làm khi người dùng xác nhận và cung cấp thông tin ngân hàng**. **Ước lượng:** 3 giờ. **Phụ thuộc:** R4.
+**Trạng thái 12/11/2026:** người dùng yêu cầu bản rút gọn: dùng ảnh QR trong Downloads, khách tự báo đã chuyển khoản. Đã triển khai QR tĩnh ở trang thành công và lưu lời xác nhận vào MySQL để admin xem; xem [báo cáo](../docs/qa/2026-11-12-qr-local.md). Thiết kế R5 đầy đủ bên dưới là kế hoạch, chưa triển khai (QR động, paid/refunded, đối chiếu admin, thống kê tiền đã thu). **Phụ thuộc:** R4.
 
 ## Mục tiêu
 

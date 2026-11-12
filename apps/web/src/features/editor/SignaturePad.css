@@ -174,15 +174,15 @@
 
 .signature-btn.primary {
   flex: 1;
-  background: #1b4332;
-  border: 1px solid #1b4332;
+  background: var(--brand);
+  border: 1px solid var(--brand);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(27, 67, 50, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--brand-rgb), 0.2);
 }
 
 .signature-btn.primary:hover:not(:disabled) {
-  background: #143527;
-  box-shadow: 0 6px 16px rgba(27, 67, 50, 0.28);
+  background: var(--brand-hover);
+  box-shadow: 0 6px 16px rgba(var(--brand-rgb), 0.28);
 }
 
 .signature-btn.primary:disabled {

@@ -61,7 +61,7 @@ H  Nghiệm thu toàn bộ
 | 02 | R2 | [02-R2-device-cart-photo-compression.md](02-R2-device-cart-photo-compression.md) | 3–5 giờ | R1 | Đã triển khai; browser/client QA còn chờ ([báo cáo](../docs/qa/2026-11-11-task-R2.md)) |
 | 03 | R3 | [03-R3-admin-products-stats.md](03-R3-admin-products-stats.md) | 3–4 giờ | R1 | Đã triển khai; integration MySQL qua, còn browser QA ([báo cáo](../docs/qa/2026-11-11-task-R3.md)) |
 | 04 | R4 | [04-R4-content-seo.md](04-R4-content-seo.md) | 3–4 giờ | R1 | Đã triển khai; browser QA còn chờ ([báo cáo](../docs/qa/2026-11-11-task-R4.md)) |
-| 05 | R5 (tùy chọn) | [05-R5-payment-vietqr-optional.md](05-R5-payment-vietqr-optional.md) | 3 giờ | R4 | Chờ người dùng quyết định |
+| 05 | R5 (tùy chọn) | [05-R5-payment-vietqr-optional.md](05-R5-payment-vietqr-optional.md) | 3 giờ | R4 | 12/11: bản rút gọn QR tĩnh + khách tự báo chuyển khoản; R5 đầy đủ vẫn planned. [Báo cáo](../docs/qa/2026-11-12-qr-local.md) |
 | 06 | G1 | [06-G1-docker.md](06-G1-docker.md) | 3–4 giờ | R1 | CI Linux và Docker local đã qua; xem [H](../docs/qa/2026-11-11-acceptance.md) |
 | 07 | G1b (tùy chọn) | [07-G1b-s3-storage-optional.md](07-G1b-s3-storage-optional.md) | 2–3 giờ | G1 | MinIO/S3 đã qua CI và local; AWS thật chưa kiểm tra ([H](../docs/qa/2026-11-11-acceptance.md)) |
 | 08 | G2 | [08-G2-ci-dockerhub.md](08-G2-ci-dockerhub.md) | 1,5–2 giờ | G1 | CI/release xanh; image v1 đã phát hành. H phát hiện lỗi cần sửa trước bàn giao ([H](../docs/qa/2026-11-11-acceptance.md)) |
