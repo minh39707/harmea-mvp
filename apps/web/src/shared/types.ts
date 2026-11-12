@@ -2,6 +2,7 @@ export type Crop = { x: number; y: number; width: number; height: number };
 export type Design = {
   fullName: string;
   signatureText: string;
+  signatureData?: string;
   musicUrl: string;
   place: string;
   dateOfBirth: string;
@@ -24,9 +25,11 @@ export type Item = {
 export type Product = {
   id: string;
   name: string;
+  description?: string;
   unitPriceVnd: number;
   templateVersion: string;
   isDemo: boolean;
+  isActive?: boolean;
   physicalSizeMm: { width: number; height: number };
   artworkSizeMm: { width: number; height: number };
   safeAreaMm: { width: number; height: number };
@@ -41,7 +44,6 @@ export type Receipt = {
   shippingFeeVnd: null;
   currency: 'VND';
   createdAt: string;
-  trackingToken: string;
 };
 export type OrderStatus =
   'pending' | 'confirmed' | 'producing' | 'shipping' | 'completed' | 'cancelled';
@@ -53,10 +55,11 @@ export type PublicTracking = {
   trackingCode: string | null;
   history: Array<{ status: OrderStatus; occurredAt: string }>;
 };
-export type View = 'product' | 'cart' | 'checkout' | 'success' | 'tracking';
+export type View = 'home' | 'product' | 'cart' | 'checkout' | 'success' | 'tracking';
 export const blankDesign: Design = {
   fullName: '',
   signatureText: '',
+  signatureData: '',
   musicUrl: '',
   place: '',
   dateOfBirth: '',

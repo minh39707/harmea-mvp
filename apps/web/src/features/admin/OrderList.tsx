@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import type { AdminOrders } from './useAdminOrders';
 import { statusLabels, isOrderStatus } from '../../shared/order-status';
 import { money } from '../../shared/format';
+import { ordersCsvHref } from './client';
 export default function OrderList({
   orders,
   open
@@ -9,6 +11,9 @@ export default function OrderList({
   open: (id: string) => void;
 }) {
   const list = orders.list;
+  const [searchDraft, setSearchDraft] = useState(orders.orderNumber);
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
   return (
     <section>
       <h1>Đơn hàng</h1>
@@ -34,6 +39,42 @@ export default function OrderList({
             ))}
           </select>
         </label>
+        <form
+          className="admin-search-form"
+          onSubmit={event => {
+            event.preventDefault();
+            orders.setOrderNumber(searchDraft.trim().toUpperCase());
+            orders.setPage(1);
+          }}
+        >
+          <label>
+            Mã đơn
+            <input
+              value={searchDraft}
+              maxLength={19}
+              autoComplete="off"
+              placeholder="HM-…"
+              onChange={event => setSearchDraft(event.target.value)}
+            />
+          </label>
+          <button className="button secondary" type="submit" disabled={orders.busy}>
+            Tìm đơn
+          </button>
+          {orders.orderNumber && (
+            <button
+              className="button secondary"
+              type="button"
+              disabled={orders.busy}
+              onClick={() => {
+                setSearchDraft('');
+                orders.setOrderNumber('');
+                orders.setPage(1);
+              }}
+            >
+              Xóa tìm kiếm
+            </button>
+          )}
+        </form>
         <button
           className="button secondary"
           disabled={orders.busy}
@@ -41,6 +82,19 @@ export default function OrderList({
         >
           Làm mới danh sách
         </button>
+      </div>
+      <div className="admin-toolbar">
+        <label>
+          Từ ngày
+          <input type="date" value={from} onChange={event => setFrom(event.target.value)} />
+        </label>
+        <label>
+          Đến ngày
+          <input type="date" value={to} onChange={event => setTo(event.target.value)} />
+        </label>
+        <a className="button secondary" href={ordersCsvHref(orders.filter, from, to)}>
+          Tải CSV
+        </a>
       </div>
       {orders.busy && <p role="status">Đang tải danh sách…</p>}
       {list && (

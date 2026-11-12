@@ -1,33 +1,495 @@
-.how {
-  margin-top: var(--space-8);
-  padding-block: var(--space-5);
-  border-block: var(--border) solid var(--line);
+/* ==========================================================================
+   PRODUCT HELP & FAQ STYLING (Harméa v2)
+   Lively, colored cards & optimized whitespace
+   ========================================================================== */
+
+.product-help-wrapper {
+  margin-top: 16px;
+  padding-top: 8px;
+  border-top: none;
 }
-.how-steps {
+
+/* --------------------------------------------------------------------------
+   SHARED HEADERS & PILLS
+   -------------------------------------------------------------------------- */
+.section-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(var(--brand-rgb), 0.08);
+  color: var(--brand);
+  margin-bottom: 12px;
+  border: 1px solid rgba(var(--brand-rgb), 0.16);
+  box-shadow: 0 1px 3px rgba(var(--brand-rgb), 0.04);
+}
+
+.section-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 2px rgba(var(--brand-rgb), 0.25);
+  display: inline-block;
+}
+
+.section-header-center {
+  text-align: center;
+  max-width: 660px;
+  margin: 0 auto 20px;
+}
+
+.section-heading {
+  font-family: var(--serif);
+  font-size: clamp(26px, 3.5vw, 32px);
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #151816;
+  letter-spacing: -0.01em;
+}
+
+.section-subtext {
+  font-size: 15.5px;
+  color: #1a1e1b;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   CÁCH SỬ DỤNG: 3 VIBRANT STEP CARDS
+   -------------------------------------------------------------------------- */
+.how-section {
+  margin-bottom: 22px;
+}
+
+.how-cards-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-4);
-  margin-top: var(--space-3);
+  gap: 22px;
 }
-.how article p,
-.faq p {
-  color: var(--muted);
-  margin-bottom: 0;
+
+.how-card {
+  border-radius: 20px;
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
-.how article span {
-  color: var(--accent-text);
-  font-size: var(--font-sm);
+
+.how-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.07);
 }
-.faq {
+
+/* Theme 1: Amber / Cream (Warm Vinyl) */
+.how-card.theme-cream {
+  background: linear-gradient(150deg, #fefaf2 0%, #f7efe0 100%);
+  border: 1px solid #ebdcb8;
+}
+
+.how-card.theme-cream:hover {
+  border-color: #deb97d;
+}
+
+.how-card.theme-cream .step-badge {
+  background: #f1e3c5;
+  color: #7a5d2b;
+}
+
+.how-card.theme-cream .step-icon-bubble {
+  background: #ffffff;
+  color: #a58143;
+  box-shadow: 0 3px 10px rgba(122, 93, 43, 0.12);
+}
+
+.how-card.theme-cream .tip-dot {
+  background: #a58143;
+}
+
+/* Theme 2: Soft Rose / Blush (Personalized Art) */
+.how-card.theme-rose {
+  background: linear-gradient(150deg, #fff7f7 0%, #fbe8e8 100%);
+  border: 1px solid #f2d2d2;
+}
+
+.how-card.theme-rose:hover {
+  border-color: #e5a7a7;
+}
+
+.how-card.theme-rose .step-badge {
+  background: #f8dedd;
+  color: #9c4553;
+}
+
+.how-card.theme-rose .step-icon-bubble {
+  background: #ffffff;
+  color: #c86c7d;
+  box-shadow: 0 3px 10px rgba(156, 69, 83, 0.12);
+}
+
+.how-card.theme-rose .tip-dot {
+  background: #c86c7d;
+}
+
+/* Theme 3: Sky Blue (Instant NFC Tech) */
+.how-card.theme-blue {
+  background: linear-gradient(150deg, #f2f8ff 0%, #e5f1fc 100%);
+  border: 1px solid #cde2f7;
+}
+
+.how-card.theme-blue:hover {
+  border-color: #9ac2ed;
+}
+
+.how-card.theme-blue .step-badge {
+  background: #d9e9f9;
+  color: #36608f;
+}
+
+.how-card.theme-blue .step-icon-bubble {
+  background: #ffffff;
+  color: #4a77aa;
+  box-shadow: 0 3px 10px rgba(54, 96, 143, 0.12);
+}
+
+.how-card.theme-blue .tip-dot {
+  background: #4a77aa;
+}
+
+/* Card Internal Typography */
+.card-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.step-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.step-icon-bubble {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+}
+
+.card-step-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #111413;
+  margin: 0;
+}
+
+.card-step-desc {
+  font-size: 15px;
+  color: #151816;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+.how-card.theme-cream .card-step-desc {
+  color: #261f13;
+  font-weight: 500;
+}
+
+.how-card.theme-rose .card-step-desc {
+  color: #2b171a;
+  font-weight: 500;
+}
+
+.how-card.theme-blue .card-step-desc {
+  color: #102131;
+  font-weight: 500;
+}
+
+.card-footer-tip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #151816;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+  margin-top: 8px;
+}
+
+.tip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   CÂU HỎI THƯỜNG GẶP (FAQ): ZERO WASTED SPACE
+   -------------------------------------------------------------------------- */
+.faq-section {
+  padding-top: 22px;
+  padding-bottom: 8px;
+  border-top: 1.5px solid #baa892;
+}
+
+.faq-layout {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--space-5);
-  padding-top: var(--space-5);
+  grid-template-columns: 350px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
 }
-.faq details {
-  padding-block: var(--space-2);
-  border-bottom: var(--border) solid var(--line);
+
+/* Left Column: Heading + Tech Info Card */
+.faq-intro-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.faq details:first-child {
-  padding-top: 0;
+
+.faq-main-title {
+  font-family: var(--serif);
+  font-size: clamp(24px, 3.2vw, 30px);
+  font-weight: 700;
+  color: #151816;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+
+.faq-main-desc {
+  font-size: 15px;
+  color: #151816;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+.faq-support-box {
+  background: #ffffff;
+  border: 1.5px solid #d4cebe;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.support-box-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.support-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand);
+}
+
+.support-box-header h4 {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #111413;
+  margin: 0;
+}
+
+.support-perks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #151816;
+  font-weight: 500;
+}
+
+.support-perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.45;
+}
+
+.check-icon {
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.support-box-footer {
+  font-size: 12.5px;
+  color: #222724;
+  font-weight: 600;
+  padding-top: 10px;
+  border-top: 1px dashed #baa892;
+  line-height: 1.5;
+}
+
+/* Right Column: Interactive Accordion Cards */
+.faq-accordion-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.faq-accordion-card {
+  background: #ffffff;
+  border: 1.5px solid #d4cebe;
+  border-radius: 14px;
+  padding: 16px 20px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.faq-accordion-card:hover {
+  border-color: #baa892;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.faq-accordion-card[open] {
+  background: #fdfcf9;
+  border-color: #baa892;
+  box-shadow: 0 4px 16px rgba(165, 129, 67, 0.08);
+}
+
+.faq-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+  gap: 16px;
+  user-select: none;
+}
+
+.faq-summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-question {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #111413;
+  line-height: 1.4;
+}
+
+.faq-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #f3f2eb;
+  color: #555;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.faq-accordion-card[open] .faq-toggle-icon {
+  background: #111413;
+  color: #ffffff;
+}
+
+.faq-answer {
+  padding-top: 14px;
+  margin-top: 12px;
+  border-top: 1.5px solid #baa892;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #151816;
+  font-weight: 500;
+}
+
+.faq-answer p {
+  margin: 0 0 8px;
+  color: #151816;
+  font-weight: 500;
+}
+
+.faq-answer strong {
+  color: #111413;
+  font-weight: 700;
+}
+
+.faq-answer ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #151816;
+  font-weight: 500;
+}
+
+.faq-answer li {
+  line-height: 1.55;
+  color: #151816;
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE DESIGN (PRODUCT HELP)
+   -------------------------------------------------------------------------- */
+@media (max-width: 960px) {
+  .faq-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .how-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .section-heading {
+    font-size: 26px;
+  }
+
+  .faq-main-title {
+    font-size: 24px;
+  }
+
+  .how-card {
+    padding: 20px 18px;
+  }
+
+  .faq-accordion-card {
+    padding: 14px 16px;
+  }
 }

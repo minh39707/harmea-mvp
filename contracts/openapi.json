@@ -1,13 +1,13 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Harméa MVP API contract",
-    "version": "0.2.0",
-    "description": "Harméa local cart MVP: one product/template, 1–10 designs per order, each 1–10 copies. No payment/customer account. Canonical orders use multipart; legacy demo routes retained temporarily until task C."
+    "title": "Harméa API contract",
+    "version": "0.7.0",
+    "description": "G1: Docker runtime, liveness/readiness checks and reverse-proxy trust. R3: admin products, SQL statistics and streamed CSV behind ADMIN_ENABLED. R2: device cart and photo normalization. R1: guest checkout without accounts, order lookup by order number + phone and fail-closed admin gate. MySQL 8.4 via mysql2. Planned operations are not runtime implementations."
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:4000",
+      "url": "http://127.0.0.1:3000",
       "description": "API local trực tiếp"
     },
     {
@@ -15,13 +15,74 @@
       "description": "Vite dev qua proxy /api"
     }
   ],
-  "security": [],
   "paths": {
+    "/health": {
+      "servers": [
+        {
+          "url": "http://127.0.0.1:3000",
+          "description": "API local trực tiếp"
+        }
+      ],
+      "get": {
+        "x-implementation-status": "implemented",
+        "operationId": "getLiveness",
+        "summary": "Liveness không phụ thuộc MySQL hoặc thư mục upload.",
+        "responses": {
+          "200": {
+            "description": "Tiến trình API đang nhận request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Liveness"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented"
+      }
+    },
+    "/ready": {
+      "servers": [
+        {
+          "url": "http://127.0.0.1:3000",
+          "description": "API local trực tiếp"
+        }
+      ],
+      "get": {
+        "x-implementation-status": "implemented",
+        "operationId": "getReadiness",
+        "summary": "Kiểm tra MySQL và quyền ghi/xóa storage đang chọn (local hoặc S3).",
+        "responses": {
+          "200": {
+            "description": "MySQL và storage đang chọn sẵn sàng.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Readiness"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Một dependency cần thiết chưa sẵn sàng.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Readiness"
+                }
+              }
+            }
+          }
+        },
+        "x-status": "implemented"
+      }
+    },
     "/api/health": {
       "get": {
-        "x-implementation-status": "starter",
+        "x-implementation-status": "implemented",
         "operationId": "getHealth",
-        "summary": "Liveness của API starter; không chứng minh nghiệp vụ đã có.",
+        "summary": "Health check tương thích; container dùng /health cho liveness.",
         "responses": {
           "200": {
             "description": "API đang chạy.",
@@ -33,14 +94,15 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/products/current": {
       "get": {
         "x-implementation-status": "implemented",
         "operationId": "getCurrentProduct",
-        "summary": "Lấy sản phẩm và template duy nhất đang bán.",
+        "summary": "Lấy sản phẩm duy nhất, kể cả khi đang tạm ngừng nhận đơn.",
         "responses": {
           "200": {
             "description": "Danh mục hiện tại.",
@@ -53,7 +115,7 @@
             }
           },
           "404": {
-            "description": "Chưa có sản phẩm đang bán.",
+            "description": "Chưa có sản phẩm trong danh mục.",
             "content": {
               "application/json": {
                 "schema": {
@@ -62,7 +124,9 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented",
+        "description": "isActive=false cho biết storefront phải hiển thị “Tạm ngừng nhận đơn”; API POST /api/orders từ chối sản phẩm đã tắt."
       }
     },
     "/api/orders": {
@@ -70,7 +134,7 @@
         "x-implementation-status": "implemented",
         "operationId": "createOrder",
         "summary": "Tạo một đơn từ thiết kế và ảnh; chưa thanh toán.",
-        "description": "FormData: payload JSON CreateOrder; photo_0/preview_0 ... photo_9/preview_9, exactly one pair per item in array order. Photo <=5MiB JPEG/PNG, preview <=2MiB PNG, each <=20MP/8192px. Total multipart <=16MiB (sum limit applies even when each file fits). Full decode; max two active upload requests per process. requestKey duplicate returns 409 without replaying token. Only one active product/template, server sums quantities and price. No payment.",
+        "description": "Creates an order from server-validated snapshots and uploaded assets. No account or session is needed. The response includes the public order number, never a tracking secret.",
         "requestBody": {
           "required": true,
           "content": {
@@ -196,7 +260,7 @@
         },
         "responses": {
           "201": {
-            "description": "Đơn và status event đầu tiên đã lưu; trả raw tracking token một lần.",
+            "description": "??n v? status event ??u ti?n ?? l?u; tr? m? ??n ?? kh?ch gi? l?i.",
             "content": {
               "application/json": {
                 "schema": {
@@ -216,7 +280,7 @@
             }
           },
           "409": {
-            "description": "DUPLICATE_REQUEST khi requestKey trùng, hoặc PRODUCT_CHANGED khi template không còn hiện hành.",
+            "description": "DUPLICATE_REQUEST, PRODUCT_CHANGED hoặc PRODUCT_INACTIVE.",
             "content": {
               "application/json": {
                 "schema": {
@@ -274,16 +338,27 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Database ho?c storage ch?a s?n s?ng.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/tracking/lookup": {
       "post": {
         "x-implementation-status": "implemented",
-        "operationId": "lookupTracking",
-        "summary": "Tra cứu công khai bằng secret trong body.",
-        "description": "Trang /track#token đọc fragment và POST body. Cache-Control:no-store và Referrer-Policy:no-referrer. Không log token/request body; rate limit. Token sai hoặc không tồn tại cùng404.",
+        "operationId": "lookupOrderByNumberAndPhone",
+        "summary": "Tra c?u c?ng khai b?ng m? ??n v? s? ?i?n tho?i.",
+        "description": "POST m? ??n v? s? ?i?n tho?i trong body; kh?ng d?ng fragment, query string hay secret tracking. Sai m? ho?c s? ?i?n tho?i c?ng tr? 404. Sau 5 l?n sai tr?n m?t m? ??n ho?c 20 l?n sai t? m?t IP trong 15 ph?t, tr? 429 v?i Retry-After. Public response ch? c? allowlist ti?n ??.",
         "requestBody": {
           "required": true,
           "content": {
@@ -355,259 +430,8 @@
               }
             }
           }
-        }
-      }
-    },
-    "/api/admin/session": {
-      "post": {
-        "x-implementation-status": "implemented",
-        "operationId": "loginAdmin",
-        "summary": "Đăng nhập một tài khoản quản trị cấu hình ngoài mã nguồn.",
-        "description": "So sánh password với ADMIN_PASSWORD_HASH. Thành công sinh session32bytes, lưu SHA256 và hạn8h; rotate session khi login. Kiểm tra Origin và rate limit đăng nhập.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "username": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 80
-                  },
-                  "password": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 256
-                  }
-                },
-                "required": [
-                  "username",
-                  "password"
-                ]
-              }
-            }
-          }
         },
-        "responses": {
-          "200": {
-            "description": "Đã đăng nhập.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AdminSession"
-                }
-              }
-            },
-            "headers": {
-              "Set-Cookie": {
-                "schema": {
-                  "type": "string"
-                },
-                "description": "harmea_admin=<opaque>; HttpOnly; SameSite=Lax; Path=/api/admin; Max-Age=28800; Secure khi HTTPS. Local HTTP loopback được bỏ Secure."
-              }
-            }
-          },
-          "400": {
-            "description": "JSON hoặc cấu trúc request không hợp lệ.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "INVALID_CREDENTIALS; thông báo chung.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "ORIGIN_NOT_ALLOWED.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Dữ liệu không đạt quy tắc nghiệp vụ.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Quá nhiều yêu cầu; thử lại sau.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Lỗi nội bộ; không trả stack trace hay thông tin nhạy cảm.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Admin credentials not configured.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "x-implementation-status": "implemented",
-        "operationId": "logoutAdmin",
-        "summary": "Xóa session phía server và cookie.",
-        "security": [
-          {
-            "adminCookie": []
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Đã đăng xuất; cookie bị xóa."
-          },
-          "401": {
-            "description": "Chưa đăng nhập hoặc session hết hạn.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Origin không được phép hoặc không đủ quyền.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Invalid input/identifier.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "operationId": "getAdminSession",
-        "x-implementation-status": "implemented",
-        "summary": "Inspect current cookie session.",
-        "security": [
-          {
-            "adminCookie": []
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "JSON hoặc cấu trúc request không hợp lệ.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "INVALID_CREDENTIALS; thông báo chung.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "ORIGIN_NOT_ALLOWED.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Dữ liệu không đạt quy tắc nghiệp vụ.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Quá nhiều yêu cầu; thử lại sau.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Lỗi nội bộ; không trả stack trace hay thông tin nhạy cảm.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Authenticated session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AdminSession"
-                }
-              }
-            }
-          }
-        }
+        "x-status": "implemented"
       }
     },
     "/api/admin/orders": {
@@ -615,11 +439,6 @@
         "x-implementation-status": "implemented",
         "operationId": "listAdminOrders",
         "summary": "Danh sách đơn cho quản trị.",
-        "security": [
-          {
-            "adminCookie": []
-          }
-        ],
         "parameters": [
           {
             "name": "page",
@@ -647,6 +466,17 @@
             "schema": {
               "$ref": "#/components/schemas/OrderStatus"
             }
+          },
+          {
+            "name": "orderNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 19,
+              "pattern": "^[Hh][Mm](?:-[0-9A-Fa-f]{0,16})?$"
+            },
+            "description": "Mã đơn đầy đủ hoặc tiền tố; không phân biệt chữ hoa thường."
           }
         ],
         "responses": {
@@ -670,8 +500,8 @@
               }
             }
           },
-          "401": {
-            "description": "Chưa đăng nhập hoặc session hết hạn.",
+          "403": {
+            "description": "Origin không được phép hoặc không đủ quyền.",
             "content": {
               "application/json": {
                 "schema": {
@@ -680,8 +510,8 @@
               }
             }
           },
-          "403": {
-            "description": "Origin không được phép hoặc không đủ quyền.",
+          "404": {
+            "description": "ADMIN_ENABLED ?ang t?t ho?c kh?ng t?m th?y ??n.",
             "content": {
               "application/json": {
                 "schema": {
@@ -700,7 +530,9 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented",
+        "description": "Mọi request cần ADMIN_ENABLED. orderNumber khớp chính xác hoặc theo tiền tố; status và phân trang giữ nguyên."
       }
     },
     "/api/admin/orders/{id}": {
@@ -708,11 +540,6 @@
         "x-implementation-status": "implemented",
         "operationId": "getAdminOrder",
         "summary": "Chi tiết đầy đủ đơn, không trả raw token hay đường dẫn kho tệp.",
-        "security": [
-          {
-            "adminCookie": []
-          }
-        ],
         "parameters": [
           {
             "name": "id",
@@ -731,16 +558,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AdminOrderDetail"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Chưa đăng nhập hoặc session hết hạn.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -775,7 +592,8 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/admin/orders/{id}/status": {
@@ -783,11 +601,6 @@
         "x-implementation-status": "implemented",
         "operationId": "updateOrderStatus",
         "summary": "Chuyển trạng thái với optimistic concurrency.",
-        "security": [
-          {
-            "adminCookie": []
-          }
-        ],
         "parameters": [
           {
             "name": "id",
@@ -822,16 +635,6 @@
           },
           "400": {
             "description": "JSON hoặc cấu trúc request không hợp lệ.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Chưa đăng nhập hoặc session hết hạn.",
             "content": {
               "application/json": {
                 "schema": {
@@ -900,19 +703,15 @@
               }
             }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
     "/api/admin/orders/{id}/items/{itemId}/assets/{kind}": {
       "get": {
         "x-implementation-status": "implemented",
         "operationId": "downloadOrderAsset",
-        "summary": "Tải tệp riêng tư qua kiểm tra session.",
-        "security": [
-          {
-            "adminCookie": []
-          }
-        ],
+        "summary": "Stream ?nh ri?ng t? t? storage local/S3 qua admin gate.",
         "parameters": [
           {
             "name": "id",
@@ -963,16 +762,6 @@
               }
             }
           },
-          "401": {
-            "description": "Chưa đăng nhập hoặc session hết hạn.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
           "403": {
             "description": "Origin không được phép hoặc không đủ quyền.",
             "content": {
@@ -1002,50 +791,149 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Database ho?c storage ch?a s?n s?ng.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
-        }
+        },
+        "x-status": "implemented"
       }
     },
-    "/api/demo-checkouts": {
-      "post": {
-        "operationId": "legacyDemoCheckout",
-        "deprecated": true,
-        "x-implementation-status": "legacy",
-        "summary": "Temporary pre-task-C demo client compatibility.",
-        "description": "Uses isolated demo_checkouts table, not admin orders. No production/state workflow. Checkout JSON requestKey/confirmed/items/recipient with embedded JPEG data URLs; repeat request replays token. See historical E1 QA. Retire only after client migration.",
+    "/api/admin/products": {
+      "get": {
+        "x-status": "implemented",
+        "x-implementation-status": "implemented",
+        "operationId": "listAdminProducts",
+        "summary": "Liệt kê sản phẩm hiện hành, bao gồm sản phẩm đang tạm ngừng.",
+        "description": "Admin gate phải được bật. Chỉ có một sản phẩm trong phạm vi hiện tại; version dùng cho cập nhật lạc quan.",
+        "responses": {
+          "200": {
+            "description": "Products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminProduct"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ADMIN_ENABLED đang tắt hoặc chưa có sản phẩm.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-task": "R3"
+      }
+    },
+    "/api/admin/products/{id}": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "getAdminProduct",
+        "summary": "Read product for administration",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminProduct"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found (also returned for another user’s order)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "x-status": "implemented",
+        "x-implementation-status": "implemented",
+        "x-task": "R3",
+        "operationId": "updateAdminProduct",
+        "summary": "Cập nhật sản phẩm bằng expectedVersion; snapshot đơn cũ không đổi.",
+        "description": "Chỉ name, description, unitPriceVnd và isActive được phép sửa. Giá trong khoảng 1.000–10.000.000 VND. Đổi giá và lịch sử giá được ghi trong cùng transaction; version cũ trả 409.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
+                "$ref": "#/components/schemas/AdminProductUpdate"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Legacy response",
+            "description": "Updated product",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LegacyReceipt"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "Legacy response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyReceipt"
+                  "$ref": "#/components/schemas/AdminProduct"
                 }
               }
             }
           },
           "404": {
-            "description": "Legacy response",
+            "description": "ADMIN_ENABLED đang tắt hoặc không tìm thấy sản phẩm.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1055,7 +943,7 @@
             }
           },
           "409": {
-            "description": "Legacy response",
+            "description": "Conflict",
             "content": {
               "application/json": {
                 "schema": {
@@ -1065,17 +953,7 @@
             }
           },
           "422": {
-            "description": "Legacy response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Legacy response",
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1087,13 +965,246 @@
         }
       }
     },
-    "/api/demo-tracking": {
+    "/api/admin/stats": {
+      "get": {
+        "x-status": "implemented",
+        "x-implementation-status": "implemented",
+        "x-task": "R3",
+        "operationId": "getAdminStats",
+        "summary": "Thống kê đơn theo ngày giờ Việt Nam, tính bằng SQL.",
+        "description": "Ngày from/to tính bao gồm cả ngày theo UTC+7 rồi quy đổi sang UTC. Mặc định 30 ngày gần nhất, tối đa 366 ngày. Doanh thu tạm tính và số thẻ loại đơn hủy; không biểu thị tiền đã thanh toán.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminStats"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Query không hợp lệ.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ADMIN_ENABLED đang tắt.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Ngày không hợp lệ hoặc khoảng ngày vượt quá 366 ngày.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/orders.csv": {
+      "get": {
+        "x-status": "implemented",
+        "x-implementation-status": "implemented",
+        "x-task": "R3",
+        "operationId": "exportAdminOrders",
+        "summary": "Xuất CSV UTF-8 có BOM, chống CSV injection, không chứa URL nhạc.",
+        "description": "Stream theo từng trang. Nếu không truyền ngày thì xuất toàn bộ thời gian; nếu truyền from/to, ngày tính theo giờ Việt Nam UTC+7. Các ô bắt đầu bằng =, +, -, @ hoặc tab được thêm tiền tố nháy đơn.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrderStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Streamed CSV UTF-8 with BOM; formula-prefixed cells escaped",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Query không hợp lệ.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ADMIN_ENABLED đang tắt.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Ngày không hợp lệ hoặc khoảng ngày vượt quá 366 ngày.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/audit-log": {
+      "get": {
+        "x-status": "planned",
+        "x-implementation-status": "planned",
+        "x-task": "F6",
+        "operationId": "listAuditLog",
+        "summary": "Read paginated administration audit log",
+        "description": "PLANNED F6: not implemented by F0. Runtime must not be inferred from this contract.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "targetType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditPage"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden: admin role required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ADMIN_ENABLED ?ang t?t ho?c kh?ng t?m th?y ??n.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tracking/payment-confirm": {
       "post": {
-        "operationId": "legacyDemoTracking",
-        "deprecated": true,
-        "x-implementation-status": "legacy",
-        "summary": "Temporary pre-task-C demo client compatibility.",
-        "description": "Uses isolated demo_checkouts table, not admin orders. No production/state workflow. Checkout JSON requestKey/confirmed/items/recipient with embedded JPEG data URLs; repeat request replays token. See historical E1 QA. Retire only after client migration.",
+        "x-implementation-status": "implemented",
+        "operationId": "reportCustomerTransfer",
+        "summary": "Record the customer declaration that a transfer was made.",
+        "description": "Static QR is displayed after checkout. This endpoint verifies order number and phone using the shared lookup rate limiter. It records an immutable, idempotent declaration event; it does not mark the order as paid or change production status. Cancelled orders return 409.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1106,27 +1217,17 @@
         },
         "responses": {
           "200": {
-            "description": "Legacy response",
+            "description": "Customer declaration recorded.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LegacyReceipt"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "Legacy response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyReceipt"
+                  "$ref": "#/components/schemas/CustomerPaymentReport"
                 }
               }
             }
           },
           "404": {
-            "description": "Legacy response",
+            "description": "ORDER_NOT_FOUND; không tiết lộ có đơn hay không.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1136,17 +1237,7 @@
             }
           },
           "409": {
-            "description": "Legacy response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Legacy response",
+            "description": "Order is cancelled.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1156,7 +1247,7 @@
             }
           },
           "429": {
-            "description": "Legacy response",
+            "description": "Quá nhiều yêu cầu; thử lại sau.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1170,13 +1261,6 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "adminCookie": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "harmea_admin"
-      }
-    },
     "schemas": {
       "Error": {
         "type": "object",
@@ -1239,6 +1323,35 @@
         "required": [
           "status",
           "service"
+        ]
+      },
+      "Liveness": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "const": "ok",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "Readiness": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "ok",
+              "not_ready"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
         ]
       },
       "Crop": {
@@ -1311,6 +1424,18 @@
           "crop": {
             "$ref": "#/components/schemas/Crop"
           },
+          "photoWidth": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8192,
+            "description": "Chiều rộng của ảnh sau khi trình duyệt đã áp dụng EXIF orientation; dùng để xác nhận crop trước khi server resize."
+          },
+          "photoHeight": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8192,
+            "description": "Chiều cao của ảnh sau khi trình duyệt đã áp dụng EXIF orientation; dùng để xác nhận crop trước khi server resize."
+          },
           "color": {
             "type": "string",
             "enum": [
@@ -1366,7 +1491,7 @@
           },
           "unitPriceVnd": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 1000
           },
           "currency": {
             "type": "string",
@@ -1461,6 +1586,14 @@
             ],
             "deprecated": true,
             "description": "Temporary compatibility field for pre-task-C demo client."
+          },
+          "description": {
+            "type": "string",
+            "description": "Mô tả hiện hành; không có trên snapshot đơn lịch sử."
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "False khi sản phẩm đang tạm ngừng nhận đơn."
           }
         },
         "required": [
@@ -1472,7 +1605,9 @@
           "isDemo",
           "physicalSizeMm",
           "artworkSizeMm",
-          "safeAreaMm"
+          "safeAreaMm",
+          "description",
+          "isActive"
         ]
       },
       "CreateOrder": {
@@ -1522,7 +1657,8 @@
             "format": "uuid"
           },
           "orderNumber": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^HM-[0-9A-F]{16}$"
           },
           "status": {
             "$ref": "#/components/schemas/OrderStatus"
@@ -1547,11 +1683,6 @@
             "type": "string",
             "const": "VND"
           },
-          "trackingToken": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9_-]{43}$",
-            "description": "Secret sinh từ32 random bytes; chỉ trả trong lần tạo thành công."
-          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -1566,7 +1697,6 @@
           "subtotalVnd",
           "shippingFeeVnd",
           "currency",
-          "trackingToken",
           "createdAt"
         ]
       },
@@ -1574,13 +1704,22 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "token": {
+          "orderNumber": {
             "type": "string",
-            "pattern": "^[A-Za-z0-9_-]{43}$"
+            "pattern": "^[Hh][Mm]-[0-9A-Fa-f]{16}$",
+            "description": "M? HM- v? 16 k? t? hex; server trim v? chu?n h?a ch? hoa."
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 32,
+            "pattern": "^[+0-9 .\\-]+$",
+            "description": "S? ?i?n tho?i Vi?t Nam; server b? kho?ng tr?ng, d?u ch?m, g?ch, chu?n h?a +84/84 v? 0."
           }
         },
         "required": [
-          "token"
+          "orderNumber",
+          "phone"
         ]
       },
       "PublicStatusEvent": {
@@ -1796,7 +1935,7 @@
             "format": "date-time"
           },
           "productSnapshot": {
-            "$ref": "#/components/schemas/Product"
+            "$ref": "#/components/schemas/ProductSnapshot"
           },
           "recipient": {
             "$ref": "#/components/schemas/Recipient"
@@ -1835,6 +1974,14 @@
             "items": {
               "$ref": "#/components/schemas/AdminOrderItem"
             }
+          },
+          "customerPaymentReportedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Customer declaration only; funds have not been verified."
           }
         },
         "required": [
@@ -1857,7 +2004,8 @@
           "trackingCode",
           "cancellationReason",
           "history",
-          "items"
+          "items",
+          "customerPaymentReportedAt"
         ]
       },
       "AdminOrderPage": {
@@ -1918,24 +2066,6 @@
           "status"
         ],
         "description": "Chỉ chuyển bước kế tiếp; pending/confirmed có thể cancelled (bắt buộc cancellationReason). trackingCode chỉ chấp nhận khi sang shipping. Không cho cập nhật cùng trạng thái. version xung đột409."
-      },
-      "AdminSession": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "authenticated": {
-            "type": "boolean",
-            "const": true
-          },
-          "expiresAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "authenticated",
-          "expiresAt"
-        ]
       },
       "OrderItemInput": {
         "type": "object",
@@ -2007,42 +2137,361 @@
           "assets"
         ]
       },
-      "LegacyReceipt": {
+      "AdminProduct": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "unitPriceVnd": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 10000000
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "templateVersion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "unitPriceVnd",
+          "isActive",
+          "version",
+          "templateVersion"
+        ]
+      },
+      "AdminProductUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 0
+          },
+          "unitPriceVnd": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 10000000
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "expectedVersion"
+        ],
+        "minProperties": 2
+      },
+      "AdminStats": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ordersByStatus": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "pending": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "confirmed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "producing": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "shipping": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "completed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "cancelled": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "pending",
+              "confirmed",
+              "producing",
+              "shipping",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "subtotalVnd": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "cardCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ordersByDay": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "orderCount": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "date",
+                "orderCount"
+              ]
+            }
+          }
+        },
+        "required": [
+          "ordersByStatus",
+          "subtotalVnd",
+          "cardCount",
+          "ordersByDay"
+        ],
+        "description": "Doanh thu tạm tính cộng subtotal của đơn không hủy; cardCount cũng chỉ gồm đơn không hủy. ordersByStatus và ordersByDay tính mọi đơn trong khoảng. Ngày theo giờ Việt Nam UTC+7."
+      },
+      "AuditEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "targetType": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "changes": {
+            "type": "object",
+            "description": "Allowlisted changes only; no credentials, session/tracking tokens or music URLs."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "targetType",
+          "targetId",
+          "changes",
+          "createdAt"
+        ]
+      },
+      "AuditPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditEntry"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ]
+      },
+      "ProductSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "unitPriceVnd": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "const": "VND"
+          },
+          "templateVersion": {
+            "type": "string"
+          },
+          "isDemo": {
+            "type": "boolean"
+          },
+          "physicalSizeMm": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "width": {
+                "type": "number",
+                "const": 54
+              },
+              "height": {
+                "type": "number",
+                "const": 86
+              }
+            },
+            "required": [
+              "width",
+              "height"
+            ]
+          },
+          "artworkSizeMm": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "width": {
+                "type": "number",
+                "const": 57
+              },
+              "height": {
+                "type": "number",
+                "const": 90
+              }
+            },
+            "required": [
+              "width",
+              "height"
+            ]
+          },
+          "safeAreaMm": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "width": {
+                "type": "number",
+                "const": 49
+              },
+              "height": {
+                "type": "number",
+                "const": 82
+              }
+            },
+            "required": [
+              "width",
+              "height"
+            ]
+          },
+          "isDemoPrice": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "Temporary compatibility field for pre-task-C demo client."
+          },
+          "image": {
+            "type": "string",
+            "deprecated": true,
+            "description": "Temporary compatibility field for pre-task-C demo client."
+          },
+          "cardSizeMm": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "width": {
+                "type": "number",
+                "const": 54
+              },
+              "height": {
+                "type": "number",
+                "const": 86
+              }
+            },
+            "required": [
+              "width",
+              "height"
+            ],
+            "deprecated": true,
+            "description": "Temporary compatibility field for pre-task-C demo client."
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "unitPriceVnd",
+          "currency",
+          "templateVersion",
+          "isDemo",
+          "physicalSizeMm",
+          "artworkSizeMm",
+          "safeAreaMm"
+        ],
+        "description": "Product snapshot embedded in an order; it does not change after the order is created."
+      },
+      "CustomerPaymentReport": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "orderNumber": {
             "type": "string"
           },
-          "status": {
-            "type": "string",
-            "const": "pending"
-          },
-          "subtotalVnd": {
-            "type": "integer"
-          },
-          "shippingFeeVnd": {
-            "type": "null"
-          },
-          "isTest": {
-            "const": true,
-            "type": "boolean"
-          },
-          "createdAt": {
+          "reportedAt": {
             "type": "string",
             "format": "date-time"
-          },
-          "trackingToken": {
-            "type": "string"
           }
         },
         "required": [
           "orderNumber",
-          "status",
-          "subtotalVnd",
-          "shippingFeeVnd",
-          "isTest",
-          "createdAt"
+          "reportedAt"
         ]
       }
     }

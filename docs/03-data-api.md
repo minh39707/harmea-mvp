@@ -1,94 +1,102 @@
-# Dữ liệu và hợp đồng API — giỏ hàng
+# Dữ liệu và API
 
-Nguồn chuẩn: `contracts/openapi.json` phiên bản 0.2.0 và `database/*.sql`. Quyết định 29/10/2026 giữ giỏ hàng thay phạm vi một thiết kế/không giỏ hàng ban đầu. Không thanh toán, không tài khoản khách, không cloud.
+OpenAPI chuẩn tại [`contracts/openapi.json`](../contracts/openapi.json), phiên bản 0.7.0. Các route có `x-status: planned` là kế hoạch; chỉ route `x-implementation-status: implemented` được xem là có runtime.
 
-## 1. Mô hình dữ liệu
+## Schema MySQL hiện tại
 
-- `products`: tối đa một sản phẩm đang hoạt động, một template, giá demo nguyên VND.
-- `orders`: một người nhận, một status/version và lịch sử chung. `quantity` là tổng 1–100 thẻ; `subtotal_vnd = unit_price_vnd × quantity`. Giá/template/sản phẩm/người nhận là snapshot.
-- `order_items`: 1–10 dòng theo position, mỗi dòng 1–10 bản; design_snapshot/photo_key/preview_key riêng. Cùng product/giá/template của header, URL nhạc riêng trong design, không fetch backend.
-- `order_status_events`: một event mỗi version, kể cả pending lúc tạo; status/version và event cùng transaction.
-- `admin_sessions`: SHA-256 của token ngẫu nhiên 32 byte, hạn 8 giờ, không lưu raw token.
+Cập nhật 12/11/2026: migration `008_customer_payment_reports.sql` thêm `order_payment_reports(order_id, reported_at)`. Mỗi đơn có tối đa một sự kiện khách tự báo chuyển khoản; thời gian đầu tiên được giữ nguyên khi gửi lại. Bản ghi này không phải bằng chứng nhận tiền và không thay đổi version/trạng thái/lịch sử sản xuất hay doanh thu.
 
-Migration 004 thêm order_items, nới quantity header đến 100 và backfill đơn một thiết kế cũ. Các cột design_snapshot/photo_key/preview_key cũ của orders giữ bản dòng đầu để tương thích; API chi tiết dùng order_items. Không sửa migration 001–003 đã áp dụng.
+`POST /api/tracking/payment-confirm` đã triển khai, nhận `{ orderNumber, phone }` trong body và trả `{ orderNumber, reportedAt }`. Dùng cùng HMAC, timing-safe comparison và bộ giới hạn thử sai với `/tracking/lookup`; sai thông tin trả 404 chung, bị khóa trả 429. Trong transaction, khóa đơn để kiểm tra hủy rồi ghi sự kiện; đơn hủy trả 409. Chi tiết admin thêm `customerPaymentReportedAt` (timestamp hoặc null), nằm sau admin gate. API lookup công khai giữ nguyên allowlist.
 
-`demo_checkouts` là kho legacy riêng, không tự chuyển thành orders, không xuất hiện trong admin canonical. Các đơn này chưa có tiến độ sản xuất/giao hàng.
+Trang thành công dùng tổng tiền snapshot từ response tạo đơn và ảnh tĩnh `/images/payment-qr.png` do người dùng cung cấp từ Downloads. Ảnh QR không tự điền số tiền/nội dung theo đơn; UI hướng dẫn khách nhập. SĐT cho bước báo chuyển khoản chỉ được giữ trong React memory, không lưu browser storage. Reload làm mất receipt; khách vẫn tra cứu tiến độ bằng mã đơn + SĐT. Chưa có QR/báo chuyển khoản trong trang tra cứu sau reload.
 
-## 2. Endpoint
+| Bảng | Nội dung chính |
+|---|---|
+| `products` | Một sản phẩm hiện hành, tên/mô tả, giá, template version, trạng thái bật/tắt và version |
+| `product_price_history` | Giá cũ/mới và thời điểm đổi; ghi cùng transaction với cập nhật sản phẩm |
+| `orders` | Mã đơn, request key, snapshot sản phẩm/người nhận, HMAC SĐT, giá và trạng thái |
+| `order_items` | Snapshot từng thiết kế, số lượng và khóa ảnh gốc/preview |
+| `order_status_events` | Lịch sử version, trạng thái nguồn/đích, actor `guest/admin/system` và ghi chú nội bộ |
+| `schema_migrations` | Tên migration, checksum và thời gian áp dụng |
 
-| Method/path | Quyền | Trạng thái sau A |
-| --- | --- | --- |
-| GET `/api/health` | Public | Đã có |
-| GET `/api/products/current` | Public | Đã có Product theo contract; alias deprecated cho client cũ |
-| POST `/api/orders` | Guest | Đã có multipart nhiều dòng |
-| POST `/api/tracking/lookup` | Token trong body | Đã có allowlist tiến độ/lịch sử |
-| POST `/api/admin/session` | Login | Đã có scrypt + cookie |
-| GET `/api/admin/session` | Admin | Đã có kiểm tra phiên |
-| DELETE `/api/admin/session` | Admin | Đã có thu hồi phiên/cookie |
-| GET `/api/admin/orders` | Admin | Đã có lọc/pagination |
-| GET `/api/admin/orders/{id}` | Admin | Đã có snapshots/items/lịch sử |
-| PATCH `/api/admin/orders/{id}/status` | Admin | Đã có expectedVersion/state machine |
-| GET `/api/admin/orders/{id}/items/{itemId}/assets/{kind}` | Admin | Đã có photo/preview từng dòng |
-| POST `/api/demo-checkouts`, `/api/demo-tracking` | Legacy public | Tạm giữ cho frontend trước C; không thuộc luồng admin mới |
+Không có bảng `users`, `sessions`, `admin_sessions`; `orders` không có `user_id` và event không có `actor_user_id`. Migration lịch sử đã áp dụng không bị sửa để xóa dấu vết; R1 dùng migration mới loại các bảng/cột auth khỏi schema runtime.
 
-Code UI checkout/tracking/admin đã nối API canonical ở C–D. API/client frontend đã kiểm tra bằng Express/PGlite/file thật; chưa nghiệm thu thao tác trình duyệt, IndexedDB/Canvas/clipboard hoặc PostgreSQL. Frontend không còn gọi route demo; route legacy vẫn giữ riêng, không tự promote đơn cũ. D có `npm run test:admin` và `npm run demo:seed`; xem báo cáo `docs/qa/2026-10-29-task-d.md`.
+`orders.recipient_snapshot` giữ SĐT và địa chỉ cần cho giao hàng. `lookup_phone_hash` là HMAC-SHA256 của SĐT chuẩn hóa với secret `LOOKUP_SECRET`; không lưu thêm bản thô để tra cứu. `tracking_token_hash` đã bị gỡ sau khi backfill.
 
-## 3. Multipart tạo đơn
+Migration 004 thêm hash nullable và xóa auth schema; `scripts/backfill-lookup.mjs` xử lý đơn cũ; migration 005 đặt `lookup_phone_hash NOT NULL` và xóa unique index/cột token. Migration 006 thêm mô tả/version sản phẩm và bảng `product_price_history`. Nếu migration cuối của R1 được hoãn do còn hash NULL, chạy `npm run db:backfill-lookup`, sau đó `npm run db:migrate`.
+
+Migration 007 cập nhật sản phẩm hiện hành thành 89.000đ, tăng version và ghi `product_price_history` trong cùng transaction nếu giá thay đổi. Không cập nhật snapshot hay giá của đơn đã gửi; các file migration 001–006 giữ nguyên checksum.
+
+## Quy tắc số điện thoại và mã đơn
+
+- Số điện thoại chuẩn hóa ở API tạo đơn và API lookup bằng cùng một hàm.
+- Bỏ whitespace, dấu chấm và dấu gạch. Prefix `+84` hoặc `84` đổi thành `0`.
+- Kết quả chỉ nhận dạng `^0[0-9]{9,10}$`.
+- Mã đơn được trim, viết hoa và xác nhận `^HM-[0-9A-F]{16}$`.
+- HMAC so sánh bằng `timingSafeEqual`; dữ liệu giả/sai định dạng dùng cùng lỗi 404.
+- Mỗi mã đơn cho tối đa năm lượt sai/15 phút; mỗi IP tối đa 20 lượt sai/15 phút. Khi đạt ngưỡng, mọi yêu cầu tiếp theo trả 429 kèm `Retry-After` trước khi tra cứu/so SĐT, kể cả khi SĐT đúng. Bộ đếm trong memory dành cho một instance và tự mở lại sau 15 phút.
+
+## API đã triển khai
+
+| Method / path | Mục đích | Trạng thái |
+|---|---|---|
+| `GET /health` | Liveness độc lập với MySQL; dành cho container | Implemented |
+| `GET /ready` | Ping MySQL và kiểm tra ghi/xóa qua storage local/S3 đang chọn; trả 503 nếu dependency chưa sẵn sàng | Implemented |
+| `GET /api/health` | Health check không truy cập dữ liệu khách | Implemented |
+| `GET /api/products/current` | Đọc sản phẩm/mẫu hiện hành và trạng thái nhận đơn | Implemented |
+| `POST /api/orders` | Tạo đơn multipart, trả `orderNumber`, không trả token | Implemented |
+| `POST /api/tracking/lookup` | Nhận `{ orderNumber, phone }` trong JSON body; trả allowlist tiến độ | Implemented |
+| `GET /api/admin/orders` | Lọc/phân trang đơn; cần `ADMIN_ENABLED` | Implemented |
+| `GET /api/admin/orders/{id}` | Chi tiết snapshot và URL nội bộ qua API admin | Implemented |
+| `PATCH /api/admin/orders/{id}/status` | State machine + `expectedVersion`; event actor `admin` | Implemented |
+| `GET /api/admin/orders/{id}/items/{itemId}/assets/{kind}` | Tải ảnh riêng qua admin gate | Implemented |
+| `GET /api/admin/products` | Liệt kê sản phẩm qua admin gate | Implemented |
+| `PATCH /api/admin/products/{id}` | Chỉnh tên, mô tả, giá, trạng thái bằng version; ghi lịch sử giá | Implemented |
+| `GET /api/admin/stats?from=&to=` | Tổng hợp trạng thái, số thẻ, tạm tính và đơn/ngày theo UTC+7 | Implemented |
+| `GET /api/admin/orders.csv?status=&from=&to=` | Stream CSV BOM; escape công thức, không xuất URL nhạc | Implemented |
+
+`GET /api/admin/orders` nhận thêm `orderNumber` để khớp mã chính xác hoặc tiền tố. Stats mặc định 30 ngày gần nhất, tối đa 366 ngày; tổng tiền và số thẻ bỏ đơn hủy, còn số đơn theo trạng thái/ngày tính mọi trạng thái. Ngày đầu/cuối bao gồm trọn ngày giờ Việt Nam rồi chuyển thành mốc UTC trong SQL. CSV không có lọc ngày thì xuất toàn bộ lịch sử.
+
+Mọi `/api/admin*` trả 404 chung khi gate tắt. `ADMIN_ENABLED` mặc định false trong production; khi bật phải chặn `/admin*` và `/api/admin*` tại reverse proxy. Dev local mặc định bật. Không còn `/api/auth/*`, `/api/me*` hoặc `/api/admin/session`.
+
+## Hợp đồng tạo đơn
+
+G1b giữ nguyên khóa ảnh trong `order_items` và URL API admin, đổi backend bằng `STORAGE_DRIVER=local|s3`. Ảnh S3 nằm dưới `uploads/`, chỉ được stream qua API admin sau gate; không phát URL S3/presigned. Tệp không có trả 404; driver không truy cập được trả 503. DB và storage không có transaction chung: khi tạo đơn lỗi, API thử dọn mọi khóa đã ghi và log sự kiện an toàn nếu dọn thất bại. Không có migration schema mới.
+
+`POST /api/orders` nhận multipart có `payload` JSON và từng cặp `photo_i`, `preview_i`. Thiết kế mới gửi `photoWidth`/`photoHeight` sau khi client áp dụng EXIF orientation; nếu kích thước sau rotate của server không khớp, API trả 422 trước khi ghi tệp. Hai trường kích thước không bắt buộc để giữ tương thích giỏ cũ. `requestKey` UUID giúp retry cùng request; key trùng trả 409 và không tạo thêm đơn. Server xác thực dữ liệu, decode ảnh với giới hạn 40 MP, chuẩn hóa ảnh gốc sang JPEG sRGB cạnh tối đa `PHOTO_MAX_EDGE` (mặc định 2400), `PHOTO_JPEG_QUALITY` (mặc định 82), và nén PNG preview lossless. Một transaction ghi order snapshot, order items và event đầu.
+
+Response 201 gồm `id`, `orderNumber`, `status`, quantity/tổng giá, tiền tệ và thời gian tạo. Mã đơn được hiển thị ở trang thành công để khách lưu; khách tự nhập mã + SĐT tại `/track`. SĐT trong snapshot được lưu ở dạng chuẩn hóa.
+
+## Hợp đồng tra cứu công khai
+
+Request body:
 
 ```json
 {
-  "requestKey": "22222222-2222-4222-8222-222222222222",
-  "designConfirmed": true,
-  "items": [{
-    "productId": "11111111-1111-4111-8111-111111111111",
-    "templateVersion": "harmea-card-v1",
-    "quantity": 2,
-    "design": {
-      "fullName": "Demo Harméa",
-      "musicUrl": "https://www.youtube.com/watch?v=demo",
-      "color": "cream",
-      "crop": { "x": 0, "y": 0, "width": 1, "height": 1 }
-    }
-  }],
-  "recipient": { "name": "Khách Demo", "phone": "0900000000", "address": "Địa chỉ giả cho demo" },
-  "note": "Không giao hàng thật"
+  "orderNumber": "HM-0123456789ABCDEF",
+  "phone": "0912 345 678"
 }
 ```
 
-Ví dụ dùng dữ liệu giả và URL placeholder, không phải bài hát đã xác minh; sinh requestKey mới bằng crypto.randomUUID() cho lần đặt mới.
+Request dùng POST body, không dùng query string, fragment hoặc URL chứa thông tin tra cứu. Mã/SĐT sai, đơn không tồn tại và mã sai định dạng cùng trả `ORDER_NOT_FOUND` với một thông báo. Response chỉ gồm:
 
-`payload` chứa JSON dưới dạng string; mỗi dòng i từ 0 có đúng một `photo_i` (JPEG/PNG ≤5 MiB) và `preview_i` (PNG ≤2 MiB). Không nhận phần dư/lặp/thiếu hoặc ảnh động/nhiều frame. Server decode đầy đủ, ≤20MP/cạnh8192; lưu đúng byte ảnh gốc và PNG proof riêng tư, tên ngẫu nhiên do server sinh.
-
-Tổng request ≤16 MiB, JSON ≤65.536 ký tự, tối đa hai upload đang xử lý mỗi tiến trình. Giới hạn tổng có thể nhỏ hơn tổng giới hạn từng ảnh. Quá kích thước trả 413; sai kiểu/không decode được trả 415; cấu trúc multipart/JSON hỏng trả 400. Web FormData có buffer giới hạn, không phải streaming-to-disk, chưa đo tải public lớn.
-
-Tên, URL nhạc và crop bắt buộc. Ngày sinh, ngày kỷ niệm, địa điểm, chữ ký tùy chọn; ngày nếu có phải YYYY-MM-DD có thật, không gửi chuỗi rỗng. DOB không trong tương lai theo Asia/Ho_Chi_Minh. Màu cream/blue/rose, mặc định cream. Crop hữu hạn trong [0,1], width/height >0, x+width/y+height ≤1, theo ảnh đã xử lý chiều EXIF. URL HTTPS/exact-host allowlist, không credentials/cổng tùy chỉnh; không tự tải URL. Preview phải được admin đối chiếu với thiết kế, không được cam kết là file in chuẩn.
-
-Lấy giá từ DB, từ chối field giá/tổng client. Kiểm tra product/template trong transaction; sai trả PRODUCT_CHANGED 409. `shippingFeeVnd: null` là chưa báo phí, không phải miễn phí hay đã thanh toán. Không sửa snapshot/tệp của đơn gửi qua API.
-
-## 4. Tracking, auth và trạng thái
-
-Token tracking ngẫu nhiên 32 byte, chỉ lưu SHA-256 và trả một lần khi tạo thành công. `/track#token` → POST lookup body. UNIQUE requestKey trả DUPLICATE_REQUEST 409, không replay token. Mất response cần liên hệ cửa hàng; không tự sinh khóa mới cho retry. Khóa mới chỉ dành cho lần đặt mới.
-
-C ghi record `{requestKey,fingerprint}` vào sessionStorage trước POST. Fingerprint SHA-256 bao gồm payload đã chuẩn hóa và SHA-256 từng Blob, record không chứa PII/raw body/URL nhạc/token. Khi kết quả chưa rõ, đổi nội dung bị chặn; retry giữ khóa, kể cả retry nhận 4xx vẫn chưa chứng minh lần trước chưa lưu. Chỉ thành công hợp lệ hoặc lần gửi đầu bị từ chối rõ ràng mới giải phóng khóa. Timeout POST 45 giây, lookup 15 giây; không có tự retry POST. Giới hạn client dành thêm 16 KiB cho envelope multipart bên trong trần 16 MiB.
-
-Public response chỉ có orderNumber/status/createdAt/updatedAt/trackingCode và history `{status,occurredAt}`; không ID, giá, người nhận, thiết kế, ảnh, URL, note, actor/lý do hủy. Admin response dùng allowlist khác và chỉ trả endpoint ảnh có xác thực, không key/path filesystem hoặc token/hash.
-
-Cookie admin `harmea_admin`: HttpOnly, SameSite=Lax, Path=/api/admin, 8 giờ; Secure khi APP_ORIGIN dùng HTTPS. Login thay phiên của client hiện tại; logout/expiry thu hồi quyền dù còn cookie. Mật khẩu scrypt từ setup, không có password mặc định; chưa cấu hình hash trả 503. Giới hạn 5 login/IP/phút và 40 mutation/IP/phút; Origin áp dụng POST/PATCH/DELETE/PUT. Không localStorage cho admin session; không log token, mật khẩu hoặc body/URL nhạc.
-
-```text
-pending -> confirmed -> producing -> shipping -> completed
-   |           |
-   +-----------+----> cancelled (cần lý do)
+```json
+{
+  "orderNumber": "HM-0123456789ABCDEF",
+  "status": "pending",
+  "createdAt": "2026-11-11T00:00:00.000Z",
+  "updatedAt": "2026-11-11T00:00:00.000Z",
+  "trackingCode": null,
+  "history": [{ "status": "pending", "occurredAt": "2026-11-11T00:00:00.000Z" }]
+}
 ```
 
-Không nhảy bước/quay lùi/cùng trạng thái/mở lại đơn cuối. PATCH gửi expectedVersion; cùng version chỉ một lần thành công, lần còn lại VERSION_CONFLICT 409, không event thừa. cancellationReason chỉ cho cancelled, trackingCode chỉ cho shipping. Website ghi nhận thao tác admin, không chứng minh NFC hoặc giao hàng vật lý.
+Không có tên, SĐT, địa chỉ, ghi chú, ảnh, thiết kế, URL nhạc, snapshot giá hoặc lý do hủy trong response công khai. `Cache-Control: no-store` được áp cho API.
 
-Error envelope `{ "error": { "code": "...", "message": "..." } }`. Thiếu phiên 401, tài nguyên không thấy 404, validation 422, conflict 409. Không trả stack trace hoặc dữ liệu nội bộ.
+## Tạo schema và kiểm tra
 
-## 5. Kiểm tra và vận hành
-
-`npm.cmd run test:api` dùng Express/PGlite/file thật trong thư mục tạm, gồm migration lặp, đa thiết kế, giá/snapshot, ảnh, privacy, session/rotation/logout/expiry, state/concurrency, rollback DB + dọn tệp khi insert event lỗi và restart. Không mock database. `contract:check` chỉ xác minh file contract hợp lệ.
-
-Dừng API trước khi migrate PGlite; không mở hai process cùng DATA_DIR. Migration 004 không tự áp vào database đang chạy; dữ liệu local hiện có chưa được thay đổi trong phiên phát triển A. Sau khi dừng API, chạy `npm.cmd run db:migrate`, `db:check`, rồi khởi động lại.
-
-DB và filesystem không cùng transaction. Nhánh lỗi dọn file vừa ghi; process chết giữa ghi file và commit có thể để tệp mồ côi, chưa có job quét. Chưa nghiệm thu PostgreSQL server, tải public lớn hoặc khôi phục power loss. Route demo legacy giữ hành vi cũ (ảnh nén trong JSON, replay token), client đã chuyển ở C; không dùng kết quả legacy để tuyên bố API canonical đã được nghiệm thu qua UI.
+- `npm run db:migrate` áp file chưa chạy và xác thực checksum file đã áp.
+- `npm run db:backfill-lookup` tính HMAC từ snapshot; không in dữ liệu khách.
+- `npm run db:check` chỉ đọc migration/product hiện hành.
+- Suite API/admin/checkout dùng MySQL thật trong database `harmea_test_<random>` tách riêng; không trỏ test vào dữ liệu cá nhân.
+- Giá, snapshot và lịch sử không được sửa bằng dữ liệu gửi từ client. Upload được lưu ngoài web root và chỉ phục vụ qua API admin sau gate.

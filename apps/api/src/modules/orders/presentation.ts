@@ -22,8 +22,12 @@ export async function detail(db: SqlConnection, orderId: string) {
   if (!r) throw new InputError('Không tìm thấy đơn.', 'ORDER_NOT_FOUND', 404);
   const items = (await getItems(db, orderId)).rows;
   const history = (await getHistory(db, orderId)).rows;
+  const paymentReport = (
+    await db.query('SELECT reported_at FROM order_payment_reports WHERE order_id=?', [orderId])
+  ).rows[0];
   return {
     ...summary(r),
+    customerPaymentReportedAt: paymentReport?.reported_at ?? null,
     productSnapshot: r.product_snapshot,
     recipient: r.recipient_snapshot,
     note: r.customer_note,

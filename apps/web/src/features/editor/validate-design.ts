@@ -29,8 +29,18 @@ export function orderDesign(design: Design) {
     musicUrl: design.musicUrl.trim(),
     color: design.color,
     crop: { ...design.crop },
+    ...(Number.isInteger(design.photoWidth) &&
+    Number.isInteger(design.photoHeight) &&
+    design.photoWidth > 0 &&
+    design.photoHeight > 0
+      ? { photoWidth: design.photoWidth, photoHeight: design.photoHeight }
+      : {}),
     ...(design.place.trim() ? { place: design.place.trim() } : {}),
-    ...(design.signatureText.trim() ? { signatureText: design.signatureText.trim() } : {}),
+    ...(design.signatureText.trim()
+      ? { signatureText: design.signatureText.trim() }
+      : design.signatureData
+        ? { signatureText: 'Ký tay' }
+        : {}),
     ...(design.dateOfBirth ? { dateOfBirth: design.dateOfBirth } : {}),
     ...(design.commemorativeDate ? { commemorativeDate: design.commemorativeDate } : {})
   };

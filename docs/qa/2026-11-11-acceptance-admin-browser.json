@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "Admin UI searches exact order number",
+    "Admin detail renders four designs and private previews",
+    "Admin UI: first tab status update 200, stale second tab receives 409",
+    "Admin UI: cancellation with required reason succeeds",
+    "Admin page renders /admin/products",
+    "Admin page renders /admin/stats"
+  ],
+  "version": "157.0.8103.40",
+  "channel": "chrome",
+  "headless": true
+}

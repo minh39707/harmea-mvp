@@ -1,0 +1,82 @@
+{
+  "scope": "Only original H screenshot files, no application assets",
+  "originalBytes": 14549464,
+  "retainedBytes": 1093654,
+  "retained": [
+    {
+      "file": "docs\\qa\\assets\\2026-11-11-h-chrome-cart-375.jpg",
+      "bytes": 94147
+    },
+    {
+      "file": "docs\\qa\\assets\\2026-11-11-h-chrome-design-375.jpg",
+      "bytes": 159957
+    },
+    {
+      "file": "docs\\qa\\assets\\2026-11-11-h-chrome-home-375.jpg",
+      "bytes": 292721
+    },
+    {
+      "file": "docs\\qa\\assets\\2026-11-11-h-msedge-cart-375.jpg",
+      "bytes": 94147
+    },
+    {
+      "file": "docs\\qa\\assets\\2026-11-11-h-msedge-design-375.jpg",
+      "bytes": 159909
+    },
+    {
+      "file": "docs\\qa\\assets\\2026-11-11-h-msedge-home-375.jpg",
+      "bytes": 292773
+    }
+  ],
+  "allCurrentJpegBytes": 2505601,
+  "allCurrentJpegs": [
+    {
+      "file": "2026-11-11-h-chrome-cart-375.jpg",
+      "bytes": 94147
+    },
+    {
+      "file": "2026-11-11-h-chrome-design-375.jpg",
+      "bytes": 159957
+    },
+    {
+      "file": "2026-11-11-h-chrome-home-375.jpg",
+      "bytes": 292721
+    },
+    {
+      "file": "2026-11-11-h-h-fix-chrome-cart-375.jpg",
+      "bytes": 131654
+    },
+    {
+      "file": "2026-11-11-h-h-fix-chrome-design-375.jpg",
+      "bytes": 206604
+    },
+    {
+      "file": "2026-11-11-h-h-fix-chrome-home-375.jpg",
+      "bytes": 367697
+    },
+    {
+      "file": "2026-11-11-h-h-fix-msedge-cart-375.jpg",
+      "bytes": 131654
+    },
+    {
+      "file": "2026-11-11-h-h-fix-msedge-design-375.jpg",
+      "bytes": 206609
+    },
+    {
+      "file": "2026-11-11-h-h-fix-msedge-home-375.jpg",
+      "bytes": 367729
+    },
+    {
+      "file": "2026-11-11-h-msedge-cart-375.jpg",
+      "bytes": 94147
+    },
+    {
+      "file": "2026-11-11-h-msedge-design-375.jpg",
+      "bytes": 159909
+    },
+    {
+      "file": "2026-11-11-h-msedge-home-375.jpg",
+      "bytes": 292773
+    }
+  ]
+}

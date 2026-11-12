@@ -90,9 +90,20 @@ export function checkoutAttempt(store: Store) {
             error.code === 'DUPLICATE_REQUEST'
           )
             throw new CheckoutProblem(
-              'Máy chủ đã nhận yêu cầu này nhưng không trả lại liên kết bí mật. Giữ mã yêu cầu và liên hệ cửa hàng để kiểm tra; không tạo thêm đơn cho cùng lần đặt này.',
+              'Đơn đã được ghi nhận. Tra cứu bằng mã đơn và số điện thoại; nếu chưa có mã đơn, liên hệ cửa hàng để kiểm tra.',
               'duplicate'
             );
+          if (
+            error instanceof ApiError &&
+            error.status === 409 &&
+            error.code === 'PRODUCT_INACTIVE'
+          ) {
+            clear();
+            throw new CheckoutProblem(
+              'Tạm ngừng nhận đơn. Sản phẩm hiện không nhận đơn mới.',
+              'input'
+            );
+          }
           if (
             error instanceof ApiError &&
             error.status >= 400 &&

@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    # main runs this suite through deploy.yml before publishing and deploying.
+    branches-ignore: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      NODE_ENV: test
+      STORAGE_DRIVER: local
+      TEST_DATABASE_URL: mysql://root:ci-mysql-test-only@127.0.0.1:3306/mysql
+      LOOKUP_SECRET: ci-fixture-lookup-secret-at-least-32-bytes
+    services:
+      mysql:
+        image: mysql:8.4.13
+        env:
+          MYSQL_ROOT_PASSWORD: ci-mysql-test-only
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval 5s --health-timeout 5s --health-retries 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24.22.2'
+          cache: npm
+      - run: npm ci
+      - name: Check workflow and shell syntax
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install --yes shellcheck
+          curl -fsSL https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz -o "$RUNNER_TEMP/actionlint.tar.gz"
+          curl -fsSL https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_checksums.txt -o "$RUNNER_TEMP/actionlint-checksums.txt"
+          mv "$RUNNER_TEMP/actionlint.tar.gz" "$RUNNER_TEMP/actionlint_1.7.12_linux_amd64.tar.gz"
+          (cd "$RUNNER_TEMP" && grep ' actionlint_1.7.12_linux_amd64.tar.gz$' actionlint-checksums.txt | sha256sum --check -)
+          tar -xzf "$RUNNER_TEMP/actionlint_1.7.12_linux_amd64.tar.gz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint"
+          shellcheck scripts/docker-smoke.sh deploy/*.sh tests/remote-deploy.sh
+          bash tests/remote-deploy.sh
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run contract:check
+      - run: npm run routes:check
+      - run: npm run test:router
+      - run: npm run test:api
+      - run: npm run test:editor
+      - run: npm run test:checkout
+      - run: npm run test:admin
+      - run: npm run test:admin-extended
+      - run: npm run test:setup
+      - run: npm run test:prod-env
+      - run: npm run test:snapshots
+      - run: npm run test:runtime
+      - run: npm run test:storage
+      - run: npm run test:docker-fixture
+      - run: npm run test:smoke
+      - name: Start disposable MinIO
+        run: docker compose -f compose.storage-test.yaml -p harmea-minio-ci up --build -d --wait --wait-timeout 180
+      - run: npm run test:storage:s3
+      - name: Remove disposable MinIO
+        if: always()
+        run: docker compose -f compose.storage-test.yaml -p harmea-minio-ci down
+
+  docker:
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      DOCKER_BUILD_RECORD_UPLOAD: 'false'
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24.22.2'
+      - uses: docker/setup-buildx-action@v4.4.1
+      - uses: docker/build-push-action@v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: harmea-web:test
+          cache-from: type=gha,scope=harmea-app
+          cache-to: type=gha,mode=max,scope=harmea-app
+      - name: Run Docker acceptance
+        run: bash scripts/docker-smoke.sh harmea-web:test

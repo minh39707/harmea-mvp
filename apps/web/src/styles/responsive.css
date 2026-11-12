@@ -39,6 +39,17 @@
   .brand {
     gap: 4px;
   }
+  .store-header .brand-btn {
+    gap: 6px;
+  }
+  .store-header .brand-emblem-icon {
+    width: 26px;
+    height: 26px;
+  }
+  .store-header .brand-text-logo {
+    font-size: 15px;
+    letter-spacing: 0.14em;
+  }
   .store-header .wordmark {
     font-size: var(--font-title);
   }
@@ -56,7 +67,6 @@
     font-size: var(--font-sm);
     white-space: nowrap;
   }
-  .product-layout,
   .cart-layout,
   .checkout-layout,
   .faq,
@@ -64,7 +74,6 @@
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-3);
   }
-  .gallery,
   .order-summary {
     position: static;
   }

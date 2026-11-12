@@ -1,5 +1,6 @@
 import { InputError } from '../../lib/errors.ts';
 import { object, text, date, uuid, isAllowedMusicUrl } from '../../lib/validate.ts';
+import { normalizePhone } from './lookup.ts';
 
 export function fields(input: unknown, allowed: string[]) {
   const value = object(input);
@@ -16,6 +17,16 @@ export function integer(value: unknown, min: number, max: number) {
     throw new InputError('Số lượng hoặc phiên bản không hợp lệ.');
   return Number(value);
 }
+export function recipientSnapshot(input: unknown) {
+  const r = fields(input, ['name', 'phone', 'address']);
+  const recipient = {
+    name: text(r.name, 'người nhận', 80),
+    phone: normalizePhone(r.phone),
+    address: text(r.address, 'địa chỉ', 500)
+  };
+  if (recipient.address.length < 10) throw new InputError('Địa chỉ không hợp lệ.');
+  return recipient;
+}
 function optionalDate(value: unknown, label: string) {
   if (value === undefined) return undefined;
   const parsed = date(value, label);
@@ -31,7 +42,9 @@ export function designSnapshot(input: unknown) {
     'signatureText',
     'musicUrl',
     'crop',
-    'color'
+    'color',
+    'photoWidth',
+    'photoHeight'
   ]);
   const crop = fields(d.crop, ['x', 'y', 'width', 'height']);
   for (const key of ['x', 'y', 'width', 'height']) {
@@ -64,6 +77,12 @@ export function designSnapshot(input: unknown) {
     throw new InputError('Dùng link HTTPS từ Spotify, YouTube hoặc SoundCloud.');
   const color = d.color === undefined ? 'cream' : text(d.color, 'màu', 12);
   if (!['cream', 'blue', 'rose'].includes(color)) throw new InputError('Màu thẻ không hợp lệ.');
+  let photoWidth: number | undefined;
+  let photoHeight: number | undefined;
+  if (d.photoWidth !== undefined || d.photoHeight !== undefined) {
+    photoWidth = integer(d.photoWidth, 1, 8192);
+    photoHeight = integer(d.photoHeight, 1, 8192);
+  }
   return {
     fullName: text(d.fullName, 'tên trên thẻ', 80),
     musicUrl,
@@ -74,7 +93,8 @@ export function designSnapshot(input: unknown) {
     ...(d.signatureText === undefined
       ? {}
       : { signatureText: text(d.signatureText, 'chữ ký', 80, false) }),
-    crop: { x, y, width, height }
+    crop: { x, y, width, height },
+    ...(photoWidth && photoHeight ? { photoWidth, photoHeight } : {})
   };
 }
 export function orderPayload(input: unknown) {
@@ -91,14 +111,7 @@ export function orderPayload(input: unknown) {
       design: designSnapshot(i.design)
     };
   });
-  const r = fields(b.recipient, ['name', 'phone', 'address']);
-  const recipient = {
-    name: text(r.name, 'người nhận', 80),
-    phone: text(r.phone, 'điện thoại', 16),
-    address: text(r.address, 'địa chỉ', 500)
-  };
-  if (!/^\+?[0-9]{8,15}$/.test(recipient.phone) || recipient.address.length < 10)
-    throw new InputError('Điện thoại hoặc địa chỉ không hợp lệ.');
+  const recipient = recipientSnapshot(b.recipient);
   return {
     requestKey: id(b.requestKey),
     items,

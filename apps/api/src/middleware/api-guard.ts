@@ -1,19 +1,28 @@
 import type { RequestHandler } from 'express';
+import { configuredAppOrigin } from '../config/app-url.ts';
+
 export function apiGuard() {
   const rates = new Map<string, { count: number; until: number }>();
   const guard: RequestHandler = (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
     if (['POST', 'PATCH', 'DELETE', 'PUT'].includes(req.method)) {
       const origin = req.headers.origin;
-      if (
-        origin &&
-        ![
-          process.env.APP_ORIGIN ?? 'http://localhost:5173',
+      const production = process.env.NODE_ENV === 'production';
+      const allowedOrigins = new Set<string>();
+      const configuredOrigin = configuredAppOrigin();
+      if (configuredOrigin) allowedOrigins.add(configuredOrigin);
+      if (!production) {
+        for (const localOrigin of [
+          'http://localhost:5173',
           'http://127.0.0.1:5173',
+          'http://localhost:3000',
+          'http://127.0.0.1:3000',
           'http://localhost:4000',
           'http://127.0.0.1:4000'
-        ].includes(origin)
-      ) {
+        ])
+          allowedOrigins.add(localOrigin);
+      }
+      if (origin && !allowedOrigins.has(origin)) {
         res
           .status(403)
           .json({ error: { code: 'ORIGIN_DENIED', message: 'Nguồn yêu cầu không hợp lệ.' } });

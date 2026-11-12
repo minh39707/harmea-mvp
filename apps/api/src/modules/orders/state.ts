@@ -14,7 +14,12 @@ const transitions: Record<string, string[]> = {
   completed: [],
   cancelled: []
 };
-export async function updateStatus(db: Database, id: string, input: unknown) {
+export async function updateStatus(
+  db: Database,
+  id: string,
+  input: unknown,
+  actor: 'admin' | 'system' = 'admin'
+) {
   const b = fields(input, ['expectedVersion', 'status', 'cancellationReason', 'trackingCode']);
   const expected = integer(b.expectedVersion, 1, 2147483646);
   const status = text(b.status, 'trạng thái', 16);
@@ -40,11 +45,12 @@ export async function updateStatus(db: Database, id: string, input: unknown) {
     if (!transitions[String(order.status)]?.includes(status))
       throw new InputError('Không thể chuyển trạng thái này.', 'INVALID_TRANSITION', 409);
     const result = await tx.query(
-      'UPDATE orders SET status=$1,version=version+1,tracking_code=COALESCE($2,tracking_code),cancellation_reason=$3,updated_at=CURRENT_TIMESTAMP WHERE id=$4 AND version=$5 RETURNING id',
+      'UPDATE orders SET status=?,version=version+1,tracking_code=COALESCE(?,tracking_code),cancellation_reason=?,updated_at=CURRENT_TIMESTAMP(3) WHERE id=? AND version=?',
       [status, tracking, reason, id, expected]
     );
-    if (!result.rows[0]) throw new InputError('Đơn đã được cập nhật.', 'VERSION_CONFLICT', 409);
-    await addEvent(tx, randomUUID(), id, expected + 1, order.status, status, 'admin', reason);
+    if (result.affectedRows !== 1)
+      throw new InputError('Đơn đã được cập nhật.', 'VERSION_CONFLICT', 409);
+    await addEvent(tx, randomUUID(), id, expected + 1, order.status, status, actor, reason);
     return detail(tx, id);
   });
 }

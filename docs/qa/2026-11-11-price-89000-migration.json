@@ -1,0 +1,12 @@
+{
+  "before": {
+    "count": 33,
+    "snapshots": "8f0a00bb337b4d69f4e7dd5f22c6f09ee90c3b5bf8f868daf1481340f1e92028"
+  },
+  "after": {
+    "count": 33,
+    "snapshots": "8f0a00bb337b4d69f4e7dd5f22c6f09ee90c3b5bf8f868daf1481340f1e92028"
+  },
+  "price": 89000,
+  "result": "PASS"
+}

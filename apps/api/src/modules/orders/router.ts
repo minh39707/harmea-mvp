@@ -1,8 +1,9 @@
 import express from 'express';
-import { resolve } from 'node:path';
+import { pipeline } from 'node:stream/promises';
+import type { FileStorage } from '../../lib/storage/types.ts';
+import { FileNotFound } from '../../lib/storage/types.ts';
 import type { Database } from '../../db.ts';
 import { InputError } from '../../lib/errors.ts';
-import { requireAdmin } from '../admin/session.ts';
 import { multipart } from './uploads.ts';
 import { createOrder } from './create.ts';
 import { detail, summary } from './presentation.ts';
@@ -10,9 +11,8 @@ import { id, integer } from './validation.ts';
 import { statuses } from './repository.ts';
 import { updateStatus } from './state.ts';
 
-export function ordersRouter(db: Database, uploadDir: string) {
+export function ordersRouter(db: Database, storage: FileStorage) {
   const router = express.Router();
-  const root = resolve(uploadDir);
   let active = 0;
   router.post('/orders', async (req, res) => {
     if (active >= 2) {
@@ -21,14 +21,15 @@ export function ordersRouter(db: Database, uploadDir: string) {
     }
     active++;
     try {
-      res.status(201).json(await createOrder(db, root, await multipart(req)));
+      res.status(201).json(await createOrder(db, storage, await multipart(req)));
     } finally {
       active--;
     }
   });
-  router.use('/admin', requireAdmin(db));
   router.get('/admin/orders', async (req, res) => {
-    if (Object.keys(req.query).some(k => !['page', 'pageSize', 'status'].includes(k)))
+    if (
+      Object.keys(req.query).some(k => !['page', 'pageSize', 'status', 'orderNumber'].includes(k))
+    )
       throw new InputError('Query không hợp lệ.', 'INVALID_QUERY', 400);
     const queryNumber = (value: unknown, fallback: number, max: number) => {
       if (value === undefined) return fallback;
@@ -41,16 +42,35 @@ export function ordersRouter(db: Database, uploadDir: string) {
     const status = req.query.status;
     if (status !== undefined && (typeof status !== 'string' || !statuses.includes(status)))
       throw new InputError('Trạng thái lọc không hợp lệ.', 'INVALID_QUERY', 400);
+    const rawOrderNumber = req.query.orderNumber;
+    const orderNumber =
+      typeof rawOrderNumber === 'string' ? rawOrderNumber.trim().toUpperCase() : '';
+    if (
+      rawOrderNumber !== undefined &&
+      (typeof rawOrderNumber !== 'string' ||
+        orderNumber.length > 19 ||
+        (orderNumber !== '' && !/^HM(?:-[0-9A-F]{0,16})?$/.test(orderNumber)))
+    )
+      throw new InputError('Mã đơn tìm kiếm không hợp lệ.', 'INVALID_ORDER_NUMBER', 400);
+    const orderPrefix = orderNumber || null;
     const result = await db.transaction(async tx => {
       const rows = await tx.query(
-        'SELECT * FROM orders WHERE ($1::text IS NULL OR status=$1) ORDER BY created_at DESC,id LIMIT $2 OFFSET $3',
-        [status ?? null, pageSize, (page - 1) * pageSize]
+        `SELECT * FROM orders
+         WHERE (? IS NULL OR status=?) AND (? IS NULL OR order_number LIKE CONCAT(?, '%'))
+         ORDER BY created_at DESC,id LIMIT ? OFFSET ?`,
+        [status ?? null, status ?? null, orderPrefix, orderPrefix, pageSize, (page - 1) * pageSize]
       );
       const count = await tx.query(
-        'SELECT count(*)::int AS total FROM orders WHERE ($1::text IS NULL OR status=$1)',
-        [status ?? null]
+        `SELECT CAST(COUNT(*) AS UNSIGNED) AS total FROM orders
+         WHERE (? IS NULL OR status=?) AND (? IS NULL OR order_number LIKE CONCAT(?, '%'))`,
+        [status ?? null, status ?? null, orderPrefix, orderPrefix]
       );
-      return { items: rows.rows.map(summary), page, pageSize, total: count.rows[0]!.total };
+      return {
+        items: rows.rows.map(summary),
+        page,
+        pageSize,
+        total: Number(count.rows[0]!.total)
+      };
     });
     res.json(result);
   });
@@ -58,7 +78,7 @@ export function ordersRouter(db: Database, uploadDir: string) {
     const orderId = id(req.params.id);
     res.json(
       await db.transaction(async tx => {
-        await tx.query('SELECT id FROM orders WHERE id=$1 FOR SHARE', [orderId]);
+        await tx.query('SELECT id FROM orders WHERE id=? FOR SHARE', [orderId]);
         return detail(tx, orderId);
       })
     );
@@ -73,7 +93,7 @@ export function ordersRouter(db: Database, uploadDir: string) {
     if (!['photo', 'preview'].includes(kind))
       throw new InputError('Không tìm thấy tệp.', 'ASSET_NOT_FOUND', 404);
     const item = (
-      await db.query('SELECT photo_key,preview_key FROM order_items WHERE order_id=$1 AND id=$2', [
+      await db.query('SELECT photo_key,preview_key FROM order_items WHERE order_id=? AND id=?', [
         orderId,
         itemId
       ])
@@ -81,13 +101,23 @@ export function ordersRouter(db: Database, uploadDir: string) {
     const key = item?.[kind === 'photo' ? 'photo_key' : 'preview_key'];
     if (typeof key !== 'string' || !/^[0-9a-f-]{36}\.(png|jpg)$/.test(key))
       throw new InputError('Không tìm thấy tệp.', 'ASSET_NOT_FOUND', 404);
+    let stream;
+    try {
+      stream = await storage.get(key);
+    } catch (error) {
+      if (error instanceof FileNotFound)
+        throw new InputError('Không tìm thấy tệp.', 'ASSET_NOT_FOUND', 404);
+      throw error;
+    }
     res.setHeader('Cache-Control', 'private, no-store');
-    res.download(resolve(root, key), `${kind}.${key.endsWith('.jpg') ? 'jpg' : 'png'}`, error => {
-      if (error && !res.headersSent)
-        res
-          .status(404)
-          .json({ error: { code: 'ASSET_NOT_FOUND', message: 'Không tìm thấy tệp.' } });
-    });
+    res.attachment(`${kind}.${key.endsWith('.jpg') ? 'jpg' : 'png'}`);
+    try {
+      await pipeline(stream, res);
+    } catch {
+      // A broken stream cannot be replaced by JSON after headers were sent.
+      process.stderr.write(`${JSON.stringify({ level: 'error', event: 'asset_stream_failed' })}\n`);
+      res.destroy();
+    }
   });
   return router;
 }

@@ -5,15 +5,7 @@ import StatusForm from './StatusForm';
 import OrderItem from './OrderItem';
 const date = (value: string) =>
   new Date(value).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
-export default function OrderDetail({
-  orders,
-  back,
-  onUnauthorized
-}: {
-  orders: AdminOrders;
-  back: () => void;
-  onUnauthorized: () => void;
-}) {
+export default function OrderDetail({ orders, back }: { orders: AdminOrders; back: () => void }) {
   const order = orders.detail;
   return (
     <section>
@@ -60,6 +52,12 @@ export default function OrderDetail({
               <dd>{money(order.subtotalVnd)} · phí giao hàng chưa bao gồm</dd>
               <dt>Mã vận đơn</dt>
               <dd>{order.trackingCode || 'Chưa nhập'}</dd>
+              <dt>Xác nhận chuyển khoản của khách</dt>
+              <dd>
+                {order.customerPaymentReportedAt
+                  ? `Khách báo đã chuyển khoản lúc ${date(order.customerPaymentReportedAt)}. Cần đối chiếu sao kê.`
+                  : 'Khách chưa báo chuyển khoản.'}
+              </dd>
               {order.cancellationReason && (
                 <>
                   <dt>Lý do hủy nội bộ</dt>
@@ -69,13 +67,7 @@ export default function OrderDetail({
             </dl>
           </section>
           {order.items.map((item, index) => (
-            <OrderItem
-              key={item.id}
-              item={item}
-              index={index}
-              orderId={order.id}
-              onUnauthorized={onUnauthorized}
-            />
+            <OrderItem key={item.id} item={item} index={index} orderId={order.id} />
           ))}
           {orders.reviewRequired && (
             <p className="error" role="alert">

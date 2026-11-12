@@ -1,18 +1,15 @@
 import { useEffect, useState } from 'react';
-import { ApiError } from '../../shared/api';
 import { privateAsset } from './client';
 export default function PrivateAsset({
   orderId,
   itemId,
   kind,
-  path,
-  onUnauthorized
+  path
 }: {
   orderId: string;
   itemId: string;
   kind: 'photo' | 'preview';
   path: string;
-  onUnauthorized: () => void;
 }) {
   const [url, setUrl] = useState(''),
     [error, setError] = useState(''),
@@ -30,10 +27,8 @@ export default function PrivateAsset({
         }
       })
       .catch(error => {
-        if (!controller.signal.aborted) {
-          if (error instanceof ApiError && error.status === 401) onUnauthorized();
-          else setError(error instanceof Error ? error.message : 'Không tải được ảnh.');
-        }
+        if (!controller.signal.aborted)
+          setError(error instanceof Error ? error.message : 'Không tải được ảnh.');
       });
     return () => {
       controller.abort();

@@ -1,5 +1,5 @@
 import { isOrderStatus } from '../../shared/order-status.ts';
-import type { AdminSession, AdminPage, AdminDetail, AdminSummary } from './types.ts';
+import type { AdminPage, AdminDetail, AdminSummary, AdminProduct, AdminStats } from './types.ts';
 export const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export function adminId(id: string) {
   if (!uuidPattern.test(id)) throw Error('Mã đơn không hợp lệ.');
@@ -11,12 +11,6 @@ const object = (v: unknown): Record<string, unknown> => {
   return v as Record<string, unknown>;
 };
 const date = (v: unknown) => typeof v === 'string' && Number.isFinite(Date.parse(v));
-export function sessionResponse(v: unknown): AdminSession {
-  const r = object(v);
-  if (r.authenticated !== true || !date(r.expiresAt))
-    throw Error('Không xác nhận được phiên quản trị.');
-  return r as AdminSession;
-}
 function summaryResponse(v: unknown): AdminSummary {
   const r = object(v);
   if (
@@ -54,6 +48,54 @@ export function pageResponse(v: unknown): AdminPage {
   r.items.forEach(summaryResponse);
   return r as AdminPage;
 }
+export function productResponse(v: unknown): AdminProduct {
+  const r = object(v);
+  if (
+    typeof r.id !== 'string' ||
+    !uuidPattern.test(r.id) ||
+    typeof r.name !== 'string' ||
+    typeof r.description !== 'string' ||
+    !Number.isInteger(r.unitPriceVnd) ||
+    Number(r.unitPriceVnd) < 1000 ||
+    Number(r.unitPriceVnd) > 10000000 ||
+    typeof r.isActive !== 'boolean' ||
+    !Number.isInteger(r.version) ||
+    Number(r.version) < 1 ||
+    typeof r.templateVersion !== 'string'
+  )
+    throw Error('Thông tin sản phẩm không hợp lệ.');
+  return r as AdminProduct;
+}
+export function productsResponse(v: unknown): AdminProduct[] {
+  if (!Array.isArray(v) || v.length > 100) throw Error('Danh sách sản phẩm không hợp lệ.');
+  return v.map(productResponse);
+}
+export function statsResponse(v: unknown): AdminStats {
+  const r = object(v);
+  const statuses = ['pending', 'confirmed', 'producing', 'shipping', 'completed', 'cancelled'];
+  const counts = object(r.ordersByStatus);
+  if (
+    statuses.some(status => !Number.isInteger(counts[status]) || Number(counts[status]) < 0) ||
+    !Number.isInteger(r.subtotalVnd) ||
+    Number(r.subtotalVnd) < 0 ||
+    !Number.isInteger(r.cardCount) ||
+    Number(r.cardCount) < 0 ||
+    !Array.isArray(r.ordersByDay) ||
+    r.ordersByDay.length > 366
+  )
+    throw Error('Thống kê quản trị không hợp lệ.');
+  for (const raw of r.ordersByDay) {
+    const row = object(raw);
+    if (
+      typeof row.date !== 'string' ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(row.date) ||
+      !Number.isInteger(row.orderCount) ||
+      Number(row.orderCount) < 0
+    )
+      throw Error('Dữ liệu biểu đồ không hợp lệ.');
+  }
+  return r as AdminStats;
+}
 export function assetPath(
   orderId: string,
   itemId: string,
@@ -74,6 +116,9 @@ export function detailResponse(v: unknown): AdminDetail {
     !['name', 'phone', 'address'].every(k => typeof recipient[k] === 'string') ||
     typeof product.name !== 'string' ||
     typeof r.note !== 'string' ||
+    (r.customerPaymentReportedAt !== undefined &&
+      r.customerPaymentReportedAt !== null &&
+      !date(r.customerPaymentReportedAt)) ||
     typeof r.templateVersion !== 'string' ||
     !Number.isInteger(r.unitPriceVnd) ||
     !Array.isArray(r.items) ||

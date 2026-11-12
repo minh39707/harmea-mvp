@@ -1,129 +1,213 @@
-# Harméa MVP — bắt đầu tại đây
+# Harméa MVP
 
-Bản demo local và tài liệu triển khai cho **một người**; mốc demo ban đầu 28/10/2026. API A và code editor/checkout/tracking/admin B–D đã triển khai theo hợp đồng canonical. Nghiệm thu qua trình duyệt và diễn tập toàn luồng còn chờ. Không có thanh toán.
+[![CI](https://github.com/minh39707/harmea-mvp/actions/workflows/ci.yml/badge.svg)](https://github.com/minh39707/harmea-mvp/actions/workflows/ci.yml)
 
-## Đã có / cần làm tiếp
+Website đặt một sản phẩm NFC Music Card. Phạm vi hiện tại là MySQL 8.4, giỏ hàng, checkout khách không tài khoản và tra cứu đơn bằng mã đơn + số điện thoại. Sau khi lưu đơn, khách thấy QR chuyển khoản tĩnh và có thể báo “Tôi đã chuyển khoản”; cửa hàng xem xác nhận trong chi tiết đơn admin và tự đối chiếu giao dịch. Không có đăng nhập khách/admin, tự động đối soát, email hoặc tự động giao hàng. Xem [roadmap](tasks/00-ROADMAP.md) và [yêu cầu](docs/01-requirements.md).
 
-| Đã triển khai / chuẩn bị | Cần làm tiếp |
+Thay đổi local sau v1.1.0: theme navy, giá sản phẩm 89.000đ qua migration `007_product_price_89000.sql`, nhạc nền MP3 tự host khi bấm badge “Chạm là phát nhạc”. Nhạc không tự phát sau reload, dừng ở `/track` và `/admin`; bật/tắt lưu on/off trong localStorage. Chưa phát hành các thay đổi này lên Docker Hub.
+
+## Trạng thái roadmap
+
+| Task | Trạng thái |
 |---|---|
-| UI tối giản E2: sản phẩm, cá nhân hóa, giỏ hàng, checkout, success và tracking | Kiểm tra thao tác trình duyệt tại 375/768/1440 px |
-| Frontend C dùng `/api/orders` multipart và `/api/tracking/lookup` | Đơn legacy không tự vào admin mới; các route demo còn giữ để tương thích/lịch sử |
-| Editor B và checkout C giữ ảnh gốc/PNG/crop từng dòng; backend lưu snapshot | Kiểm tra upload/IndexedDB/Canvas/clipboard thực trên trình duyệt |
-| Auth cookie, UI admin list/detail/assets và status/version/history | Nghiệm thu admin qua trình duyệt, gồm hai tab xung đột |
-| Migration checksum 001–004, PGlite integration tests, adapter PostgreSQL và Compose | Áp 004 vào DB local sau khi dừng API; kiểm tra PostgreSQL thực tế |
-| Code E cả hai giai đoạn, API A và code B–D đã triển khai | Nghiệm thu trực quan B/C/D/E2 và diễn tập toàn luồng |
+| F0–F2 | Xong; xem `tasks/done/` và báo cáo F2 |
+| R1 — gỡ login, admin gate, lookup mã + SĐT | Xong; xem [báo cáo R1](docs/qa/2026-11-11-task-R1.md) |
+| R2 — lưu giỏ/ảnh trên thiết bị và nén ảnh | Đã triển khai; còn browser QA/đo phía client ([báo cáo](docs/qa/2026-11-11-task-R2.md)) |
+| R3 — admin sản phẩm/thống kê/xuất CSV | Đã triển khai; xem [báo cáo R3](docs/qa/2026-11-11-task-R3.md). Còn kiểm tra trực quan trên trình duyệt |
+| R4 — router, nội dung, SEO | Đã triển khai; xem [báo cáo R4](docs/qa/2026-11-11-task-R4.md). Còn browser QA |
+| G1 — Docker runtime | Đã qua CI Linux và nghiệm thu image local; xem [H](docs/qa/2026-11-11-acceptance.md) |
+| G2 — CI và release Docker Hub | CI/release xanh; đã phát hành `hainam164/harmea-web:v1.1.0`, commit `e5c17ef`; [digest/bằng chứng](docs/qa/2026-11-11-release-v1.1.0.md) |
+| G3 — bàn giao | Backup/xóa volumes/restore đã qua trong CI release; persistence local qua. Chưa triển khai server; xem [H](docs/qa/2026-11-11-acceptance.md) |
+| G1b — storage local/S3 | MinIO/S3 đã qua trên CI và Docker local; chưa kiểm tra AWS thật |
+| H — nghiệm thu cuối | Browser trên đúng digest `v1.1.0` PASS (12 checks, 18 layout); người dùng chưa thử ảnh điện thoại thật/Excel, chưa nghiệm thu server ([báo cáo release](docs/qa/2026-11-11-release-v1.1.0.md)) |
+| R5 thanh toán | 12/11: bản rút gọn theo yêu cầu mới — QR tĩnh từ Downloads, khách tự báo chuyển khoản, lưu MySQL và hiển thị admin. Không tự đánh dấu đã nhận tiền. Xem [báo cáo](docs/qa/2026-11-12-qr-local.md) |
 
-Giá seed **50.000 VND là số giả cho demo**. Không có thanh toán hoặc tự động sản xuất/giao hàng. Các bộ A/B/C/D hiện qua **56 tests Node** trên PGlite/HTTP/tệp thật. Bộ smoke legacy lịch sử hiện **30 phép / 26 khớp / 4 không khớp**, không phải bộ nghiệm thu contract mới. Xem [báo cáo task A](docs/qa/2026-10-29-task-a.md) và [báo cáo E2](docs/qa/2026-10-29-clean-layout-phase2.md). Chưa nghiệm thu toàn MVP hoặc PostgreSQL thực tế.
+Task F3/F4 cũ đã hủy; báo cáo của chúng được giữ làm lịch sử. UI storefront hiện có tiếp tục được dùng và có thể chỉnh sau.
 
-## Cấu trúc hiện tại
+## Công nghệ và thư mục
+
+- Web: React, TypeScript, Vite.
+- API: Express, TypeScript, Node.js 24.
+- DB: MySQL 8.4 qua `mysql2`, SQL có tham số và adapter `apps/api/src/db.ts`.
+- Ảnh đơn nằm trong `storage/uploads` mặc định hoặc bucket S3 private nếu chọn driver S3; chỉ tải qua API admin khi gate bật.
 
 ```text
-apps/web/src/app/        shell, điều hướng và state chung
-apps/web/src/features/   editor, cart, checkout, tracking, admin
-apps/web/src/shared/     types, API client, format và UI dùng chung
-apps/web/src/styles/     CSS chung, tokens và responsive
-apps/api/src/middleware/ headers, Origin và rate limit
-apps/api/src/lib/        validation, lỗi và hash
-apps/api/src/modules/    catalog, orders, admin; checkout/tracking legacy tạm thời
-tests/                  integration API canonical và smoke legacy, DB thử riêng
-docs/qa/                báo cáo và bằng chứng kiểm tra
+apps/web/src/features/    home, editor, cart, checkout, tracking, admin
+apps/api/src/modules/     admin, catalog, orders
+database/                 migration MySQL checksum
+database/postgres-legacy/ migration cũ chỉ để đọc lịch sử
+contracts/openapi.json    API contract 0.7.0
+tasks/                    roadmap và từng task
+tests/                    integration MySQL, smoke và editor
+docs/qa/                  báo cáo kết quả đã chạy
 ```
 
-CSS của từng feature nằm cạnh component; `styles/index.css` nhập tập trung. E2 dùng tokens cho màu/chữ/khoảng cách, `styles/responsive.css` thay bốn file responsive cũ. Header 64px, ba màu thẻ riêng trong CardPreview.css; form ảnh/crop luôn hiển thị, thông tin tùy chọn nằm trong details. Frontend checkout, tracking và admin đã nối API canonical. Xem [báo cáo E2](docs/qa/2026-10-29-clean-layout-phase2.md); chưa có ảnh chụp hoặc nghiệm thu trực quan.
+Không có bảng user/session và không lưu auth vào web storage. Checkout giữ UUID + fingerprint của request chưa rõ kết quả trong sessionStorage `harmea.checkout.pending.v1`; không lưu raw phone, body, token hay URL nhạc trong record đó.
 
-Editor B dùng cùng một SVG cho xem trước và xuất PNG 570×900 (artwork 57×90, thẻ 54×86, safe area 49×82). Đây là proof minh họa, chưa phải file in chuẩn. Metadata/thumbnail giữ trong `harmea.cart.v2`; Blob ảnh gốc và PNG nằm trong IndexedDB `harmea.editor.v1`. Không đưa Blob vào localStorage. Giỏ cũ thiếu ảnh gốc cần chọn lại ảnh khi sửa. Xem [báo cáo B](docs/qa/2026-10-29-task-b.md); phần upload/download/IndexedDB trên trình duyệt chưa được xác nhận.
+Giỏ lưu metadata ở localStorage và mỗi thiết kế có Blob ảnh riêng trong IndexedDB. Trình duyệt chuẩn hóa ảnh theo EXIF, nén JPEG quality 0.85, cạnh dài tối đa 2400 px; API xác thực lại, xoay theo EXIF, chuyển sRGB và mã hóa mozjpeg quality 82. Ảnh chỉ được tải lên khi đặt đơn.
 
-Checkout C giữ UUID + SHA-256 fingerprint của lần gửi chưa rõ kết quả trong sessionStorage `harmea.checkout.pending.v1`; không có raw token, URL nhạc, body hoặc người nhận trong record. Thành công mới xóa pending và cho lần đặt mới dùng khóa mới. Mất response giữ cùng khóa; nhận 409 trùng thì liên hệ cửa hàng, không giả vờ khôi phục link. Tracking dùng fragment/POST body và chỉ hiện tiến độ/lịch sử công khai. Xem [báo cáo C](docs/qa/2026-10-29-task-c.md).
+Font DM Sans và Playfair Display được lưu trong `apps/web/public/fonts` cùng giấy phép và nguồn tải; trình duyệt tải font từ cùng origin, kể cả ở `/track`. Không cần truy cập Google Fonts khi build hoặc chạy app. Kết quả khắc phục font/favicon và các kiểm tra sau review nằm ở cuối [báo cáo G1](docs/qa/2026-11-11-task-G1.md).
 
-Admin D tại `/admin/login` dùng cookie HttpOnly, không lưu session/mật khẩu vào web storage. Có lọc/phân trang, chi tiết snapshot từng thiết kế, ảnh gốc/PNG riêng tư, chuyển trạng thái kèm xác nhận và expectedVersion. Gặp 409 chỉ tải lại đơn; mất kết quả cập nhật thì yêu cầu tải lại trước thao tác tiếp. Đăng xuất ẩn dữ liệu ngay; lỗi mạng không được coi là đã thu hồi phiên. Xem [báo cáo D](docs/qa/2026-10-29-task-d.md).
+## Cài đặt và chạy local
 
-## Đọc theo thứ tự
-
-1. [Requirement và phạm vi](docs/01-requirements.md).
-2. [Kiến trúc và quyết định kỹ thuật](docs/02-architecture.md).
-3. [Dữ liệu, API và quy tắc tích hợp](docs/03-data-api.md); hợp đồng máy đọc được: [OpenAPI](contracts/openapi.json).
-4. [Kế hoạch 8–10 giờ dự kiến cho một người](docs/05-solo-plan.md).
-5. Code E cả hai giai đoạn và A–D đã triển khai; phần tiếp theo là nghiệm thu UI và diễn tập khi browser khả dụng. Xem các báo cáo [E1](docs/qa/2026-10-29-clean-layout.md), [A](docs/qa/2026-10-29-task-a.md), [B](docs/qa/2026-10-29-task-b.md), [C](docs/qa/2026-10-29-task-c.md), [D](docs/qa/2026-10-29-task-d.md), [E2](docs/qa/2026-10-29-clean-layout-phase2.md).
-6. Dùng [checklist demo](docs/04-acceptance-demo.md) để nghiệm thu.
-
-## Chạy trên Windows / PowerShell
-
-Yêu cầu: Node.js 24.x và npm. Chạy mọi lệnh từ thư mục chứa README này. Dùng `npm.cmd` nếu PowerShell chặn `npm.ps1`.
+Trong PowerShell từ thư mục dự án:
 
 ```powershell
 npm.cmd ci --ignore-scripts
 npm.cmd run setup
 ```
 
-`setup` tạo `.env` và `.local-admin.txt` với bí mật ngẫu nhiên, giữ nguyên nếu `.env` đã có. Đăng nhập tại `/admin/login` bằng tài khoản local này. Không đưa hai file này vào Git/chia sẻ. `.env.example` là mẫu công khai.
+`setup` tạo `.env` local với MySQL ở `127.0.0.1`, `APP_URL=http://localhost:5173` và `LOOKUP_SECRET` ngẫu nhiên. Nếu `.env` cũ còn `HOST=127.0.0.1`, `PORT=4000` và `APP_URL=http://localhost:4000` mặc định, lần chạy `setup` tiếp theo sẽ bỏ/cập nhật các giá trị đó mà giữ URL DB và secret hiện có. Muốn API chỉ nghe loopback khi phát triển, tự thêm `HOST=127.0.0.1` vào `.env`; mặc định API nghe `0.0.0.0` để hoạt động trong container. Giữ `.env` riêng tư; không commit hoặc đưa vào ZIP bàn giao.
 
-### Cách A — PostgreSQL bằng Docker
-
-1. Mở Docker Desktop, chờ engine sẵn sàng.
-2. Trong `.env`, đổi `DB_DRIVER=pglite` thành `DB_DRIVER=postgres`. `DATABASE_URL` đã được setup sinh khớp mật khẩu Compose.
-3. Chạy:
+Khởi động MySQL local bằng Compose dev:
 
 ```powershell
-docker compose up -d --wait db
+npm.cmd run db:up
+# hoặc: docker compose -f compose.dev.yaml up -d --wait db
 npm.cmd run db:migrate
+```
+
+Nếu runner báo migration `005_r1_finalize_lookup.sql` bị hoãn vì đơn cũ chưa có HMAC, chạy:
+
+```powershell
+npm.cmd run db:backfill-lookup
+npm.cmd run db:migrate
+```
+
+Migration `006_r3_admin_products.sql` thêm mô tả/version sản phẩm, giới hạn giá và lịch sử đổi giá. Không sửa các migration đã áp dụng; `db:migrate` sẽ áp migration mới.
+
+Sau đó chạy:
+
+```powershell
 npm.cmd run db:check
 npm.cmd run dev
 ```
 
-Compose chạy **database**, còn web/API chạy bằng Node trên máy. PostgreSQL chỉ bind `127.0.0.1:5432`; dữ liệu nằm trong named volume. Dừng bằng `docker compose stop`. Nếu cổng 5432 bị chiếm, đổi cổng bên trái trong Compose và `DATABASE_URL` tương ứng. Không dùng lệnh xóa volume nếu cần giữ đơn.
+Web ở `http://127.0.0.1:5173`, API ở `http://127.0.0.1:3000/api/health`; `/health` kiểm tra tiến trình không phụ thuộc DB/storage, còn `/ready` kiểm tra MySQL và quyền ghi/xóa qua driver storage đang chọn. Nếu DB/storage mất kết nối, API vẫn chạy và endpoint cần backend đó trả `503`. `/track` nhận mã đơn và SĐT trong form. Local dev bật admin mặc định tại `/admin`.
 
-### Cách B — local dự phòng, không cần Docker
+### Migration đã áp dụng
 
-Giữ `DB_DRIVER=pglite` trong `.env`, rồi chạy:
+DB local đã áp `001_init.sql` đến `006_r3_admin_products.sql`. File `003_users.sql` được giữ nguyên do đã áp dụng và không còn ảnh hưởng schema sau migration R1. Migration `004_r1_remove_auth_add_lookup.sql` xóa bảng/cột auth và thêm `lookup_phone_hash` nullable. Script Node backfill HMAC từ recipient snapshot; migration `005_r1_finalize_lookup.sql` đặt cột NOT NULL và xóa `tracking_token_hash`. Migration 006 thêm mô tả/version sản phẩm và lịch sử giá. Không chỉnh file migration đã áp dụng để né checksum.
+
+### Gate admin và production
+
+- `ADMIN_ENABLED` mặc định true ngoài production, false khi `NODE_ENV=production`.
+- Khi gate tắt, `/api/admin*` trả JSON 404 chung và `/admin*` trả trang 404.
+- Khi triển khai, chỉ bật `ADMIN_ENABLED=true` sau khi reverse proxy chặn `/admin*` và `/api/admin*` (Basic Auth hoặc giới hạn IP).
+- Production thiếu `LOOKUP_SECRET` tối thiểu 32 byte thì API từ chối khởi động.
+- Bộ đếm lookup lưu trong memory, chỉ phù hợp một API instance.
+- `APP_URL` là biến chính cho Origin, `robots.txt` và `sitemap.xml`; `APP_ORIGIN` chỉ còn là giá trị dự phòng có cảnh báo một lần.
+
+### Docker
+
+`compose.dev.yaml` chỉ chạy MySQL local. `docker-compose.yml` là cấu hình container production: app và MySQL không publish cổng; app nối network external `web` để Caddy của người vận hành gọi `app:3000`, còn MySQL chỉ ở network `backend` internal. Cấu hình không chứa Caddy, không triển khai cloud và không bật `ADMIN_ENABLED`.
+
+Để dùng Compose production, cấu hình `.env` theo `.env.example`, thay mọi `CHANGE_ME`, đặt `DATABASE_URL` dùng host `db`, rồi tạo network dùng chung một lần. Đừng ghi đè `.env` local đang có; bảo đảm file dùng cho Compose chứa cấu hình production trước khi chạy lệnh migrate:
 
 ```powershell
-npm.cmd run db:migrate
-npm.cmd run db:check
-npm.cmd run dev
+# Chỉ tạo từ mẫu nếu chưa có .env; nếu đã có, giữ file và chỉnh cấu hình có chủ đích.
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+# Thay CHANGE_ME bằng giá trị riêng và đặt DATABASE_URL dùng host db trong .env.
+docker network create web
+docker compose run --rm app node scripts/migrate.ts
+docker compose up --build -d
 ```
 
-PGlite dùng PostgreSQL nhúng, dữ liệu bền tại `storage/db`. Chỉ một tiến trình được mở thư mục DB này: dừng API trước khi chạy migration/check DB sau khi task A đã kết nối database vào API.
+Compose chính không có `ports`. Để truy cập app từ máy local, có thể ghép override loopback: `docker compose -f docker-compose.yml -f docker-compose.local.yml up --build`. Dữ liệu DB và upload dùng named volume; `docker compose down` không xóa volume nếu không thêm `-v`.
 
-**Hai chế độ có kho dữ liệu riêng.** Đổi driver không tự chuyển đơn hoặc tài khoản; chạy migration/seed trên chế độ mới. Nếu chuyển máy, sao lưu DB theo driver và `storage/uploads` khi ứng dụng đã dừng; không chỉ copy mã nguồn.
+Máy phát triển hiện có Docker CLI nhưng Docker Engine chưa chạy. Vì vậy chưa xác nhận build image, runtime container, volumes hay luồng Docker; xem [báo cáo G1](docs/qa/2026-11-11-task-G1.md). Chưa cấu hình server/cloud hoặc proxy production.
 
-**Nâng bản local đang dùng:** dừng API trước, chạy `npm.cmd run db:migrate` (thêm 004, không sửa 001–003), `npm.cmd run db:check`, rồi khởi động lại API. Phiên phát triển task A chỉ migrate database thử, chưa thay DB đang chạy của bạn. Các đơn `demo_checkouts` vẫn giữ riêng và không tự được chuyển thành đơn có tiến độ/admin.
+### Bàn giao ứng dụng (G3)
 
-## Địa chỉ và kiểm tra
+Xem [DEPLOY.md](DEPLOY.md) cho biến môi trường, khởi tạo/cập nhật, admin gate và backup/restore. `npm.cmd run env:prod -- --out <file-ngoài-repo>` sinh mật khẩu và lookup secret mới, mặc định local; có `--image`, `--s3-bucket` và `--aws-region`. File thật gửi riêng, không đưa vào Git/ZIP. Giữ LOOKUP_SECRET cũ cùng dữ liệu đã có; không chạy `--force` để thay env đang sử dụng.
 
-- Web: `http://127.0.0.1:5173` — luồng đặt thử; tracking tại `/track#token`.
-- Admin: `http://127.0.0.1:5173/admin/login`; danh sách `/admin/orders` và chi tiết `/admin/orders/:id`.
-- API: `http://127.0.0.1:4000/api/health`.
-- Web gọi đường dẫn tương đối `/api/...`, Vite proxy đến cổng 4000.
-- API nghiệp vụ chưa có sẽ trả 404; không có mock thành công để nhầm là đã lưu.
+`deploy/backup.sh` và `deploy/restore.sh` dùng Compose ở mức ứng dụng; local gồm DB + ảnh, S3 chỉ gồm DB. Restore cần `--yes`, kiểm tra checksum/config trước khi thay dữ liệu. CI đã thêm diễn tập trên volume test riêng; chưa chạy Docker/server thật trong task.
+
+### CI và release image (G2)
+
+`.github/workflows/ci.yml` chạy các kiểm tra code, test MySQL thật, build/chạy MinIO cho test S3, sau đó build image amd64 và nghiệm thu Docker. Test SIGTERM chạy trên Linux. Workflow release gọi lại CI, build một image ứng viên và smoke chính image đó trước khi login/push; không triển khai server.
+
+Người dùng tạo secret `DOCKERHUB_TOKEN` (Read & Write access token) và `DOCKERHUB_USERNAME` trong GitHub Settings; username cũng có thể dùng repository variable `DOCKERHUB_USERNAME`. Workflow dùng `<username>/harmea-web`, không hard-code tài khoản. Cập nhật `CHANGELOG.md` với section đúng version và dòng `Có migration: có/không` trước khi tự push tag `vN` hoặc `vN.M.K`. Image được gắn tag version, `sha-<12 ký tự commit>` và `latest`; triển khai dùng version cụ thể. Xem [DEPLOY.md](DEPLOY.md).
+
+Nếu phát hành thủ công khi chưa dùng CI, người dùng tự đăng nhập/build/push từ môi trường tin cậy:
+
+```bash
+docker login
+docker buildx build --platform linux/amd64 -t <user>/harmea-web:v1 --push .
+```
+
+Agent chỉ viết workflow/hướng dẫn, không chạy login/push hoặc tạo secret. CI/release chưa chạy trên GitHub; Docker runtime và MinIO vẫn chưa nghiệm thu ở máy phát triển do Engine không chạy.
+
+### Storage local/S3 (G1b)
+
+`STORAGE_DRIVER=local` là mặc định, giữ các khóa ảnh và volume hiện tại. Khi người vận hành đã cung cấp bucket private, Block Public Access, mã hóa SSE-S3 và IAM role có quyền đọc/ghi/xóa object dưới `uploads/`, đặt `STORAGE_DRIVER=s3`, `S3_BUCKET` và `AWS_REGION` trong `.env` riêng. Ứng dụng không tạo bucket/role, không dùng URL public/presigned và không mở thêm API ảnh. SDK đọc credential từ chuỗi provider mặc định (trên EC2 dùng instance role); factory từ chối AWS access key trong env và custom endpoint. Xem [AWS credential providers](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html).
+
+Để phân biệt object chưa tồn tại qua `exists()`, người vận hành cần cung cấp thêm quyền bucket `s3:ListBucket`; thiếu quyền này S3 có thể trả 403 thay vì 404. Driver giữ lỗi quyền là 503, không coi đó là file không tồn tại; migration dừng để tránh bỏ qua lỗi cấu hình. Xem [AWS HeadObject permissions](https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html).
+
+`/health` vẫn độc lập DB/storage; `/ready` kiểm tra MySQL và ghi/xóa probe qua driver đang chọn. Backend storage không truy cập được trả 503; tệp không tồn tại trả 404 ở API admin. Không tự fallback sang local khi đã chọn S3. MinIO và credential thử chỉ có trong test harness, không nằm trong factory ứng dụng.
+
+Chuyển ảnh cũ: dừng nhận đơn trong thời gian copy/đối chiếu, giữ `UPLOAD_DIR` trỏ tới thư mục local đang chứa ảnh, cấu hình bucket/region/role riêng rồi chạy:
+
+```powershell
+npm.cmd run storage:migrate-s3 -- --dry-run
+# Chỉ người vận hành chạy khi đã chuẩn bị bucket và role:
+npm.cmd run storage:migrate-s3
+```
+
+Dry-run chỉ đọc DB và ảnh local, không tạo S3 client. Lệnh thật chỉ copy các khóa ảnh được tham chiếu bởi đơn, giữ nguyên khóa trong DB, kiểm tra SHA-256 sau copy và bỏ qua object đã có cùng checksum. Checksum khác thì dừng và không ghi đè. File nguồn luôn được giữ; chuyển driver sau khi toàn bộ ảnh đã được đối chiếu. Không xóa bản local hoặc đổi driver ngược lại khi chưa đối chiếu các đơn mới.
+
+Kiểm tra local: `npm.cmd run test:storage` (gồm MySQL thật). Khi Docker Engine chạy, thử MinIO bằng project tạm riêng:
+
+```powershell
+docker compose -f compose.storage-test.yaml -p harmea-storage-test up --build -d --wait
+npm.cmd run test:storage:s3
+docker compose -f compose.storage-test.yaml -p harmea-storage-test down
+```
+
+Service test chỉ bind loopback, dùng tmpfs và credential fixture công khai; không ghép vào Compose production. `S3_TEST_ENDPOINT` chỉ hỗ trợ HTTP loopback, mặc định `http://127.0.0.1:19000`. MinIO standalone chưa cấu hình KMS: suite S3 kiểm tra lưu/stream/cleanup/checksum, không nghiệm thu mã hóa SSE-S3 thực tế. Máy hiện chưa chạy Docker Engine nên MinIO/container và AWS thật chưa được nghiệm thu.
+
+`tests/minio/Dockerfile` build MinIO từ commit chính thức `07c3a429bfed433e49018cb0f78a52145d4bedeb` của release `RELEASE.2025-09-07T16-13-09Z`, kèm giấy phép trong image test. Cần mạng để tải Go modules và nguồn khi build lần đầu. Cấu hình này thay cho image registry/binary MinIO không truy cập được ở lần kiểm tra; chưa xác nhận build trên Docker.
+
+### Hai đơn demo
+
+Chạy khi API đã dừng, DB đã migrate và `.env` có `LOOKUP_SECRET`:
+
+```powershell
+npm.cmd run demo:seed
+```
+
+Lệnh tạo hai order hư cấu hoặc giữ nguyên đơn fixture có sẵn; in mã đơn để kiểm tra trong `/track`. Không tạo `storage/demo-links.json`. SĐT demo là số giả trong payload seed; không dùng thông tin demo làm giao dịch thật. URL nhạc là placeholder chưa xác minh NFC.
+
+## Test và kiểm tra
+
+Các suite database cần `TEST_DATABASE_URL` trỏ tới MySQL local account có quyền tạo/xóa DB. Mỗi suite dùng DB `harmea_test_<random>` riêng và dọn sau khi chạy.
 
 ```powershell
 npm.cmd run typecheck
 npm.cmd run build
 npm.cmd run contract:check
+npm.cmd run format:check
 npm.cmd run test:api
 npm.cmd run test:editor
 npm.cmd run test:checkout
 npm.cmd run test:admin
+npm.cmd run test:admin-extended
+npm.cmd run test:setup
+npm.cmd run test:prod-env
+npm.cmd run test:snapshots
+npm.cmd run test:runtime
+npm.cmd run test:storage
+npm.cmd run test:docker-fixture
+npm.cmd run test:router
+npm.cmd run routes:check
 npm.cmd run test:smoke
-npm.cmd run db:check
 ```
 
-Kết quả starter: [kiểm tra starter](docs/qa/2026-10-27-starter-verification.md); kết quả refactor: [báo cáo E1](docs/qa/2026-10-29-clean-layout.md). Smoke không ghi file mặc định; thêm `-- --out <file>` khi muốn lưu bằng chứng. Script khảo sát không dùng exit code để báo các mismatch đã biết. Docker cần kiểm tra trên máy có Docker engine; không suy ra đã chạy từ việc có Compose.
+Không đánh dấu kiểm tra trực quan, Docker hoặc proxy là đạt nếu chưa chạy thật. Xem [`docs/04-acceptance-demo.md`](docs/04-acceptance-demo.md) và báo cáo QA trong `docs/qa/`.
 
-### Chuẩn bị hai đơn diễn tập
+## Bảo vệ dữ liệu
 
-Dừng API trước khi chạy các lệnh sau (PGlite chỉ một tiến trình mở DB):
-
-```powershell
-npm.cmd run db:migrate
-npm.cmd run demo:seed
-npm.cmd run dev
-```
-
-Lệnh seed tạo hai đơn hư cấu: một `completed`, một `cancelled`, bằng cùng validation/transaction tạo đơn và chuyển trạng thái. Chạy lại giữ nguyên các đơn có khóa fixture, không sửa snapshot hoặc tự tiếp tục đơn dở. Link tracking một lần lưu riêng trong `storage/demo-links.json` đã bị Git bỏ qua; không chia sẻ tệp hoặc chiếu token. Nếu mất tệp, không khôi phục token từ DB. URL nhạc là placeholder Spotify chưa xác minh, không dùng để chứng minh phát nhạc/NFC. Đổi giá/sản phẩm seed có thể làm lệnh từ chối; không tự thay dữ liệu danh mục. Phiên triển khai D chỉ chạy lệnh trên DB thử, chưa tạo đơn trong DB của bạn.
-
-## Cách đưa cho coding agent hoặc tự triển khai
-
-Mở thư mục này làm project. Đọc `AGENTS.md`, rồi dùng nguyên prompt trong `tasks/A-api-data.md`. Chỉ giao task B/C/D sau khi đạt điều kiện phụ thuộc. Từng task có phạm vi file và tiêu chí Done. Không yêu cầu agent làm tất cả đồng thời trên cùng checkout.
-
-Giữ giỏ hàng theo quyết định trong task E; hợp đồng/docs/task A/C đã đồng bộ thành 1–10 thiết kế cùng sản phẩm/mẫu, mỗi dòng 1–10 bản. Multipart dùng payload + photo_i/preview_i, tổng ≤16 MiB. Không thêm payment, nhiều mẫu, cloud hoặc microservices. Thời lượng trong kế hoạch là ước lượng, không phải phần đã hoàn thành hoặc cam kết thời gian.
+- Không ghi SĐT, địa chỉ, body đặt hàng, URL nhạc, secret hoặc cookie vào log.
+- Không phục vụ public `storage/uploads`; API admin luôn qua `ADMIN_ENABLED`.
+- Không commit `.env`, `.local-admin.txt`, `storage/`, `node_modules/` hoặc `.npm-cache/`.
+- Không tự thêm ORM/framework/router, thanh toán hay dịch vụ ngoài phạm vi roadmap.

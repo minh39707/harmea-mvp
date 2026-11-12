@@ -5,7 +5,7 @@ export function catalogRouter(db: Database) {
   const router = express.Router();
   router.get('/products/current', async (_req, res) => {
     const { rows } = await db.query(
-      'SELECT id,name,unit_price_vnd,template_version,is_demo FROM products WHERE is_active=true'
+      'SELECT id,name,description,unit_price_vnd,template_version,is_demo,is_active FROM products ORDER BY is_active DESC,created_at,id LIMIT 1'
     );
     const p = rows[0];
     if (!p) {
@@ -16,7 +16,9 @@ export function catalogRouter(db: Database) {
     }
     res.json({
       ...productSnapshot(p),
-      isDemoPrice: p.is_demo,
+      description: String(p.description ?? ''),
+      isActive: Boolean(p.is_active),
+      isDemoPrice: Boolean(p.is_demo),
       image: '/images/card-sample.png',
       cardSizeMm: { width: 54, height: 86 }
     });

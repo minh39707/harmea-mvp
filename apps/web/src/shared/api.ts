@@ -1,10 +1,17 @@
 export class ApiError extends Error {
   status: number;
   code: string;
-  constructor(message: string, status: number, code: string) {
+  retryAfterSeconds: number | null;
+  constructor(
+    message: string,
+    status: number,
+    code: string,
+    retryAfterSeconds: number | null = null
+  ) {
     super(message);
     this.status = status;
     this.code = code;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
 }
 export async function api<T>(
@@ -44,7 +51,8 @@ export async function api<T>(
         ? data.error.message.slice(0, 500)
         : 'Không thể xử lý yêu cầu.',
       r.status,
-      typeof data?.error?.code === 'string' ? data.error.code : 'REQUEST_FAILED'
+      typeof data?.error?.code === 'string' ? data.error.code : 'REQUEST_FAILED',
+      /^\d+$/.test(r.headers.get('Retry-After') ?? '') ? Number(r.headers.get('Retry-After')) : null
     );
   return data as T;
 }
