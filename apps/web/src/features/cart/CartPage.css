@@ -633,12 +633,11 @@
   color: var(--text);
 }
 
-.free-badge {
-  color: var(--brand);
-  background: var(--brand-soft);
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 4px;
+.shipping-fee-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
 }
 
 .summary-divider {

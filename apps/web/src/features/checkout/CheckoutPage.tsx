@@ -1,6 +1,11 @@
 import type { Shop } from '../../app/useShop';
 import { money } from '../../shared/format';
-import { DELIVERY_NOTE, estimateDelivery } from '../../shared/delivery';
+import {
+  DELIVERY_NOTE,
+  SHIPPING_FEE_LABEL,
+  SHIPPING_FEE_NOTE,
+  estimateDelivery
+} from '../../shared/delivery';
 import { IconUser } from '../../shared/ui/Icons';
 import './CheckoutPage.css';
 
@@ -132,9 +137,11 @@ export default function CheckoutPage({
             <span>Tiền sản phẩm</span>
             <strong>{money(subtotal)}</strong>
           </div>
-          <p className="note">
-            Chưa bao gồm phí giao hàng. Máy chủ sẽ kiểm tra lại giá khi tạo đơn.
-          </p>
+          <div className="sum">
+            <span>Phí vận chuyển</span>
+            <span className="shipping-fee-badge">{SHIPPING_FEE_LABEL}</span>
+          </div>
+          <p className="note">{SHIPPING_FEE_NOTE} Máy chủ sẽ kiểm tra lại giá khi tạo đơn.</p>
           <div className="delivery-estimate" role="note">
             <span className="delivery-estimate-label">Dự kiến giao</span>
             <strong>{estimateDelivery().label}</strong>

@@ -58,3 +58,12 @@
   color: var(--muted);
   font-size: 12px;
 }
+
+/* Phí vận chuyển (F5): dùng chung giỏ hàng và checkout. */
+.shipping-fee-badge {
+  color: var(--brand);
+  background: var(--brand-soft);
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}

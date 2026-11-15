@@ -4,7 +4,12 @@ import Quantity from '../../shared/ui/Quantity';
 import { blankDesign as blank } from '../../shared/types';
 import type { Item } from '../../shared/types';
 import { money, colorLabel } from '../../shared/format';
-import { DELIVERY_NOTE, estimateDelivery } from '../../shared/delivery';
+import {
+  DELIVERY_NOTE,
+  SHIPPING_FEE_LABEL,
+  SHIPPING_FEE_NOTE,
+  estimateDelivery
+} from '../../shared/delivery';
 import { hasLowPrintResolution } from '../editor/photo-processing';
 import {
   IconVinyl,
@@ -315,7 +320,7 @@ export default function CartPage({
               </div>
               <div className="summary-row">
                 <span className="row-label">Phí vận chuyển</span>
-                <span className="free-badge">Chưa tính (ở bước tiếp)</span>
+                <span className="shipping-fee-badge">{SHIPPING_FEE_LABEL}</span>
               </div>
             </div>
 
@@ -328,9 +333,11 @@ export default function CartPage({
             <div className="summary-divider" />
 
             <div className="summary-total-row">
-              <span className="total-label">Tổng thanh toán:</span>
+              <span className="total-label">Tổng tiền sản phẩm:</span>
               <strong className="total-val">{money(selectedSubtotal)}</strong>
             </div>
+
+            <p className="shipping-fee-note">{SHIPPING_FEE_NOTE}</p>
 
             <button
               className="btn-checkout-primary"

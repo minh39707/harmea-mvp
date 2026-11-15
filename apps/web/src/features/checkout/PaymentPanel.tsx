@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { api } from '../../shared/api';
 import { money } from '../../shared/format';
+import { SHIPPING_FEE_NOTE } from '../../shared/delivery';
 import './PaymentPanel.css';
 
 export default function PaymentPanel({
@@ -48,7 +49,9 @@ export default function PaymentPanel({
       <h2 id="transfer-title">Bước thanh toán mô phỏng</h2>
       <p>Đây là bước mô phỏng. Không quét mã, không chuyển tiền.</p>
       <strong className="transfer-amount">{money(amount)}</strong>
-      <p className="note">Tiền sản phẩm (demo). Không có khoản tiền nào được thu.</p>
+      <p className="note">
+        Tiền sản phẩm (demo). {SHIPPING_FEE_NOTE} Không có khoản tiền nào được thu.
+      </p>
       <div
         className="transfer-qr demo-qr-placeholder"
         role="img"

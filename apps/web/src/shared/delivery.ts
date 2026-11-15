@@ -58,4 +58,9 @@ export function estimateDelivery(orderDate: Date | string = new Date()): Deliver
   };
 }
 
+/** Cách ghi phí vận chuyển dùng chung cho giỏ, checkout, thanh toán, trang đã nhận đơn (F5). */
+export const SHIPPING_FEE_LABEL = 'Xác nhận trước khi giao';
+export const SHIPPING_FEE_NOTE =
+  'Phí vận chuyển chưa cộng vào tổng tiền và sẽ được cửa hàng xác nhận với bạn trước khi giao hàng.';
+
 export const DELIVERY_NOTE = `Gồm ${PRODUCTION_DAYS} ngày làm thẻ và ${SHIPPING_DAYS_MIN}–${SHIPPING_DAYS_MAX} ngày giao, không tính Chủ nhật.`;

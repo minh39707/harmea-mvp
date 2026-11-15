@@ -2,7 +2,7 @@ import type { Shop } from '../../app/useShop';
 import { blankDesign as blank } from '../../shared/types';
 import { statusLabels } from '../../shared/order-status';
 import { money } from '../../shared/format';
-import { DELIVERY_NOTE, estimateDelivery } from '../../shared/delivery';
+import { DELIVERY_NOTE, SHIPPING_FEE_LABEL, estimateDelivery } from '../../shared/delivery';
 import { IconCheck, IconCopy, IconSearch } from '../../shared/ui/Icons';
 import './SuccessPage.css';
 import PaymentPanel from './PaymentPanel';
@@ -48,6 +48,10 @@ export default function SuccessPage({
         <div className="receipt-row">
           <span>Tiền sản phẩm:</span>
           <strong className="amount-highlight">{money(receipt.subtotalVnd)}</strong>
+        </div>
+        <div className="receipt-row">
+          <span>Phí vận chuyển:</span>
+          <b>{SHIPPING_FEE_LABEL}</b>
         </div>
         <div className="receipt-row">
           <span>Số lượng thẻ NFC:</span>

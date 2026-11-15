@@ -49,7 +49,7 @@ export default function OrderDetail({ orders, back }: { orders: AdminOrders; bac
               <dt>Đơn giá đã chốt</dt>
               <dd>{money(order.unitPriceVnd)}</dd>
               <dt>Tiền sản phẩm</dt>
-              <dd>{money(order.subtotalVnd)} · phí giao hàng chưa bao gồm</dd>
+              <dd>{money(order.subtotalVnd)} · chưa gồm phí vận chuyển</dd>
               <dt>Mã vận đơn</dt>
               <dd>{order.trackingCode || 'Chưa nhập'}</dd>
               <dt>Thanh toán demo của khách</dt>
