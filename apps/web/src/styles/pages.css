@@ -22,3 +22,16 @@
   gap: var(--space-6);
   align-items: start;
 }
+
+/* Thông báo dự án sinh viên / thanh toán demo (F1, F2). */
+.demo-alert {
+  margin: 0 0 var(--space-3);
+  padding: 12px var(--space-2);
+  border: 1px solid var(--danger);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--danger-surface);
+  color: var(--danger);
+  font-size: 14px;
+  line-height: 1.5;
+}

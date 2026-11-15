@@ -37,6 +37,10 @@ export default function CheckoutPage({
         ← Quay lại giỏ hàng
       </button>
       <h1>Thông tin đặt đơn</h1>
+      <div className="demo-alert" role="alert">
+        <strong>Dự án sinh viên – website demo.</strong> Harméa là bài tập môn E-Business, không
+        phải cửa hàng thật. Đơn đặt ở đây không được bán, giao hay thu tiền.
+      </div>
       <form className="checkout-layout" onSubmit={checkout} aria-busy={busy}>
         <fieldset className="checkout-fields" disabled={busy}>
           <div className="step-card-header">
