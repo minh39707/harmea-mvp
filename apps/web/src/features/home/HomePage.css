@@ -316,7 +316,7 @@
   z-index: 10;
 }
 
-/* Thẻ Xanh (Drake) - Nằm ở giữa phía dưới bên trái */
+/* Thẻ xanh - nằm ở giữa phía dưới bên trái */
 .hero-card-item.card-blue {
   top: 170px;
   left: 10px;
@@ -331,7 +331,7 @@
   z-index: 10;
 }
 
-/* Thẻ Hồng (Kendrick Lamar) - Nằm phía dưới bên phải đè lên đĩa và thẻ xanh */
+/* Thẻ hồng - nằm phía dưới bên phải đè lên đĩa và thẻ xanh */
 .hero-card-item.card-rose {
   top: 210px;
   left: 155px;

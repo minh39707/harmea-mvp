@@ -27,8 +27,8 @@ function AboutPage() {
     <>
       <p>
         Harméa là ý tưởng về một tấm thẻ NFC cá nhân hóa để lưu giữ hình ảnh, lời nhắn và liên kết
-        âm nhạc. Website hiện là bản demo; quy mô kinh doanh, pháp nhân và thời điểm mở bán:{' '}
-        <strong>[CẦN XÁC NHẬN]</strong>.
+        âm nhạc. Website này là sản phẩm demo của học phần E-Business tại Trường Đại học Hà Nội,
+        không phải cửa hàng đang hoạt động và chưa mở bán thương mại.
       </p>
       <p>
         Bạn có thể thử trình thiết kế và lưu các mẫu trong giỏ trên trình duyệt hiện tại. Bản demo
@@ -52,8 +52,9 @@ function NfcPage() {
       </p>
       <p>
         Điện thoại không tự phát nhạc chỉ bằng thao tác chạm. Người dùng có thể cần xác nhận mở liên
-        kết, cài ứng dụng hoặc đăng nhập vào dịch vụ âm nhạc. Cách ghi liên kết lên thẻ, loại chip
-        và danh sách thiết bị đã kiểm tra: <strong>[CẦN XÁC NHẬN]</strong>.
+        kết, cài ứng dụng hoặc đăng nhập vào dịch vụ âm nhạc. Bản demo mô phỏng quy trình thiết kế;
+        loại chip, quy trình ghi thẻ và khả năng tương thích thiết bị phải được kiểm tra lại trước
+        khi sản xuất thật.
       </p>
       <p className="content-note">
         Khả năng đọc NFC và cách mở liên kết còn tùy thiết bị, hệ điều hành và cài đặt của người
@@ -95,7 +96,7 @@ function FaqPage() {
       <details>
         <summary>Thời gian giao hàng và quy định đổi trả ra sao?</summary>
         <p>
-          Các nội dung này chưa được xác nhận. Xem{' '}
+          Bản demo không giao hàng và không nhận đổi trả. Xem phạm vi mô phỏng tại{' '}
           <Link to="/policies/shipping">chính sách giao hàng</Link> và{' '}
           <Link to="/policies/returns">chính sách đổi trả</Link> trước khi sử dụng.
         </p>
@@ -103,7 +104,7 @@ function FaqPage() {
       <details>
         <summary>Tôi liên hệ với Harméa ở đâu?</summary>
         <p>
-          Thông tin liên hệ chính thức đang chờ xác nhận tại trang{' '}
+          Bản demo chưa vận hành kênh chăm sóc khách hàng. Xem thông tin phạm vi dự án tại trang{' '}
           <Link to="/contact">liên hệ</Link>.
         </p>
       </details>
@@ -115,11 +116,13 @@ function ShippingPage() {
   return (
     <>
       <p>
-        Đây là bản demo, chưa thu tiền và chưa tự động giao hàng. Phạm vi khu vực giao, đơn vị vận
-        chuyển, phí giao hàng và thời gian dự kiến: <strong>[CẦN XÁC NHẬN]</strong>.
+        Đây là bản demo học phần, không tiếp nhận đơn thương mại và không giao sản phẩm. Phí
+        30.000 VND và khoảng ngày giao trên luồng checkout chỉ là dữ liệu mô phỏng để kiểm tra trải
+        nghiệm người dùng; không phải báo giá hoặc cam kết vận chuyển.
       </p>
       <p>
-        Vui lòng xác nhận các thông tin này trước khi mở bán hoặc nhận đơn thật. Xem thêm{' '}
+        Nếu dự án chuyển sang kinh doanh thật, nhóm phải xác nhận khu vực giao, đơn vị vận chuyển,
+        biểu phí và thời gian dự kiến trước khi nhận đơn. Xem thêm{' '}
         <Link to="/policies/returns">chính sách đổi trả</Link>.
       </p>
     </>
@@ -130,12 +133,11 @@ function ReturnsPage() {
   return (
     <>
       <p>
-        Điều kiện đổi hoặc trả, thời hạn yêu cầu, cách gửi sản phẩm về và phương án xử lý chi phí:{' '}
-        <strong>[CẦN XÁC NHẬN]</strong>.
+        Bản demo không bán, sản xuất hoặc giao sản phẩm nên không phát sinh giao dịch đổi trả.
       </p>
       <p>
-        Chính sách đổi trả đang chờ cửa hàng xác nhận. Vui lòng không coi phần này là chính sách đã
-        có hiệu lực.
+        Trước khi mở bán thật, nhóm phải công bố điều kiện đổi trả, thời hạn yêu cầu, quy trình gửi
+        sản phẩm và bên chịu chi phí. Nội dung hiện tại chỉ mô tả phạm vi của bản demo học phần.
       </p>
     </>
   );
@@ -161,10 +163,11 @@ function PrivacyPage() {
         Tra cứu cần cả mã đơn và số điện thoại đã dùng khi đặt. Hệ thống không đặt thông tin này
         trong đường dẫn trang; số điện thoại tra cứu được xử lý riêng ở máy chủ.
       </p>
-      <h2>Thông tin cần xác nhận</h2>
+      <h2>Giới hạn của bản demo</h2>
       <p>
-        Thời hạn lưu ảnh và dữ liệu đơn, quy trình yêu cầu xóa, đầu mối xử lý quyền riêng tư và
-        thông tin đơn vị vận hành: <strong>[CẦN XÁC NHẬN]</strong>.
+        Không dùng thông tin cá nhân thật hoặc ảnh riêng tư trên website demo. Dữ liệu demo có thể
+        bị xóa khi nhóm đặt lại máy chủ. Dự án chưa có pháp nhân, đầu mối bảo vệ dữ liệu hoặc quy
+        trình yêu cầu xóa dành cho khách hàng thương mại.
       </p>
     </>
   );
@@ -174,8 +177,8 @@ function ContactPage() {
   return (
     <>
       <p>
-        Email hỗ trợ, số điện thoại, địa chỉ và thời gian tiếp nhận yêu cầu:{' '}
-        <strong>[CẦN XÁC NHẬN]</strong>.
+        Bản demo học phần chưa vận hành email, số điện thoại, địa chỉ hoặc thời gian hỗ trợ khách
+        hàng. Thành viên lớp trao đổi với nhóm qua kênh học phần đã được giảng viên cung cấp.
       </p>
       <p>Không gửi ảnh riêng tư hoặc thông tin thanh toán qua kênh chưa được Harméa xác nhận.</p>
     </>

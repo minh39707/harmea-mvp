@@ -16,24 +16,24 @@ import {
 export const COLOR_SAMPLES = [
   {
     id: 'cream',
-    src: '/images/card-sample-cream.jpg',
+    src: '/images/template-blank-cream.jpg',
     title: 'Màu Kem kỷ niệm',
     label: 'Kem kỷ niệm',
-    artist: 'The Weeknd — The Idol'
+    artist: 'HARMÉA demo template — add your own licensed image'
   },
   {
     id: 'blue',
-    src: '/images/card-sample-blue.jpg',
+    src: '/images/template-blank-blue.jpg',
     title: 'Màu Xanh bình yên',
     label: 'Xanh bình yên',
-    artist: 'Drake — Nothing Was The Same'
+    artist: 'HARMÉA demo template — add your own licensed image'
   },
   {
     id: 'rose',
-    src: '/images/card-sample-rose.jpg',
+    src: '/images/template-blank-rose.jpg',
     title: 'Màu Hồng dịu dàng',
     label: 'Hồng dịu dàng',
-    artist: 'Kendrick Lamar — DAMN.'
+    artist: 'HARMÉA demo template — add your own licensed image'
   }
 ];
 

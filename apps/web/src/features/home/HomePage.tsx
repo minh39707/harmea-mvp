@@ -9,8 +9,7 @@ import {
   IconPen,
   IconSparkle,
   IconChip,
-  IconShield,
-  IconStar
+  IconShield
 } from '../../shared/ui/Icons';
 
 type HomeProps = Pick<Shop, 'go' | 'setDraft' | 'product'> & { music: BackgroundMusic };
@@ -114,31 +113,31 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
 
             {/* 3 Thẻ mẫu xếp lớp sống động theo bố cục mới (Kem, Xanh, Hồng) */}
             <div className="hero-cards-composition">
-              {/* Thẻ Kem kỷ niệm (The Weeknd - The Idol) */}
+              {/* Mẫu trống để người dùng thêm ảnh có quyền sử dụng */}
               <div
                 className="hero-card-item card-cream"
                 onClick={() => chooseColorAndCustomize('cream')}
                 title="Bấm để thiết kế mẫu Kem kỷ niệm"
               >
-                <img src="/images/card-sample-cream.jpg" alt="Mẫu thẻ Kem kỷ niệm" />
+                <img src="/images/template-blank-cream.jpg" alt="Mẫu thẻ trống màu Kem kỷ niệm" />
               </div>
 
-              {/* Thẻ Xanh bình yên (Drake - Nothing Was The Same) */}
+              {/* Mẫu trống để người dùng thêm ảnh có quyền sử dụng */}
               <div
                 className="hero-card-item card-blue"
                 onClick={() => chooseColorAndCustomize('blue')}
                 title="Bấm để thiết kế mẫu Xanh bình yên"
               >
-                <img src="/images/card-sample-blue.jpg" alt="Mẫu thẻ Xanh bình yên" />
+                <img src="/images/template-blank-blue.jpg" alt="Mẫu thẻ trống màu Xanh bình yên" />
               </div>
 
-              {/* Thẻ Hồng dịu dàng (Kendrick Lamar - DAMN.) */}
+              {/* Mẫu trống để người dùng thêm ảnh có quyền sử dụng */}
               <div
                 className="hero-card-item card-rose"
                 onClick={() => chooseColorAndCustomize('rose')}
                 title="Bấm để thiết kế mẫu Hồng dịu dàng"
               >
-                <img src="/images/card-sample-rose.jpg" alt="Mẫu thẻ Hồng dịu dàng" />
+                <img src="/images/template-blank-rose.jpg" alt="Mẫu thẻ trống màu Hồng dịu dàng" />
               </div>
             </div>
 
@@ -367,67 +366,47 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
 
       <div className="section-divider" aria-hidden="true" />
 
-      {/* =========================================================================
-          6. LỜI CHIA SẺ TỪ KHÁCH HÀNG (CUSTOMER EXPERIENCES)
-         ========================================================================= */}
+      {/* Kết quả kiểm thử học phần, không phải đánh giá khách hàng */}
       <section className="home-reviews-section">
         <div className="section-header">
-          <span className="section-eyebrow">CẢM XÚC GỬI GẮM</span>
-          <h2 className="section-title">Khoảnh Khắc Cùng Harméa</h2>
+          <span className="section-eyebrow">KIỂM THỬ HỌC PHẦN</span>
+          <h2 className="section-title">Kết Quả Thử Nghiệm Ban Đầu</h2>
           <p className="section-subtitle">
-            Những chia sẻ và cảm xúc chân thật từ những người đã lưu giữ giai điệu cùng Harméa
+            Số liệu từ 10 người thử luồng đặt đơn demo ngày 10–11/11/2026; không phải đánh giá của
+            khách hàng và không có giao dịch thật.
           </p>
         </div>
 
         <div className="reviews-grid">
           <div className="review-card">
-            <div className="review-stars">
-              {[...Array(5)].map((_, i) => (
-                <IconStar key={i} size={15} color="#d4a34b" />
-              ))}
-            </div>
             <p className="review-comment">
-              “Mình đặt tặng người yêu bài hát kỷ niệm của hai đứa. Khi nhận thẻ, bạn ấy chạm nhẹ
-              điện thoại vào lưng thẻ, giai điệu cất lên bất ngờ làm bạn ấy xúc động suýt khóc. Món
-              quà vừa tinh tế vừa giàu cảm xúc!”
+              9/10 người thử hoàn thành luồng đặt đơn demo. Một người dừng ở màn hình QR vì lo ngại
+              đây là yêu cầu chuyển tiền thật.
             </p>
             <div className="review-author">
-              <strong>Khánh Vy</strong>
-              <span>Hà Nội • Màu Kem kỷ niệm</span>
+              <strong>Completion</strong>
+              <span>Store Test T1–T10 • Results R2–R3</span>
             </div>
           </div>
 
           <div className="review-card">
-            <div className="review-stars">
-              {[...Array(5)].map((_, i) => (
-                <IconStar key={i} size={15} color="#d4a34b" />
-              ))}
-            </div>
             <p className="review-comment">
-              “Chất lượng in rất chỉn chu, ảnh chân dung sắc nét và màu sắc trang nhã đúng như bản
-              xem trước. Mình để thẻ sau ốp lưng trong suốt, bạn bè ai thấy cũng tò mò rồi thử chạm
-              NFC nghe nhạc. Trải nghiệm rất mượt mà!”
+              Thời gian hoàn thành trung bình là 6,65 phút và điểm dễ sử dụng trung bình là 3,7/5.
             </p>
             <div className="review-author">
-              <strong>Hoàng Minh</strong>
-              <span>TP. Hồ Chí Minh • Màu Xanh bình yên</span>
+              <strong>Usability</strong>
+              <span>Results R4–R5</span>
             </div>
           </div>
 
           <div className="review-card">
-            <div className="review-stars">
-              {[...Array(5)].map((_, i) => (
-                <IconStar key={i} size={15} color="#d4a34b" />
-              ))}
-            </div>
             <p className="review-comment">
-              “Lựa chọn tuyệt vời để làm quà sinh nhật cho bạn thân. Thẻ có ảnh kỷ niệm, chữ ký tay
-              riêng và liên kết đến playlist yêu thích trên Spotify, hoàn toàn độc bản không đụng
-              hàng với bất kỳ món đồ nào khác.”
+              Các vấn đề chính gồm ngày và phí giao hàng chưa rõ, thiếu lời nhắn, vùng ký làm cuộn
+              trang, nhãn khó hiểu và bàn phím che nút thao tác.
             </p>
             <div className="review-author">
-              <strong>Thuỳ Trang</strong>
-              <span>Đà Nẵng • Màu Hồng dịu dàng</span>
+              <strong>Observed issues</strong>
+              <span>Store Test T1–T10 • Fixes F1–F8</span>
             </div>
           </div>
         </div>
@@ -441,8 +420,8 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
       <section className="home-cta-banner">
         <div className="cta-showcase-box">
           <img
-            src="/images/home-cta-showcase.jpg"
-            alt="Bộ sưu tập 3 thẻ Harméa và đĩa than âm nhạc"
+            src="/images/card-real-3.jpg"
+            alt="Minh họa thẻ NFC Harméa với hình phong cảnh không nhận diện cá nhân"
             className="cta-showcase-img"
           />
         </div>
