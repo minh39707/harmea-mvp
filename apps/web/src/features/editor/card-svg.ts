@@ -68,7 +68,7 @@ export function cardSvg(design: Design, guides = false) {
       : ''
   }
 
-  <!-- Dòng 3: Place of issue (form: "Nơi lưu giữ kỷ niệm"; nhãn in sẵn trong ảnh mẫu) -->
+  <!-- Dòng 3: Place of issue -->
   ${
     design.place
       ? `<text x="745" y="${layout.line3}" text-anchor="middle" font-family="'Courier New', Courier, monospace" font-size="${placeFontSize}" font-weight="bold" fill="#151816" letter-spacing="1">${escapeXml(design.place)}</text>`

@@ -182,19 +182,18 @@ export default function OptionalFields({
               )}
             </div>
 
-            {/* Ô 2: Nơi lưu giữ kỷ niệm — in vào dòng "Place of issue" có sẵn trên mẫu thẻ */}
+            {/* Ô 2: Địa điểm (Place of issue) — gợi ý tiếng Việt trong ô nhập (F7) */}
             <div className="accordion-cell">
               <div className="cell-label-row">
                 <IconMapPin size={16} color="var(--brand)" />
-                <span className="cell-label">Nơi lưu giữ kỷ niệm (tùy chọn)</span>
+                <span className="cell-label">Địa điểm (Place of issue)</span>
               </div>
-              <span className="cell-hint">In trên thẻ ở dòng “Place of issue”</span>
               <input
                 className="cell-input"
                 maxLength={120}
                 value={draft.place}
                 onChange={e => handleTextChange('place', e.target.value)}
-                placeholder="Ví dụ: HỒ GƯƠM, HÀ NỘI"
+                placeholder="Nhập nơi cấp (ví dụ: Hà Nội, TP. Hồ Chí Minh...)"
               />
             </div>
 
@@ -202,9 +201,8 @@ export default function OptionalFields({
             <div className="accordion-cell">
               <div className="cell-label-row">
                 <IconCalendar size={16} color="var(--brand)" />
-                <span className="cell-label">Ngày kỷ niệm</span>
+                <span className="cell-label">Ngày kỷ niệm (Date of issue)</span>
               </div>
-              <span className="cell-hint">In trên thẻ ở dòng “Date of issue”</span>
               <input
                 className="cell-input cell-date-input"
                 type="date"
@@ -217,9 +215,8 @@ export default function OptionalFields({
             <div className="accordion-cell">
               <div className="cell-label-row">
                 <IconCalendar size={16} color="var(--brand)" />
-                <span className="cell-label">Ngày sinh</span>
+                <span className="cell-label">Ngày sinh (Date of birth)</span>
               </div>
-              <span className="cell-hint">In trên thẻ ở dòng “Date of birth”</span>
               <input
                 className="cell-input cell-date-input"
                 type="date"

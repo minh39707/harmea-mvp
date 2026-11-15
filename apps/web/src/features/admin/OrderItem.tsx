@@ -44,7 +44,7 @@ export default function OrderItem({
             <dd>{d.fullName}</dd>
             <dt>Ngày sinh</dt>
             <dd>{d.dateOfBirth || 'Không nhập'}</dd>
-            <dt>Nơi lưu giữ kỷ niệm (dòng Place of issue)</dt>
+            <dt>Địa điểm (Place of issue)</dt>
             <dd>{d.place || 'Không nhập'}</dd>
             <dt>Ngày kỷ niệm</dt>
             <dd>{d.commemorativeDate || 'Không nhập'}</dd>
