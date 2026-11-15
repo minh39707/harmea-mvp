@@ -457,6 +457,16 @@ export function IconTruck({ size = 20, strokeWidth = 1.75, ...props }: IconProps
   );
 }
 
+export function IconMessage({ size = 20, strokeWidth = 1.75, ...props }: IconProps) {
+  return (
+    <svg {...baseProps(size, strokeWidth, props)}>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      <line x1="8" y1="9" x2="16" y2="9" />
+      <line x1="8" y1="13" x2="13" y2="13" />
+    </svg>
+  );
+}
+
 export function IconInfo({ size = 20, strokeWidth = 1.75, ...props }: IconProps) {
   return (
     <svg {...baseProps(size, strokeWidth, props)}>

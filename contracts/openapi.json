@@ -1412,7 +1412,7 @@
           },
           "giftMessage": {
             "type": "string",
-            "maxLength": 120,
+            "maxLength": 200,
             "description": "Lời nhắn/lời chúc tùy chọn, in trên thiệp giấy đi kèm thẻ, không in lên thẻ. Chuỗi rỗng sau trim bị bỏ khỏi snapshot."
           },
           "signatureText": {

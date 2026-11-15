@@ -416,33 +416,6 @@
   box-shadow: 0 0 0 2px rgba(var(--brand-rgb), 0.1);
 }
 
-.gift-message-cell {
-  grid-column: 1 / -1;
-}
-
-.cell-input.cell-textarea {
-  height: auto;
-  min-height: 72px;
-  padding: 10px 12px;
-  line-height: 1.5;
-  resize: vertical;
-}
-
-.gift-message-meta {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-.gift-message-meta span:last-child {
-  flex-shrink: 0;
-  font-variant-numeric: tabular-nums;
-}
-
 .cell-date-input {
   font-family: inherit;
 }
@@ -682,4 +655,51 @@
   .btn-primary-add {
     width: 100%;
   }
+}
+
+/* F6: ô lời nhắn dưới cảnh báo độ phân giải (theo ảnh minh chứng) */
+.gift-message-box {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1.5px solid #e2dccd;
+  border-radius: 12px;
+  background: #fbfaf7;
+}
+
+.gift-message-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.gift-message-head label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #151816;
+}
+
+.gift-message-head span {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gift-message-box textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px 12px;
+  border: 1.5px solid #c9c0b0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13.5px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.gift-message-box textarea:focus {
+  border-color: var(--brand);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--brand-rgb), 0.1);
 }

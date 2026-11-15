@@ -91,9 +91,9 @@ export function designSnapshot(input: unknown) {
     ...(dateOfBirth ? { dateOfBirth } : {}),
     ...(commemorativeDate ? { commemorativeDate } : {}),
     ...(d.place === undefined ? {} : { place: text(d.place, 'nơi lưu giữ kỷ niệm', 120, false) }),
-    ...(d.giftMessage === undefined || !text(d.giftMessage, 'lời nhắn', 120, false)
+    ...(d.giftMessage === undefined || !text(d.giftMessage, 'lời nhắn', 200, false)
       ? {}
-      : { giftMessage: text(d.giftMessage, 'lời nhắn', 120, false) }),
+      : { giftMessage: text(d.giftMessage, 'lời nhắn', 200, false) }),
     ...(d.signatureText === undefined
       ? {}
       : { signatureText: text(d.signatureText, 'chữ ký', 80, false) }),

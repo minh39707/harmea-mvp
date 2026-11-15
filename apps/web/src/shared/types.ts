@@ -7,7 +7,7 @@ export type Design = {
   place: string;
   dateOfBirth: string;
   commemorativeDate: string;
-  /** Lời nhắn/lời chúc in trên thiệp giấy đi kèm, không in lên thẻ (F6). Tối đa 120 ký tự. */
+  /** Lời nhắn/lời chúc in trên thiệp giấy đi kèm, không in lên thẻ (F6). Tối đa 200 ký tự. */
   giftMessage?: string;
   color: string;
   photo: string;
@@ -76,7 +76,7 @@ export const blankDesign: Design = {
   crop: { x: 0, y: 0, width: 1, height: 1 }
 };
 
-export const GIFT_MESSAGE_MAX = 120;
+export const GIFT_MESSAGE_MAX = 200;
 export const GIFT_MESSAGE_NOTE = 'Lời nhắn được in trên thiệp giấy đi kèm thẻ, không in lên thẻ.';
 
 export type Recipient = { name: string; phone: string; address: string; note: string };
