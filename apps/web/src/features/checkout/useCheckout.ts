@@ -60,7 +60,10 @@ export function useCheckout({
       for (const item of snapshot) prepared.push(await preparedItem(item));
       const result = await attempt.current!.submit(prepared, customer, confirmed);
       if (!result) return;
-      setReceipt(result.receipt);
+      setReceipt({
+        ...result.receipt,
+        giftMessages: snapshot.map(item => item.design.giftMessage?.trim() ?? '').filter(Boolean)
+      });
       setTrackPhone(customer.phone);
       setCart(old =>
         old.filter(

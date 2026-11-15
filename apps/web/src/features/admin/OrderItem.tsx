@@ -48,6 +48,8 @@ export default function OrderItem({
             <dd>{d.place || 'Không nhập'}</dd>
             <dt>Ngày kỷ niệm</dt>
             <dd>{d.commemorativeDate || 'Không nhập'}</dd>
+            <dt>Lời nhắn (in trên thiệp giấy)</dt>
+            <dd>{d.giftMessage || 'Không nhập'}</dd>
             <dt>Chữ ký</dt>
             <dd>{d.signatureText || 'Không nhập'}</dd>
             <dt>Màu</dt>

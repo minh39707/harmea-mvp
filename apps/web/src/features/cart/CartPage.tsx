@@ -219,6 +219,13 @@ export default function CartPage({
                           <h3 className="cart-item-name">{displayName}</h3>
                         </div>
 
+                        {item.design.giftMessage?.trim() && (
+                          <p className="cart-gift-message">
+                            <span>Lời nhắn (in trên thiệp giấy):</span> “
+                            {item.design.giftMessage.trim()}”
+                          </p>
+                        )}
+
                         {musicText ? (
                           <div className="cart-music-tag">
                             <span className="music-tag-icon">

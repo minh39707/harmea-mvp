@@ -1,5 +1,5 @@
 import type { Shop } from '../../app/useShop';
-import { blankDesign as blank } from '../../shared/types';
+import { blankDesign as blank, GIFT_MESSAGE_NOTE } from '../../shared/types';
 import { statusLabels } from '../../shared/order-status';
 import { money } from '../../shared/format';
 import { DELIVERY_NOTE, SHIPPING_FEE_LABEL, estimateDelivery } from '../../shared/delivery';
@@ -61,6 +61,17 @@ export default function SuccessPage({
           <span>Dự kiến giao:</span>
           <b>{estimateDelivery(receipt.createdAt).label}</b>
         </div>
+        {receipt.giftMessages && receipt.giftMessages.length > 0 && (
+          <div className="receipt-gift-messages">
+            <span>Lời nhắn:</span>
+            <ul>
+              {receipt.giftMessages.map((m, i) => (
+                <li key={i}>“{m}”</li>
+              ))}
+            </ul>
+            <small>{GIFT_MESSAGE_NOTE}</small>
+          </div>
+        )}
         <p className="note">{DELIVERY_NOTE} Đây là đơn demo nên sẽ không có hàng được giao.</p>
 
         <div className="receipt-actions">

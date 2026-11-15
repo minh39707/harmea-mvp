@@ -141,7 +141,14 @@ export function detailResponse(v: unknown): AdminDetail {
       typeof d.musicUrl !== 'string'
     )
       throw Error('Thiết kế của đơn không hợp lệ.');
-    for (const key of ['dateOfBirth', 'commemorativeDate', 'place', 'signatureText', 'color'])
+    for (const key of [
+      'dateOfBirth',
+      'commemorativeDate',
+      'giftMessage',
+      'place',
+      'signatureText',
+      'color'
+    ])
       if (d[key] !== undefined && typeof d[key] !== 'string')
         throw Error('Trường chữ của thiết kế không hợp lệ.');
     for (const kind of ['photo', 'preview'] as const)

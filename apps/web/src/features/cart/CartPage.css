@@ -758,3 +758,16 @@
     border-top: 1px dashed #f0eee8;
   }
 }
+
+.cart-gift-message {
+  margin: 4px 0 8px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.cart-gift-message span {
+  font-style: normal;
+  color: var(--muted);
+}

@@ -12,9 +12,11 @@ import {
   IconChevronUp,
   IconChevronDown,
   IconRefresh,
-  IconTrash
+  IconTrash,
+  IconCard
 } from '../../shared/ui/Icons';
 import { formatImageBytes } from './photo-processing';
+import { GIFT_MESSAGE_MAX, GIFT_MESSAGE_NOTE } from '../../shared/types';
 
 type OptionalFieldsProps = Pick<Shop, 'draft' | 'update' | 'photo' | 'photoStats'> & {
   updateCrop?: Shop['updateCrop'];
@@ -223,6 +225,32 @@ export default function OptionalFields({
                 value={draft.dateOfBirth}
                 onChange={e => handleTextChange('dateOfBirth', e.target.value)}
               />
+            </div>
+
+            {/* Ô 5: Lời nhắn / lời chúc (F6) — in trên thiệp giấy, không in lên thẻ */}
+            <div className="accordion-cell gift-message-cell">
+              <div className="cell-label-row">
+                <IconCard size={16} color="var(--brand)" />
+                <label className="cell-label" htmlFor="card-gift-message">
+                  Lời nhắn / lời chúc (tùy chọn)
+                </label>
+              </div>
+              <textarea
+                id="card-gift-message"
+                className="cell-input cell-textarea"
+                rows={3}
+                maxLength={GIFT_MESSAGE_MAX}
+                value={draft.giftMessage ?? ''}
+                onChange={e => handleTextChange('giftMessage', e.target.value)}
+                placeholder="Ví dụ: Chúc mừng sinh nhật! Mong bài hát này luôn nhắc bạn về hôm nay."
+                aria-describedby="gift-message-note gift-message-count"
+              />
+              <div className="gift-message-meta">
+                <span id="gift-message-note">{GIFT_MESSAGE_NOTE}</span>
+                <span id="gift-message-count" aria-live="polite">
+                  {(draft.giftMessage ?? '').length}/{GIFT_MESSAGE_MAX}
+                </span>
+              </div>
             </div>
           </div>
         )}

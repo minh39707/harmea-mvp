@@ -508,3 +508,17 @@ test('F4: estimateDelivery skips Sundays and uses Vietnam time', async () => {
     assert.notEqual(r.latest.getUTCDay(), 0);
   }
 });
+
+test('F6: gift message is trimmed, limited to 120 chars and old carts stay readable', () => {
+  assert.equal(orderDesign({ ...design, giftMessage: '  Chúc mừng!  ' }).giftMessage, 'Chúc mừng!');
+  assert.ok(!('giftMessage' in orderDesign({ ...design, giftMessage: '   ' })));
+  assert.ok(!('giftMessage' in orderDesign({ ...design, giftMessage: undefined })));
+  assert.throws(() => orderDesign({ ...design, giftMessage: 'a'.repeat(121) }), /120/);
+  const { giftMessage, ...oldDesign } = { ...design, giftMessage: 'x' };
+  const [oldItem] = parseCart([{ id: 'a', productId: 'p', quantity: 1, design: { ...oldDesign } }]);
+  assert.equal(oldItem.design.giftMessage, '');
+  const [newItem] = parseCart([
+    { id: 'b', productId: 'p', quantity: 1, design: { ...design, giftMessage } }
+  ]);
+  assert.equal(newItem.design.giftMessage, 'x');
+});

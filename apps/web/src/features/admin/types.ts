@@ -35,6 +35,7 @@ export type AdminDesign = {
   color?: string;
   dateOfBirth?: string;
   commemorativeDate?: string;
+  giftMessage?: string;
   place?: string;
   signatureText?: string;
 };
