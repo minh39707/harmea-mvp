@@ -62,16 +62,13 @@ try {
     .fill('Synthetic QA address, do not ship');
   await page.getByRole('checkbox').check();
   await page.locator('.btn-proceed-payment').click();
-  await page.getByRole('heading', { name: 'Thanh toán bằng QR', exact: true }).waitFor();
+  await page.getByRole('heading', { name: 'Bước thanh toán mô phỏng', exact: true }).waitFor();
   const orderNumber = (await page.locator('.success-order-number').innerText()).trim();
-  assert.equal(
-    await page.locator('.transfer-qr').evaluate(img => img.complete && img.naturalWidth > 0),
-    true
-  );
+  assert.equal(await page.locator('.transfer-qr img').count(), 0);
   assert.equal(await page.locator('.transfer-reference').innerText(), orderNumber);
   assert.match(await page.locator('.transfer-amount').innerText(), /89[.,]000/);
   report.checks.push(
-    'Real checkout saves order and displays supplied QR, snapshot amount 89000 VND and order reference'
+    'Real checkout saves order and shows non-scannable demo QR placeholder, snapshot amount 89000 VND and order reference'
   );
   for (const width of [375, 768, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -98,10 +95,10 @@ try {
       await route.abort('failed');
     } else await route.continue();
   });
-  await page.getByRole('button', { name: 'Tôi đã chuyển khoản', exact: true }).click();
+  await page.getByRole('button', { name: 'Hoàn tất đơn demo', exact: true }).click();
   await page.locator('.transfer-panel [role=alert]').waitFor();
   assert.equal(await page.locator('.transfer-reported').count(), 0);
-  await page.getByRole('button', { name: 'Tôi đã chuyển khoản', exact: true }).click();
+  await page.getByRole('button', { name: 'Hoàn tất đơn demo', exact: true }).click();
   await page.locator('.transfer-reported').waitFor();
   const row = (
     await db.query('SELECT id,status,version,subtotal_vnd FROM orders WHERE order_number=?', [
@@ -124,7 +121,7 @@ try {
   assert.ok(!JSON.stringify(storage).includes('0900000000'));
   assert.ok(!JSON.stringify(storage).includes('Synthetic QA address'));
   await page.goto(base + '/admin/orders/' + row.id);
-  await page.getByText('Khách báo đã chuyển khoản lúc', { exact: false }).waitFor();
+  await page.getByText('Khách bấm hoàn tất đơn demo lúc', { exact: false }).waitFor();
   report.checks.push(
     'Admin displays persisted customer declaration after page navigation; phone/address absent from browser storage'
   );

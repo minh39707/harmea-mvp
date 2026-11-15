@@ -147,10 +147,10 @@ export default function CheckoutPage({
                   ? 'Tạm ngừng nhận đơn'
                   : pendingRequestKey
                     ? 'Thử gửi lại cùng nội dung →'
-                    : 'Đặt đơn và xem mã QR →'}
+                    : 'Đặt đơn demo →'}
           </button>
           <p className="note summary-footer-note">
-            Mã QR chuyển khoản sẽ hiển thị sau khi đơn được lưu.
+            Sau khi lưu đơn sẽ có bước thanh toán mô phỏng. Không chuyển tiền thật.
           </p>
         </aside>
       </form>

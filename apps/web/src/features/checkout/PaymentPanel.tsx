@@ -15,7 +15,6 @@ export default function PaymentPanel({
   const [busy, setBusy] = useState(false);
   const [reportedAt, setReportedAt] = useState('');
   const [error, setError] = useState('');
-  const [imageFailed, setImageFailed] = useState(false);
   const locked = useRef(false);
 
   async function confirmTransfer() {
@@ -32,7 +31,9 @@ export default function PaymentPanel({
         throw new Error('Chưa xác nhận được kết quả. Vui lòng thử lại.');
       setReportedAt(result.reportedAt);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Chưa gửi được xác nhận. Hãy thử lại.');
+      setError(
+        cause instanceof Error ? cause.message : 'Chưa hoàn tất được đơn demo. Hãy thử lại.'
+      );
     } finally {
       locked.current = false;
       setBusy(false);
@@ -41,38 +42,36 @@ export default function PaymentPanel({
 
   return (
     <section className="transfer-panel" aria-labelledby="transfer-title">
-      <h2 id="transfer-title">Thanh toán bằng QR</h2>
-      <p>Quét mã bằng ứng dụng ngân hàng, nhập số tiền và nội dung bên dưới.</p>
-      <strong className="transfer-amount">{money(amount)}</strong>
-      <p className="note">Tiền sản phẩm, chưa bao gồm phí giao hàng.</p>
-      {imageFailed ? (
-        <p role="alert">Không tải được mã QR. Vui lòng tải lại trang hoặc liên hệ cửa hàng.</p>
-      ) : (
-        <img
-          className="transfer-qr"
-          src="/images/payment-qr.png"
-          alt="Mã QR chuyển khoản của Harméa"
-          width={280}
-          height={280}
-          onError={() => setImageFailed(true)}
-        />
-      )}
-      <p>
-        Nội dung chuyển khoản: <strong className="transfer-reference">{orderNumber}</strong>
+      <p className="demo-payment-banner" role="alert">
+        THANH TOÁN DEMO – KHÔNG CHUYỂN TIỀN
       </p>
-      <p className="note">Kiểm tra người nhận trong ứng dụng ngân hàng trước khi chuyển tiền.</p>
+      <h2 id="transfer-title">Bước thanh toán mô phỏng</h2>
+      <p>Đây là bước mô phỏng. Không quét mã, không chuyển tiền.</p>
+      <strong className="transfer-amount">{money(amount)}</strong>
+      <p className="note">Tiền sản phẩm (demo). Không có khoản tiền nào được thu.</p>
+      <div
+        className="transfer-qr demo-qr-placeholder"
+        role="img"
+        aria-label="Ô giữ chỗ QR demo, không quét được"
+      >
+        <span>QR DEMO</span>
+        <small>Không phải mã thanh toán</small>
+      </div>
+      <p>
+        Mã đơn demo: <strong className="transfer-reference">{orderNumber}</strong>
+      </p>
       {reportedAt ? (
         <p className="transfer-reported" role="status">
-          Đã ghi nhận bạn báo chuyển khoản. Cửa hàng sẽ kiểm tra giao dịch.
+          Đã hoàn tất đơn demo. Không có giao dịch tiền thật nào được thực hiện.
         </p>
       ) : (
         <button
           type="button"
           className="button primary"
-          disabled={busy || imageFailed}
+          disabled={busy}
           onClick={() => void confirmTransfer()}
         >
-          {busy ? 'Đang gửi xác nhận…' : 'Tôi đã chuyển khoản'}
+          {busy ? 'Đang hoàn tất…' : 'Hoàn tất đơn demo'}
         </button>
       )}
       {error && (
