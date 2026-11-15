@@ -42,6 +42,7 @@
 .demo-qr {
   position: relative;
   overflow: hidden;
+  container-type: inline-size;
 }
 
 .demo-qr svg {
@@ -54,14 +55,14 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 118%;
-  padding: 8px 6px;
+  width: 112%;
+  padding: 2.6cqi 1cqi;
   transform: translate(-50%, -50%) rotate(-14deg);
   border-radius: 8px;
   background: #c8161d;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   color: #fff;
-  font-size: clamp(13px, 4.2vw, 19px);
+  font-size: 6.4cqi;
   font-weight: 800;
   letter-spacing: 0.02em;
   line-height: 1.2;
