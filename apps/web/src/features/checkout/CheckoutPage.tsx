@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import type { Shop } from '../../app/useShop';
 import { money } from '../../shared/format';
 import {
@@ -7,6 +8,7 @@ import {
   estimateDelivery
 } from '../../shared/delivery';
 import { IconUser } from '../../shared/ui/Icons';
+import { revealOnFocus, useKeyboardInset } from '../../shared/useKeyboardInset';
 import './CheckoutPage.css';
 
 export default function CheckoutPage({
@@ -37,6 +39,18 @@ export default function CheckoutPage({
   | 'editorBusy'
   | 'pendingRequestKey'
 >) {
+  useKeyboardInset();
+  const submitDisabled =
+    busy || editorBusy || !cart.length || !product || product.isActive === false;
+  const submitLabel = busy
+    ? 'Đang lưu đơn…'
+    : editorBusy
+      ? 'Đang chuẩn bị thiết kế…'
+      : product?.isActive === false
+        ? 'Tạm ngừng nhận đơn'
+        : pendingRequestKey
+          ? 'Thử gửi lại cùng nội dung →'
+          : 'Đặt đơn demo →';
   return (
     <section className="checkout-page-wrapper">
       <button className="text-button btn-back-cart" disabled={busy} onClick={() => go('cart')}>
@@ -47,8 +61,8 @@ export default function CheckoutPage({
         <strong>Dự án sinh viên – website demo.</strong> Harméa là bài tập môn E-Business, không
         phải cửa hàng thật. Đơn đặt ở đây không được bán, giao hay thu tiền.
       </div>
-      <form className="checkout-layout" onSubmit={checkout} aria-busy={busy}>
-        <fieldset className="checkout-fields" disabled={busy}>
+      <form id="checkout-form" className="checkout-layout" onSubmit={checkout} aria-busy={busy}>
+        <fieldset className="checkout-fields" disabled={busy} onFocus={revealOnFocus}>
           <div className="step-card-header">
             <IconUser size={18} color="var(--brand)" />
             <h3>Thông tin người nhận</h3>
@@ -61,6 +75,7 @@ export default function CheckoutPage({
                 required
                 maxLength={80}
                 autoComplete="name"
+                enterKeyHint="next"
                 value={recipient.name}
                 onChange={e => setRecipient({ ...recipient, name: e.target.value })}
                 placeholder="Ví dụ: Nguyễn Văn An"
@@ -71,8 +86,10 @@ export default function CheckoutPage({
               <input
                 required
                 type="tel"
+                inputMode="tel"
                 maxLength={32}
                 autoComplete="tel"
+                enterKeyHint="next"
                 value={recipient.phone}
                 onChange={e => setRecipient({ ...recipient, phone: e.target.value })}
                 placeholder="Ví dụ: 0912 345 678"
@@ -86,6 +103,7 @@ export default function CheckoutPage({
               minLength={10}
               maxLength={500}
               autoComplete="street-address"
+              enterKeyHint="next"
               rows={3}
               value={recipient.address}
               onChange={e => setRecipient({ ...recipient, address: e.target.value })}
@@ -97,6 +115,7 @@ export default function CheckoutPage({
             <textarea
               maxLength={500}
               rows={2}
+              enterKeyHint="done"
               value={recipient.note}
               onChange={e => setRecipient({ ...recipient, note: e.target.value })}
             />
@@ -150,23 +169,34 @@ export default function CheckoutPage({
           <button
             className="button primary btn-proceed-payment"
             type="submit"
-            disabled={busy || editorBusy || !cart.length || !product || product.isActive === false}
+            disabled={submitDisabled}
           >
-            {busy
-              ? 'Đang lưu đơn…'
-              : editorBusy
-                ? 'Đang chuẩn bị thiết kế…'
-                : product?.isActive === false
-                  ? 'Tạm ngừng nhận đơn'
-                  : pendingRequestKey
-                    ? 'Thử gửi lại cùng nội dung →'
-                    : 'Đặt đơn demo →'}
+            {submitLabel}
           </button>
           <p className="note summary-footer-note">
             Sau khi lưu đơn sẽ có bước thanh toán mô phỏng. Không chuyển tiền thật.
           </p>
         </aside>
       </form>
+      {/* F8: thanh đặt đơn trên mobile, luôn nằm ngay trên bàn phím (xem useKeyboardInset).
+          Gắn vào <body> vì khung trang có transform làm position:fixed bám sai chỗ. */}
+      {createPortal(
+        <div className="mobile-action-bar">
+          <div className="mobile-action-total">
+            <span>Tiền sản phẩm</span>
+            <strong>{money(subtotal)}</strong>
+          </div>
+          <button
+            className="button primary"
+            type="submit"
+            form="checkout-form"
+            disabled={submitDisabled}
+          >
+            {submitLabel}
+          </button>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }

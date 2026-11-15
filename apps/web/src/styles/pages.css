@@ -67,3 +67,61 @@
   padding: 2px 8px;
   border-radius: 4px;
 }
+
+/* F8: thanh đặt đơn trên mobile, đặt ngay trên bàn phím khi bàn phím mở. */
+.mobile-action-bar {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .mobile-action-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--keyboard-inset, 0px);
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .keyboard-open .mobile-action-bar {
+    padding-bottom: 10px;
+  }
+
+  .mobile-action-total {
+    display: grid;
+    flex-shrink: 0;
+    line-height: 1.2;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .mobile-action-total strong {
+    color: var(--brand);
+    font-size: 15px;
+  }
+
+  .mobile-action-bar .button {
+    flex: 1;
+    min-height: 48px;
+    white-space: normal;
+  }
+
+  /* Chừa chỗ để thanh không che nội dung cuối trang và nút nhạc nền. */
+  body:has(.mobile-action-bar) {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+
+  body:has(.mobile-action-bar) .background-music {
+    bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  .keyboard-open body:has(.mobile-action-bar) .background-music {
+    display: none;
+  }
+}

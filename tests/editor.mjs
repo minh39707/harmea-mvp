@@ -522,3 +522,11 @@ test('F6: gift message is trimmed, limited to 120 chars and old carts stay reada
   ]);
   assert.equal(newItem.design.giftMessage, 'x');
 });
+
+test('F8: keyboard inset ignores toolbar jitter and measures the keyboard', async () => {
+  const { keyboardInset } = await import('../apps/web/src/shared/useKeyboardInset.ts');
+  assert.equal(keyboardInset(844, 844, 0), 0);
+  assert.equal(keyboardInset(844, 790, 0), 0); // thanh địa chỉ co lại, không phải bàn phím
+  assert.equal(keyboardInset(844, 508, 0), 336); // bàn phím iPhone ~336px
+  assert.equal(keyboardInset(844, 508, 120), 216); // trang đã bị đẩy lên 120px
+});
