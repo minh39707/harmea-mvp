@@ -182,7 +182,7 @@ export default function OptionalFields({
               )}
             </div>
 
-            {/* Ô 2: Địa điểm (Place of issue) */}
+            {/* Ô 2: Địa điểm (Place of issue) — gợi ý tiếng Việt trong ô nhập (F7) */}
             <div className="accordion-cell">
               <div className="cell-label-row">
                 <IconMapPin size={16} color="var(--brand)" />
@@ -193,11 +193,11 @@ export default function OptionalFields({
                 maxLength={120}
                 value={draft.place}
                 onChange={e => handleTextChange('place', e.target.value)}
-                placeholder="Ví dụ: THE SIX, TORONTO"
+                placeholder="Nhập nơi cấp (ví dụ: Hà Nội, TP. Hồ Chí Minh...)"
               />
             </div>
 
-            {/* Ô 3: Ngày kỷ niệm (Date of issue) */}
+            {/* Ô 3: Ngày kỷ niệm — dòng "Date of issue" trên mẫu thẻ */}
             <div className="accordion-cell">
               <div className="cell-label-row">
                 <IconCalendar size={16} color="var(--brand)" />
@@ -211,7 +211,7 @@ export default function OptionalFields({
               />
             </div>
 
-            {/* Ô 4: Ngày sinh (Date of birth) */}
+            {/* Ô 4: Ngày sinh — dòng "Date of birth" trên mẫu thẻ */}
             <div className="accordion-cell">
               <div className="cell-label-row">
                 <IconCalendar size={16} color="var(--brand)" />

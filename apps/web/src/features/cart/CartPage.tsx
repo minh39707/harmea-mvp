@@ -4,6 +4,12 @@ import Quantity from '../../shared/ui/Quantity';
 import { blankDesign as blank } from '../../shared/types';
 import type { Item } from '../../shared/types';
 import { money, colorLabel } from '../../shared/format';
+import {
+  DELIVERY_NOTE,
+  SHIPPING_FEE_SUFFIX,
+  SHIPPING_FEE_VND,
+  estimateDelivery
+} from '../../shared/delivery';
 import { hasLowPrintResolution } from '../editor/photo-processing';
 import {
   IconVinyl,
@@ -13,7 +19,10 @@ import {
   IconPlus,
   IconCard,
   IconShield,
-  IconCheck
+  IconCheck,
+  IconTruck,
+  IconCalendar,
+  IconInfo
 } from '../../shared/ui/Icons';
 import './CartPage.css';
 
@@ -62,6 +71,8 @@ export default function CartPage({
   )
 }: CartPageProps) {
   const unitPrice = product?.unitPriceVnd ?? 89000;
+  const deliveryLabel = estimateDelivery().label;
+  const selectedTotal = selectedSubtotal + (selectedItems.length ? SHIPPING_FEE_VND : 0);
   const isAllSelected = cart.length > 0 && selectedItems.length === cart.length;
   const isSomeSelected = selectedItems.length > 0 && selectedItems.length < cart.length;
 
@@ -213,6 +224,13 @@ export default function CartPage({
                           <h3 className="cart-item-name">{displayName}</h3>
                         </div>
 
+                        {item.design.giftMessage?.trim() && (
+                          <p className="cart-gift-message">
+                            <span>Lời nhắn (in trên thiệp giấy):</span> “
+                            {item.design.giftMessage.trim()}”
+                          </p>
+                        )}
+
                         {musicText ? (
                           <div className="cart-music-tag">
                             <span className="music-tag-icon">
@@ -275,6 +293,21 @@ export default function CartPage({
                         />
                       </div>
                     </div>
+
+                    {/* F4: ngày giao dự kiến của từng thẻ (theo ảnh minh chứng) */}
+                    <div className="cart-item-delivery">
+                      <IconTruck size={18} />
+                      <span className="cart-item-delivery-label">Ngày giao hàng dự kiến:</span>
+                      <IconCalendar size={16} />
+                      <strong>{deliveryLabel}</strong>
+                      <span
+                        className="delivery-info"
+                        title={DELIVERY_NOTE}
+                        aria-label={DELIVERY_NOTE}
+                      >
+                        <IconInfo size={17} />
+                      </span>
+                    </div>
                   </article>
                 );
               })}
@@ -312,17 +345,35 @@ export default function CartPage({
                   <strong>{money(selectedSubtotal)}</strong>
                 </span>
               </div>
-              <div className="summary-row">
-                <span className="row-label">Phí vận chuyển</span>
-                <span className="free-badge">Chưa tính (ở bước tiếp)</span>
+              {/* F5: phí vận chuyển đồng giá (theo ảnh minh chứng) */}
+              <div className="summary-shipping-box">
+                <IconTruck size={18} />
+                <span>Phí vận chuyển</span>
+                <strong>
+                  {money(SHIPPING_FEE_VND)} {SHIPPING_FEE_SUFFIX}
+                </strong>
               </div>
             </div>
 
             <div className="summary-divider" />
 
+            {/* F4: ô ngày giao dự kiến trong tóm tắt đơn (theo ảnh minh chứng) */}
+            <div className="summary-delivery-box" role="note">
+              <IconTruck size={24} />
+              <div>
+                <span className="summary-delivery-label">
+                  Ngày giao hàng dự kiến
+                  <span className="delivery-info" title={DELIVERY_NOTE} aria-label={DELIVERY_NOTE}>
+                    <IconInfo size={15} />
+                  </span>
+                </span>
+                <strong>{deliveryLabel}</strong>
+              </div>
+            </div>
+
             <div className="summary-total-row">
               <span className="total-label">Tổng thanh toán:</span>
-              <strong className="total-val">{money(selectedSubtotal)}</strong>
+              <strong className="total-val">{money(selectedTotal)}</strong>
             </div>
 
             <button

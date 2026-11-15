@@ -80,8 +80,9 @@ function FaqPage() {
       <details>
         <summary>Tôi thanh toán như thế nào?</summary>
         <p>
-          Sau khi đặt đơn, quét mã QR và nhập đúng số tiền, mã đơn. Bấm “Tôi đã chuyển khoản” để báo
-          cửa hàng kiểm tra giao dịch. Giao hàng được cửa hàng xử lý riêng.
+          Đây là website demo cho dự án sinh viên nên không có thanh toán thật. Sau khi đặt đơn, bạn
+          thấy bước thanh toán mô phỏng và bấm “Hoàn tất đơn demo”. Không quét mã, không chuyển
+          tiền.
         </p>
       </details>
       <details>

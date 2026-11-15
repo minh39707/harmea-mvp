@@ -45,6 +45,9 @@ function storedItem(raw: unknown): Item | null {
       : { x: 0, y: 0, width: 1, height: 1 };
   const dimension = (n: unknown) =>
     typeof n === 'number' && Number.isFinite(n) && n > 0 && n <= 8192 ? n : 0;
+  // Giỏ cũ (trước F6) không có giftMessage: mặc định rỗng để vẫn đọc được.
+  const giftMessage =
+    typeof d.giftMessage === 'string' && d.giftMessage.length <= 200 ? d.giftMessage : '';
   const signatureData =
     typeof d.signatureData === 'string' && d.signatureData.length <= 150000 ? d.signatureData : '';
   return {
@@ -53,6 +56,7 @@ function storedItem(raw: unknown): Item | null {
     quantity: Number(i.quantity),
     design: {
       ...texts,
+      giftMessage,
       crop,
       photoWidth: dimension(d.photoWidth),
       photoHeight: dimension(d.photoHeight),

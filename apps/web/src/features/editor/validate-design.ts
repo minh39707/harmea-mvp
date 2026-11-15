@@ -7,6 +7,8 @@ export function orderDesign(design: Design) {
     throw Error('Tên trên thẻ cần từ 1 đến 80 ký tự.');
   if (design.place.trim().length > 120 || design.signatureText.trim().length > 80)
     throw Error('Địa điểm tối đa 120 và chữ ký tối đa 80 ký tự.');
+  const giftMessage = (design.giftMessage ?? '').trim();
+  if (giftMessage.length > 200) throw Error('Lời nhắn tối đa 200 ký tự.');
   if (!validMusic(design.musicUrl.trim()) || design.musicUrl.trim().length > 2048)
     throw Error('Dùng link HTTPS từ Spotify, YouTube hoặc SoundCloud.');
   if (!validCrop(design.crop)) throw Error('Vùng cắt ảnh không hợp lệ.');
@@ -41,6 +43,7 @@ export function orderDesign(design: Design) {
       : design.signatureData
         ? { signatureText: 'Ký tay' }
         : {}),
+    ...(giftMessage ? { giftMessage } : {}),
     ...(design.dateOfBirth ? { dateOfBirth: design.dateOfBirth } : {}),
     ...(design.commemorativeDate ? { commemorativeDate: design.commemorativeDate } : {})
   };

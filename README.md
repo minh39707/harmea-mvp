@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/minh39707/harmea-mvp/actions/workflows/ci.yml/badge.svg)](https://github.com/minh39707/harmea-mvp/actions/workflows/ci.yml)
 
-Website đặt một sản phẩm NFC Music Card. Phạm vi hiện tại là MySQL 8.4, giỏ hàng, checkout khách không tài khoản và tra cứu đơn bằng mã đơn + số điện thoại. Sau khi lưu đơn, khách thấy QR chuyển khoản tĩnh và có thể báo “Tôi đã chuyển khoản”; cửa hàng xem xác nhận trong chi tiết đơn admin và tự đối chiếu giao dịch. Không có đăng nhập khách/admin, tự động đối soát, email hoặc tự động giao hàng. Xem [roadmap](tasks/00-ROADMAP.md) và [yêu cầu](docs/01-requirements.md).
+Website đặt một sản phẩm NFC Music Card. Phạm vi hiện tại là MySQL 8.4, giỏ hàng, checkout khách không tài khoản và tra cứu đơn bằng mã đơn + số điện thoại. Đây là website demo cho dự án môn E-Business, không bán hàng và không thu tiền. Sau khi lưu đơn, khách thấy bước “THANH TOÁN DEMO – KHÔNG CHUYỂN TIỀN” với ô giữ chỗ QR không quét được và nút “Hoàn tất đơn demo”; admin thấy thời điểm bấm trong chi tiết đơn. Không có đăng nhập khách/admin, tự động đối soát, email hoặc tự động giao hàng. Xem [roadmap](tasks/00-ROADMAP.md) và [yêu cầu](docs/01-requirements.md).
 
 Thay đổi local sau v1.1.0: theme navy, giá sản phẩm 89.000đ qua migration `007_product_price_89000.sql`, nhạc nền MP3 tự host khi bấm badge “Chạm là phát nhạc”. Nhạc không tự phát sau reload, dừng ở `/track` và `/admin`; bật/tắt lưu on/off trong localStorage. Chưa phát hành các thay đổi này lên Docker Hub.
 

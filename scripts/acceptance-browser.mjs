@@ -201,7 +201,7 @@ for (const channel of ['chrome', 'msedge']) {
       window.dispatchEvent(new PopStateEvent('popstate'));
     });
     assert.equal(
-      await page.getByRole('button', { name: 'Đặt đơn và xem mã QR →', exact: true }).isDisabled(),
+      await page.getByRole('button', { name: 'Đặt đơn demo →', exact: true }).isDisabled(),
       true
     );
     await page.getByRole('button', { name: '← Quay lại giỏ hàng', exact: true }).click();
@@ -215,7 +215,7 @@ for (const channel of ['chrome', 'msedge']) {
       .getByLabel('Địa chỉ nhận hàng chi tiết *', { exact: true })
       .fill('Địa chỉ giả browser H, không giao hàng');
     await page.getByRole('checkbox').check();
-    await page.getByRole('button', { name: 'Đặt đơn và xem mã QR →', exact: true }).click();
+    await page.getByRole('button', { name: 'Đặt đơn demo →', exact: true }).click();
     await page.getByRole('heading', { name: 'Đã nhận đơn', exact: true }).waitFor();
     const orderNumber = (await page.locator('.success-order-number').innerText()).trim();
     assert.match(orderNumber, /^HM-[0-9A-F]{16}$/);

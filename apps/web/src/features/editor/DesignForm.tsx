@@ -1,6 +1,7 @@
 import type { Shop } from '../../app/useShop';
 import Quantity from '../../shared/ui/Quantity';
 import OptionalFields from './OptionalFields';
+import GiftMessageField from './GiftMessageField';
 import { hasLowPrintResolution } from './photo-processing';
 import { money } from '../../shared/format';
 import {
@@ -222,6 +223,8 @@ export default function DesignForm({
             Vùng ảnh đã chọn có độ phân giải thấp, thẻ in có thể bị mờ
           </p>
         )}
+
+        <GiftMessageField draft={draft} update={update} setGallery={setGallery} />
 
         {/* 6. HÀNG HÀNH ĐỘNG: SỐ LƯỢNG [- 1 +] & NÚT LƯU VÀO GIỎ (var(--brand)) */}
         <div className="action-bar-row">

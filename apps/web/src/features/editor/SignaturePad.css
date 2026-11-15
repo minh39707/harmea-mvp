@@ -7,8 +7,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
+  height: 100dvh;
+  overscroll-behavior: contain;
   background: rgba(0, 0, 0, 0.72);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -105,6 +107,7 @@
   width: 100%;
   height: 200px;
   display: block;
+  /* Chỉ canvas chặn cử chỉ chạm để vẽ; phần còn lại của trang không bị ảnh hưởng. */
   touch-action: none;
   cursor: crosshair;
 }

@@ -33,7 +33,8 @@ export function receiptResponse(value: unknown): Receipt {
     r.status !== 'pending' ||
     !stamp(r.createdAt) ||
     r.currency !== 'VND' ||
-    r.shippingFeeVnd !== null
+    !Number.isSafeInteger(r.shippingFeeVnd) ||
+    Number(r.shippingFeeVnd) < 0
   )
     throw Error('Chưa xác nhận được kết quả đặt đơn.');
   if (

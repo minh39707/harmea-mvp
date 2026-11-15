@@ -228,3 +228,19 @@
     flex-direction: column;
   }
 }
+
+.receipt-gift-messages {
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.receipt-gift-messages ul {
+  margin: 4px 0;
+  padding-left: 18px;
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+.receipt-gift-messages small {
+  color: var(--muted);
+}

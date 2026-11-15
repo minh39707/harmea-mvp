@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { Shop } from '../../app/useShop';
 import Card from './CardPreview';
 import { colorLabel } from '../../shared/format';
+import { GIFT_MESSAGE_NOTE } from '../../shared/types';
 import {
   IconExpand,
   IconChevronLeft,
@@ -154,6 +155,19 @@ export default function ProductGallery({
           <IconCard size={14} color="var(--brand)" />
           <span>Hai mặt thẻ được in đồng bộ giống nhau</span>
         </div>
+
+        {/* F6: vị trí in lời nhắn — thiệp giấy riêng, không nằm trên thẻ */}
+        {gallery === 'preview' && (
+          <div className="gift-card-preview" aria-label="Thiệp giấy đi kèm thẻ">
+            <span className="gift-card-preview-title">Thiệp giấy đi kèm</span>
+            {draft.giftMessage?.trim() ? (
+              <p className="gift-card-preview-text">“{draft.giftMessage.trim()}”</p>
+            ) : (
+              <p className="gift-card-preview-empty">Chưa có lời nhắn.</p>
+            )}
+            <small>{GIFT_MESSAGE_NOTE}</small>
+          </div>
+        )}
 
         {/* 3 chấm chuyển trang (carousel dots) ở đáy khung preview khi ở tab mẫu */}
         {gallery === 'sample' && (

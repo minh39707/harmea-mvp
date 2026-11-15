@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './SignaturePad.css';
+import { lockScroll } from '../../shared/scroll-lock';
 import { IconPen, IconClose, IconRefresh, IconCheck } from '../../shared/ui/Icons';
 
 type SignaturePadProps = {
@@ -21,25 +22,30 @@ export default function SignaturePad({
   const [hasDrawn, setHasDrawn] = useState(false);
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
 
-  // Close on Escape key & prevent background scroll
+  // onClose của cha là arrow function mới mỗi lần render. Giữ trong ref để effect khoá cuộn chỉ
+  // chạy khi isOpen đổi, không khoá/mở lại liên tục trong lúc modal đang mở.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Esc để đóng & khoá cuộn nền. Cleanup chạy cho mọi cách đóng (Esc, X, bấm nền, Xác nhận)
+  // và khi unmount, nên body luôn được trả về style cũ và vị trí cuộn cũ.
   useEffect(() => {
     if (!isOpen) return;
 
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        onClose();
-      }
+      if (e.key === 'Escape') onCloseRef.current();
     }
 
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const unlock = lockScroll();
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', handleKeyDown);
+      unlock();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   // Initialize canvas resolution & settings when opened
   useEffect(() => {
@@ -240,6 +246,7 @@ export default function SignaturePad({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
+            onPointerCancel={handlePointerUp}
           />
           <div className="signature-canvas-guide" aria-hidden="true" />
           {!hasDrawn && (

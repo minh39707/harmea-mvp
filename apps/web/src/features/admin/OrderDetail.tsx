@@ -49,14 +49,16 @@ export default function OrderDetail({ orders, back }: { orders: AdminOrders; bac
               <dt>Đơn giá đã chốt</dt>
               <dd>{money(order.unitPriceVnd)}</dd>
               <dt>Tiền sản phẩm</dt>
-              <dd>{money(order.subtotalVnd)} · phí giao hàng chưa bao gồm</dd>
+              <dd>
+                {money(order.subtotalVnd)} · phí vận chuyển {money(order.shippingFeeVnd)}
+              </dd>
               <dt>Mã vận đơn</dt>
               <dd>{order.trackingCode || 'Chưa nhập'}</dd>
-              <dt>Xác nhận chuyển khoản của khách</dt>
+              <dt>Thanh toán demo của khách</dt>
               <dd>
                 {order.customerPaymentReportedAt
-                  ? `Khách báo đã chuyển khoản lúc ${date(order.customerPaymentReportedAt)}. Cần đối chiếu sao kê.`
-                  : 'Khách chưa báo chuyển khoản.'}
+                  ? `Khách bấm hoàn tất đơn demo lúc ${date(order.customerPaymentReportedAt)}. Không có tiền thật.`
+                  : 'Khách chưa hoàn tất đơn demo.'}
               </dd>
               {order.cancellationReason && (
                 <>

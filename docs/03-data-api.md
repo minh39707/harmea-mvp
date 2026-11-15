@@ -8,7 +8,7 @@ Cập nhật 12/11/2026: migration `008_customer_payment_reports.sql` thêm `ord
 
 `POST /api/tracking/payment-confirm` đã triển khai, nhận `{ orderNumber, phone }` trong body và trả `{ orderNumber, reportedAt }`. Dùng cùng HMAC, timing-safe comparison và bộ giới hạn thử sai với `/tracking/lookup`; sai thông tin trả 404 chung, bị khóa trả 429. Trong transaction, khóa đơn để kiểm tra hủy rồi ghi sự kiện; đơn hủy trả 409. Chi tiết admin thêm `customerPaymentReportedAt` (timestamp hoặc null), nằm sau admin gate. API lookup công khai giữ nguyên allowlist.
 
-Trang thành công dùng tổng tiền snapshot từ response tạo đơn và ảnh tĩnh `/images/payment-qr.png` do người dùng cung cấp từ Downloads. Ảnh QR không tự điền số tiền/nội dung theo đơn; UI hướng dẫn khách nhập. SĐT cho bước báo chuyển khoản chỉ được giữ trong React memory, không lưu browser storage. Reload làm mất receipt; khách vẫn tra cứu tiến độ bằng mã đơn + SĐT. Chưa có QR/báo chuyển khoản trong trang tra cứu sau reload.
+Trang thành công dùng tổng tiền snapshot từ response tạo đơn và ảnh tĩnh ảnh QR tĩnh (đã thay bằng ô giữ chỗ "QR DEMO" ngày 15/11/2026, F2 — website là demo, không thu tiền). Ảnh QR không tự điền số tiền/nội dung theo đơn; UI hướng dẫn khách nhập. SĐT cho bước báo chuyển khoản chỉ được giữ trong React memory, không lưu browser storage. Reload làm mất receipt; khách vẫn tra cứu tiến độ bằng mã đơn + SĐT. Chưa có QR/báo chuyển khoản trong trang tra cứu sau reload.
 
 | Bảng | Nội dung chính |
 |---|---|

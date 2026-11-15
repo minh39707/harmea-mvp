@@ -68,7 +68,7 @@ export function orderTrackingRouter(db: Database, limiter = new TrackingLookupLi
           .rows[0];
         if (order?.status === 'cancelled')
           throw new InputError(
-            'Đơn đã hủy không thể xác nhận chuyển khoản.',
+            'Đơn đã hủy không thể hoàn tất thanh toán demo.',
             'ORDER_CANCELLED',
             409
           );

@@ -7,6 +7,8 @@ export type Design = {
   place: string;
   dateOfBirth: string;
   commemorativeDate: string;
+  /** Lời nhắn/lời chúc in trên thiệp giấy đi kèm, không in lên thẻ (F6). Tối đa 200 ký tự. */
+  giftMessage?: string;
   color: string;
   photo: string;
   photoWidth: number;
@@ -41,9 +43,11 @@ export type Receipt = {
   quantity: number;
   unitPriceVnd: number;
   subtotalVnd: number;
-  shippingFeeVnd: null;
+  shippingFeeVnd: number;
   currency: 'VND';
   createdAt: string;
+  /** Chỉ có ở client: lời nhắn của các thiết kế vừa gửi, để hiện ở trang "Đã nhận đơn". */
+  giftMessages?: string[];
 };
 export type OrderStatus =
   'pending' | 'confirmed' | 'producing' | 'shipping' | 'completed' | 'cancelled';
@@ -64,12 +68,16 @@ export const blankDesign: Design = {
   place: '',
   dateOfBirth: '',
   commemorativeDate: '',
+  giftMessage: '',
   color: 'cream',
   photo: '',
   photoWidth: 0,
   photoHeight: 0,
   crop: { x: 0, y: 0, width: 1, height: 1 }
 };
+
+export const GIFT_MESSAGE_MAX = 200;
+export const GIFT_MESSAGE_NOTE = 'Lời nhắn được in trên thiệp giấy đi kèm thẻ, không in lên thẻ.';
 
 export type Recipient = { name: string; phone: string; address: string; note: string };
 export type StateSetter<T> = import('react').Dispatch<import('react').SetStateAction<T>>;

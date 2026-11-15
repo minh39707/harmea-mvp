@@ -460,3 +460,75 @@ test('full cart and deletion from another tab leave editor data and assets untou
   assert.equal(deletedStore.blobs.size, 0);
   assert.equal(deletedStore.cart.length, 0);
 });
+
+test('F3: signature pad scroll lock restores body style and scroll position', async () => {
+  const { lockScroll } = await import('../apps/web/src/shared/scroll-lock.ts');
+  const scrolls = [];
+  const win = {
+    document: {
+      body: { style: { overflow: '', position: '', top: '', left: '', right: '', width: '' } }
+    },
+    scrollY: 640,
+    scrollTo: (x, y) => scrolls.push([x, y])
+  };
+  const before = { ...win.document.body.style };
+  const unlock = lockScroll(win);
+  assert.equal(win.document.body.style.overflow, 'hidden');
+  assert.equal(win.document.body.style.position, 'fixed');
+  assert.equal(win.document.body.style.top, '-640px');
+  // Hai lớp khoá lồng nhau: mở lớp trong không được trả style sớm.
+  const inner = lockScroll(win);
+  inner();
+  assert.equal(win.document.body.style.position, 'fixed');
+  unlock();
+  unlock(); // gọi lặp (vd. Esc rồi unmount) không làm hỏng trạng thái
+  assert.deepEqual(win.document.body.style, before);
+  assert.deepEqual(scrolls, [[0, 640]]);
+  // Khoá lại sau khi đã mở vẫn hoạt động bình thường.
+  const again = lockScroll(win);
+  assert.equal(win.document.body.style.overflow, 'hidden');
+  again();
+  assert.equal(win.document.body.style.overflow, '');
+});
+
+test('F4: estimateDelivery skips Sundays and uses Vietnam time', async () => {
+  const { estimateDelivery } = await import('../apps/web/src/shared/delivery.ts');
+  // Chủ nhật 15/11/2026: làm thẻ T2 16, giao 2–4 ngày → T4 18 – T6 20 (khớp ảnh minh chứng F4).
+  assert.equal(estimateDelivery('2026-11-15T03:00:00Z').label, 'Thứ Tư, 18/11 – Thứ Sáu, 20/11');
+  // Thứ 6, 20/11: làm thẻ T7 21, giao → T3 24 – T5 26.
+  assert.equal(estimateDelivery('2026-11-20T03:00:00Z').label, 'Thứ Ba, 24/11 – Thứ Năm, 26/11');
+  // Thứ 7, 21/11: làm thẻ T2 23 → T4 25 – T6 27.
+  assert.equal(estimateDelivery('2026-11-21T03:00:00Z').label, 'Thứ Tư, 25/11 – Thứ Sáu, 27/11');
+  // Chủ nhật, 22/11: giống thứ 7 vì Chủ nhật không tính.
+  assert.equal(estimateDelivery('2026-11-22T03:00:00Z').label, 'Thứ Tư, 25/11 – Thứ Sáu, 27/11');
+  // 20/11 18:00 UTC đã là 01:00 thứ 7, 21/11 ở Việt Nam.
+  assert.equal(estimateDelivery('2026-11-20T18:00:00Z').label, 'Thứ Tư, 25/11 – Thứ Sáu, 27/11');
+  // Khoảng giao không bao giờ rơi vào Chủ nhật.
+  for (let d = 0; d < 14; d++) {
+    const r = estimateDelivery(new Date(Date.UTC(2026, 10, 15 + d, 5)));
+    assert.notEqual(r.earliest.getUTCDay(), 0);
+    assert.notEqual(r.latest.getUTCDay(), 0);
+  }
+});
+
+test('F6: gift message is trimmed, limited to 200 chars and old carts stay readable', () => {
+  assert.equal(orderDesign({ ...design, giftMessage: '  Chúc mừng!  ' }).giftMessage, 'Chúc mừng!');
+  assert.ok(!('giftMessage' in orderDesign({ ...design, giftMessage: '   ' })));
+  assert.ok(!('giftMessage' in orderDesign({ ...design, giftMessage: undefined })));
+  assert.throws(() => orderDesign({ ...design, giftMessage: 'a'.repeat(201) }), /200/);
+  const { giftMessage, ...oldDesign } = { ...design, giftMessage: 'x' };
+  const [oldItem] = parseCart([{ id: 'a', productId: 'p', quantity: 1, design: { ...oldDesign } }]);
+  assert.equal(oldItem.design.giftMessage, '');
+  const [newItem] = parseCart([
+    { id: 'b', productId: 'p', quantity: 1, design: { ...design, giftMessage } }
+  ]);
+  assert.equal(newItem.design.giftMessage, 'x');
+});
+
+test('F8: keyboard inset ignores toolbar jitter and measures the keyboard', async () => {
+  const { keyboardInset } = await import('../apps/web/src/shared/useKeyboardInset.ts');
+  assert.equal(keyboardInset(844, 844, 0), 0);
+  assert.equal(keyboardInset(844, 790, 0), 0); // thanh địa chỉ co lại, không phải bàn phím
+  assert.equal(keyboardInset(844, 508, 0), 336); // bàn phím iPhone ~336px
+  assert.equal(keyboardInset(844, 508, 120), 216); // trang đã bị đẩy lên 120px
+});

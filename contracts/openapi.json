@@ -1410,6 +1410,11 @@
             "format": "date",
             "description": "Ngày in trên thẻ, có thể ở quá khứ hoặc tương lai."
           },
+          "giftMessage": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Lời nhắn/lời chúc tùy chọn, in trên thiệp giấy đi kèm thẻ, không in lên thẻ. Chuỗi rỗng sau trim bị bỏ khỏi snapshot."
+          },
           "signatureText": {
             "type": "string",
             "maxLength": 80,
@@ -1676,8 +1681,9 @@
             "type": "integer"
           },
           "shippingFeeVnd": {
-            "type": "null",
-            "description": "Chưa báo phí giao hàng; không hiển thị là 0 hoặc miễn phí."
+            "type": "integer",
+            "const": 30000,
+            "description": "Phí vận chuyển đồng giá toàn quốc 30.000đ (website demo, không thu tiền thật)."
           },
           "currency": {
             "type": "string",
@@ -1805,7 +1811,9 @@
             "type": "integer"
           },
           "shippingFeeVnd": {
-            "type": "null"
+            "type": "integer",
+            "const": 30000,
+            "description": "Phí vận chuyển đồng giá toàn quốc 30.000đ (website demo, không thu tiền thật)."
           },
           "currency": {
             "type": "string",
@@ -1916,7 +1924,9 @@
             "type": "integer"
           },
           "shippingFeeVnd": {
-            "type": "null"
+            "type": "integer",
+            "const": 30000,
+            "description": "Phí vận chuyển đồng giá toàn quốc 30.000đ (website demo, không thu tiền thật)."
           },
           "currency": {
             "type": "string",

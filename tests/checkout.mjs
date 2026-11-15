@@ -156,7 +156,8 @@ test('browser checkout coordinator against real Express, MySQL and image files',
       photoWidth: 120,
       photoHeight: 80,
       crop: centerCrop(120, 80),
-      dateOfBirth: '2003-01-15'
+      dateOfBirth: '2003-01-15',
+      giftMessage: fullName === 'QA Nguyễn Minh' ? '  Chúc mừng sinh nhật!  ' : '   '
     };
     const png = await sharp(Buffer.from(cardSvg(design)))
       .png()
@@ -190,6 +191,8 @@ test('browser checkout coordinator against real Express, MySQL and image files',
       assert.equal(await count(), before + 1);
       assert.equal(latestReceipt.quantity, 4);
       assert.equal(latestReceipt.subtotalVnd, 356000);
+      // F5: phí vận chuyển đồng giá 30.000đ do máy chủ trả về.
+      assert.equal(latestReceipt.shippingFeeVnd, 30000);
       assert.deepEqual(requests[0].parts, [
         'payload',
         'photo_0',
@@ -214,6 +217,15 @@ test('browser checkout coordinator against real Express, MySQL and image files',
       assert.equal(storedPhotoMeta.exif, undefined);
       assert.notEqual(hash(storedPhoto), hash(original));
       assert.equal(row.design_snapshot.dateOfBirth, '2003-01-15');
+      // F6: lời nhắn được trim và lưu trong snapshot; lời nhắn rỗng không được lưu.
+      assert.equal(row.design_snapshot.giftMessage, 'Chúc mừng sinh nhật!');
+      const second = (
+        await db.query(
+          'SELECT design_snapshot FROM order_items WHERE order_id=? ORDER BY position',
+          [latestReceipt.id]
+        )
+      ).rows[1];
+      assert.ok(!('giftMessage' in second.design_snapshot));
       assert.deepEqual(row.design_snapshot.crop, prepared[0].payload.design.crop);
       assert.deepEqual(
         await sharp(await readFile(join(process.env.UPLOAD_DIR, row.preview_key)))
