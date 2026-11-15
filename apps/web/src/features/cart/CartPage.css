@@ -771,3 +771,63 @@
   font-style: normal;
   color: var(--muted);
 }
+
+/* F4: ngày giao dự kiến (theo ảnh minh chứng trong Evidence Workbook) */
+.cart-item-delivery {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 14px;
+}
+
+.cart-item-delivery-label {
+  color: var(--text);
+}
+
+.cart-item-delivery strong {
+  font-weight: 700;
+}
+
+.cart-item-delivery .delivery-info {
+  margin-left: auto;
+}
+
+.delivery-info {
+  display: inline-flex;
+  color: var(--brand);
+  cursor: help;
+}
+
+.summary-delivery-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.summary-delivery-box > div {
+  display: grid;
+  gap: 2px;
+}
+
+.summary-delivery-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--brand);
+  font-size: 13px;
+}
+
+.summary-delivery-box strong {
+  font-size: 16px;
+  font-weight: 700;
+}

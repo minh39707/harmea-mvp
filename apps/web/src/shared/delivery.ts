@@ -1,14 +1,14 @@
 // Ước tính ngày giao hàng (F4). Sửa các hằng số dưới đây khi đổi thời gian sản xuất/giao.
 
 /** Số ngày làm việc để làm thẻ, tính từ ngày sau ngày đặt. */
-export const PRODUCTION_DAYS = 2;
+export const PRODUCTION_DAYS = 1;
 /** Số ngày làm việc giao hàng sau khi làm xong thẻ: ít nhất / nhiều nhất. */
 export const SHIPPING_DAYS_MIN = 2;
 export const SHIPPING_DAYS_MAX = 4;
 /** Múi giờ dùng để xác định "hôm nay" của đơn. */
 export const DELIVERY_TIME_ZONE = 'Asia/Ho_Chi_Minh';
 
-const weekdayLabels = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+const weekdayLabels = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 
 /** Ngày lịch (năm/tháng/ngày) của thời điểm `at` theo múi giờ Việt Nam, đặt ở 00:00 UTC. */
 function calendarDate(at: Date): Date {
@@ -43,7 +43,7 @@ export type DeliveryEstimate = { earliest: Date; latest: Date; label: string };
 
 /**
  * Khoảng ngày giao dự kiến cho đơn đặt lúc `orderDate`.
- * Ví dụ label: "Thứ 5, 20/11 – Thứ 2, 24/11".
+ * Ví dụ label: "Thứ Tư, 18/11 – Thứ Sáu, 20/11".
  */
 export function estimateDelivery(orderDate: Date | string = new Date()): DeliveryEstimate {
   const at = typeof orderDate === 'string' ? new Date(orderDate) : orderDate;

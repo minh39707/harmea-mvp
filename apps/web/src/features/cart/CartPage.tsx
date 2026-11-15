@@ -19,7 +19,10 @@ import {
   IconPlus,
   IconCard,
   IconShield,
-  IconCheck
+  IconCheck,
+  IconTruck,
+  IconCalendar,
+  IconInfo
 } from '../../shared/ui/Icons';
 import './CartPage.css';
 
@@ -68,6 +71,7 @@ export default function CartPage({
   )
 }: CartPageProps) {
   const unitPrice = product?.unitPriceVnd ?? 89000;
+  const deliveryLabel = estimateDelivery().label;
   const isAllSelected = cart.length > 0 && selectedItems.length === cart.length;
   const isSomeSelected = selectedItems.length > 0 && selectedItems.length < cart.length;
 
@@ -288,6 +292,21 @@ export default function CartPage({
                         />
                       </div>
                     </div>
+
+                    {/* F4: ngày giao dự kiến của từng thẻ (theo ảnh minh chứng) */}
+                    <div className="cart-item-delivery">
+                      <IconTruck size={18} />
+                      <span className="cart-item-delivery-label">Ngày giao hàng dự kiến:</span>
+                      <IconCalendar size={16} />
+                      <strong>{deliveryLabel}</strong>
+                      <span
+                        className="delivery-info"
+                        title={DELIVERY_NOTE}
+                        aria-label={DELIVERY_NOTE}
+                      >
+                        <IconInfo size={17} />
+                      </span>
+                    </div>
                   </article>
                 );
               })}
@@ -331,13 +350,21 @@ export default function CartPage({
               </div>
             </div>
 
-            <div className="delivery-estimate" role="note">
-              <span className="delivery-estimate-label">Dự kiến giao</span>
-              <strong>{estimateDelivery().label}</strong>
-              <small>{DELIVERY_NOTE}</small>
-            </div>
-
             <div className="summary-divider" />
+
+            {/* F4: ô ngày giao dự kiến trong tóm tắt đơn (theo ảnh minh chứng) */}
+            <div className="summary-delivery-box" role="note">
+              <IconTruck size={24} />
+              <div>
+                <span className="summary-delivery-label">
+                  Ngày giao hàng dự kiến
+                  <span className="delivery-info" title={DELIVERY_NOTE} aria-label={DELIVERY_NOTE}>
+                    <IconInfo size={15} />
+                  </span>
+                </span>
+                <strong>{deliveryLabel}</strong>
+              </div>
+            </div>
 
             <div className="summary-total-row">
               <span className="total-label">Tổng tiền sản phẩm:</span>
