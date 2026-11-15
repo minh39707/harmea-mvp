@@ -43,7 +43,7 @@ export type Receipt = {
   quantity: number;
   unitPriceVnd: number;
   subtotalVnd: number;
-  shippingFeeVnd: null;
+  shippingFeeVnd: number;
   currency: 'VND';
   createdAt: string;
   /** Chỉ có ở client: lời nhắn của các thiết kế vừa gửi, để hiện ở trang "Đã nhận đơn". */

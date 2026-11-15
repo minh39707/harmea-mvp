@@ -6,7 +6,7 @@ export type AdminSummary = {
   status: OrderStatus;
   quantity: number;
   subtotalVnd: number;
-  shippingFeeVnd: null;
+  shippingFeeVnd: number;
   currency: 'VND';
   version: number;
   createdAt: string;

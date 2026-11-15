@@ -24,7 +24,8 @@ function summaryResponse(v: unknown): AdminSummary {
     !Number.isInteger(r.quantity) ||
     !Number.isInteger(r.subtotalVnd) ||
     r.currency !== 'VND' ||
-    r.shippingFeeVnd !== null ||
+    !Number.isSafeInteger(r.shippingFeeVnd) ||
+    Number(r.shippingFeeVnd) < 0 ||
     !date(r.createdAt) ||
     !date(r.updatedAt)
   )

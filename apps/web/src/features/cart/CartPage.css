@@ -633,13 +633,6 @@
   color: var(--text);
 }
 
-.shipping-fee-note {
-  margin: 8px 0 0;
-  color: var(--muted);
-  font-size: 12.5px;
-  line-height: 1.5;
-}
-
 .summary-divider {
   height: 1px;
   background: var(--line);
@@ -829,5 +822,22 @@
 
 .summary-delivery-box strong {
   font-size: 16px;
+  font-weight: 700;
+}
+
+/* F5: phí vận chuyển đồng giá (theo ảnh minh chứng) */
+.summary-shipping-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 14px;
+}
+
+.summary-shipping-box strong {
+  margin-left: auto;
   font-weight: 700;
 }

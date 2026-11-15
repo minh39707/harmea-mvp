@@ -1681,8 +1681,9 @@
             "type": "integer"
           },
           "shippingFeeVnd": {
-            "type": "null",
-            "description": "Chưa báo phí giao hàng; không hiển thị là 0 hoặc miễn phí."
+            "type": "integer",
+            "const": 30000,
+            "description": "Phí vận chuyển đồng giá toàn quốc 30.000đ (website demo, không thu tiền thật)."
           },
           "currency": {
             "type": "string",
@@ -1810,7 +1811,9 @@
             "type": "integer"
           },
           "shippingFeeVnd": {
-            "type": "null"
+            "type": "integer",
+            "const": 30000,
+            "description": "Phí vận chuyển đồng giá toàn quốc 30.000đ (website demo, không thu tiền thật)."
           },
           "currency": {
             "type": "string",
@@ -1921,7 +1924,9 @@
             "type": "integer"
           },
           "shippingFeeVnd": {
-            "type": "null"
+            "type": "integer",
+            "const": 30000,
+            "description": "Phí vận chuyển đồng giá toàn quốc 30.000đ (website demo, không thu tiền thật)."
           },
           "currency": {
             "type": "string",

@@ -1,6 +1,7 @@
 import type { SqlConnection } from '../../db.ts';
 import { getItems, getHistory, getOrder } from './repository.ts';
 import { InputError } from '../../lib/errors.ts';
+import { SHIPPING_FEE_VND } from './shipping.ts';
 
 export function summary(r: Record<string, unknown>) {
   return {
@@ -10,7 +11,7 @@ export function summary(r: Record<string, unknown>) {
     status: r.status,
     quantity: r.quantity,
     subtotalVnd: r.subtotal_vnd,
-    shippingFeeVnd: null,
+    shippingFeeVnd: SHIPPING_FEE_VND,
     currency: r.currency,
     version: r.version,
     createdAt: r.created_at,

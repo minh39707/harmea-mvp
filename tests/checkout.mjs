@@ -191,6 +191,8 @@ test('browser checkout coordinator against real Express, MySQL and image files',
       assert.equal(await count(), before + 1);
       assert.equal(latestReceipt.quantity, 4);
       assert.equal(latestReceipt.subtotalVnd, 356000);
+      // F5: phí vận chuyển đồng giá 30.000đ do máy chủ trả về.
+      assert.equal(latestReceipt.shippingFeeVnd, 30000);
       assert.deepEqual(requests[0].parts, [
         'payload',
         'photo_0',

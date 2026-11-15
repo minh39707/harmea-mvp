@@ -6,8 +6,8 @@ import type { Item } from '../../shared/types';
 import { money, colorLabel } from '../../shared/format';
 import {
   DELIVERY_NOTE,
-  SHIPPING_FEE_LABEL,
-  SHIPPING_FEE_NOTE,
+  SHIPPING_FEE_SUFFIX,
+  SHIPPING_FEE_VND,
   estimateDelivery
 } from '../../shared/delivery';
 import { hasLowPrintResolution } from '../editor/photo-processing';
@@ -72,6 +72,7 @@ export default function CartPage({
 }: CartPageProps) {
   const unitPrice = product?.unitPriceVnd ?? 89000;
   const deliveryLabel = estimateDelivery().label;
+  const selectedTotal = selectedSubtotal + (selectedItems.length ? SHIPPING_FEE_VND : 0);
   const isAllSelected = cart.length > 0 && selectedItems.length === cart.length;
   const isSomeSelected = selectedItems.length > 0 && selectedItems.length < cart.length;
 
@@ -344,9 +345,13 @@ export default function CartPage({
                   <strong>{money(selectedSubtotal)}</strong>
                 </span>
               </div>
-              <div className="summary-row">
-                <span className="row-label">Phí vận chuyển</span>
-                <span className="shipping-fee-badge">{SHIPPING_FEE_LABEL}</span>
+              {/* F5: phí vận chuyển đồng giá (theo ảnh minh chứng) */}
+              <div className="summary-shipping-box">
+                <IconTruck size={18} />
+                <span>Phí vận chuyển</span>
+                <strong>
+                  {money(SHIPPING_FEE_VND)} {SHIPPING_FEE_SUFFIX}
+                </strong>
               </div>
             </div>
 
@@ -367,11 +372,9 @@ export default function CartPage({
             </div>
 
             <div className="summary-total-row">
-              <span className="total-label">Tổng tiền sản phẩm:</span>
-              <strong className="total-val">{money(selectedSubtotal)}</strong>
+              <span className="total-label">Tổng thanh toán:</span>
+              <strong className="total-val">{money(selectedTotal)}</strong>
             </div>
-
-            <p className="shipping-fee-note">{SHIPPING_FEE_NOTE}</p>
 
             <button
               className="btn-checkout-primary"

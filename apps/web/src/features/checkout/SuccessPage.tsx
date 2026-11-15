@@ -2,7 +2,7 @@ import type { Shop } from '../../app/useShop';
 import { blankDesign as blank, GIFT_MESSAGE_NOTE } from '../../shared/types';
 import { statusLabels } from '../../shared/order-status';
 import { money } from '../../shared/format';
-import { DELIVERY_NOTE, SHIPPING_FEE_LABEL, estimateDelivery } from '../../shared/delivery';
+import { DELIVERY_NOTE, SHIPPING_FEE_SUFFIX, estimateDelivery } from '../../shared/delivery';
 import { IconCheck, IconCopy, IconSearch } from '../../shared/ui/Icons';
 import './SuccessPage.css';
 import PaymentPanel from './PaymentPanel';
@@ -51,7 +51,15 @@ export default function SuccessPage({
         </div>
         <div className="receipt-row">
           <span>Phí vận chuyển:</span>
-          <b>{SHIPPING_FEE_LABEL}</b>
+          <b>
+            {money(receipt.shippingFeeVnd)} {SHIPPING_FEE_SUFFIX}
+          </b>
+        </div>
+        <div className="receipt-row">
+          <span>Tổng thanh toán:</span>
+          <strong className="amount-highlight">
+            {money(receipt.subtotalVnd + receipt.shippingFeeVnd)}
+          </strong>
         </div>
         <div className="receipt-row">
           <span>Số lượng thẻ NFC:</span>
@@ -112,7 +120,7 @@ export default function SuccessPage({
       <PaymentPanel
         key={receipt.id}
         orderNumber={receipt.orderNumber}
-        amount={receipt.subtotalVnd}
+        amount={receipt.subtotalVnd + receipt.shippingFeeVnd}
         phone={trackPhone}
       />
 

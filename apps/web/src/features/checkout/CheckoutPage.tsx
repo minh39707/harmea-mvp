@@ -3,8 +3,8 @@ import type { Shop } from '../../app/useShop';
 import { money } from '../../shared/format';
 import {
   DELIVERY_NOTE,
-  SHIPPING_FEE_LABEL,
-  SHIPPING_FEE_NOTE,
+  SHIPPING_FEE_SUFFIX,
+  SHIPPING_FEE_VND,
   estimateDelivery
 } from '../../shared/delivery';
 import { IconUser } from '../../shared/ui/Icons';
@@ -158,9 +158,15 @@ export default function CheckoutPage({
           </div>
           <div className="sum">
             <span>Phí vận chuyển</span>
-            <span className="shipping-fee-badge">{SHIPPING_FEE_LABEL}</span>
+            <strong>
+              {money(SHIPPING_FEE_VND)} {SHIPPING_FEE_SUFFIX}
+            </strong>
           </div>
-          <p className="note">{SHIPPING_FEE_NOTE} Máy chủ sẽ kiểm tra lại giá khi tạo đơn.</p>
+          <div className="sum">
+            <span>Tổng thanh toán</span>
+            <strong>{money(subtotal + SHIPPING_FEE_VND)}</strong>
+          </div>
+          <p className="note">Máy chủ sẽ kiểm tra lại giá khi tạo đơn.</p>
           <div className="delivery-estimate" role="note">
             <span className="delivery-estimate-label">Dự kiến giao</span>
             <strong>{estimateDelivery().label}</strong>
@@ -183,8 +189,8 @@ export default function CheckoutPage({
       {createPortal(
         <div className="mobile-action-bar">
           <div className="mobile-action-total">
-            <span>Tiền sản phẩm</span>
-            <strong>{money(subtotal)}</strong>
+            <span>Tổng thanh toán</span>
+            <strong>{money(subtotal + SHIPPING_FEE_VND)}</strong>
           </div>
           <button
             className="button primary"

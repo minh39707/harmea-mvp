@@ -1,3 +1,4 @@
+import { SHIPPING_FEE_VND } from './shipping.ts';
 import { randomUUID } from 'node:crypto';
 import type { Database } from '../../db.ts';
 import { InputError } from '../../lib/errors.ts';
@@ -105,7 +106,7 @@ export async function createOrder(db: Database, storage: FileStorage, form: Form
       quantity: result.quantity,
       unitPriceVnd: result.unit_price_vnd,
       subtotalVnd: result.subtotal_vnd,
-      shippingFeeVnd: null,
+      shippingFeeVnd: SHIPPING_FEE_VND,
       currency: 'VND',
       createdAt: result.created_at
     };
