@@ -1,5 +1,6 @@
 import type { Shop } from '../../app/useShop';
 import { money } from '../../shared/format';
+import { DELIVERY_NOTE, estimateDelivery } from '../../shared/delivery';
 import { IconUser } from '../../shared/ui/Icons';
 import './CheckoutPage.css';
 
@@ -134,6 +135,11 @@ export default function CheckoutPage({
           <p className="note">
             Chưa bao gồm phí giao hàng. Máy chủ sẽ kiểm tra lại giá khi tạo đơn.
           </p>
+          <div className="delivery-estimate" role="note">
+            <span className="delivery-estimate-label">Dự kiến giao</span>
+            <strong>{estimateDelivery().label}</strong>
+            <small>{DELIVERY_NOTE}</small>
+          </div>
           <button
             className="button primary btn-proceed-payment"
             type="submit"

@@ -4,6 +4,7 @@ import Quantity from '../../shared/ui/Quantity';
 import { blankDesign as blank } from '../../shared/types';
 import type { Item } from '../../shared/types';
 import { money, colorLabel } from '../../shared/format';
+import { DELIVERY_NOTE, estimateDelivery } from '../../shared/delivery';
 import { hasLowPrintResolution } from '../editor/photo-processing';
 import {
   IconVinyl,
@@ -316,6 +317,12 @@ export default function CartPage({
                 <span className="row-label">Phí vận chuyển</span>
                 <span className="free-badge">Chưa tính (ở bước tiếp)</span>
               </div>
+            </div>
+
+            <div className="delivery-estimate" role="note">
+              <span className="delivery-estimate-label">Dự kiến giao</span>
+              <strong>{estimateDelivery().label}</strong>
+              <small>{DELIVERY_NOTE}</small>
             </div>
 
             <div className="summary-divider" />

@@ -490,3 +490,21 @@ test('F3: signature pad scroll lock restores body style and scroll position', as
   again();
   assert.equal(win.document.body.style.overflow, '');
 });
+
+test('F4: estimateDelivery skips Sundays and uses Vietnam time', async () => {
+  const { estimateDelivery } = await import('../apps/web/src/shared/delivery.ts');
+  // Thứ 6, 20/11/2026 (giờ VN): làm thẻ T7 21 + T2 23, giao 2–4 ngày → T4 25 – T6 27.
+  assert.equal(estimateDelivery('2026-11-20T03:00:00Z').label, 'Thứ 4, 25/11 – Thứ 6, 27/11');
+  // Thứ 7, 21/11: làm thẻ T2 23 + T3 24 → T5 26 – T7 28.
+  assert.equal(estimateDelivery('2026-11-21T03:00:00Z').label, 'Thứ 5, 26/11 – Thứ 7, 28/11');
+  // Chủ nhật, 22/11: giống thứ 7 vì Chủ nhật không tính.
+  assert.equal(estimateDelivery('2026-11-22T03:00:00Z').label, 'Thứ 5, 26/11 – Thứ 7, 28/11');
+  // 20/11 18:00 UTC đã là 01:00 thứ 7, 21/11 ở Việt Nam.
+  assert.equal(estimateDelivery('2026-11-20T18:00:00Z').label, 'Thứ 5, 26/11 – Thứ 7, 28/11');
+  // Khoảng giao không bao giờ rơi vào Chủ nhật.
+  for (let d = 0; d < 14; d++) {
+    const r = estimateDelivery(new Date(Date.UTC(2026, 10, 15 + d, 5)));
+    assert.notEqual(r.earliest.getUTCDay(), 0);
+    assert.notEqual(r.latest.getUTCDay(), 0);
+  }
+});

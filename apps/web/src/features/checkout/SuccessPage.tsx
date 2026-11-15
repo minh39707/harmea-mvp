@@ -2,6 +2,7 @@ import type { Shop } from '../../app/useShop';
 import { blankDesign as blank } from '../../shared/types';
 import { statusLabels } from '../../shared/order-status';
 import { money } from '../../shared/format';
+import { DELIVERY_NOTE, estimateDelivery } from '../../shared/delivery';
 import { IconCheck, IconCopy, IconSearch } from '../../shared/ui/Icons';
 import './SuccessPage.css';
 import PaymentPanel from './PaymentPanel';
@@ -52,6 +53,11 @@ export default function SuccessPage({
           <span>Số lượng thẻ NFC:</span>
           <b>{receipt.quantity} thẻ</b>
         </div>
+        <div className="receipt-row">
+          <span>Dự kiến giao:</span>
+          <b>{estimateDelivery(receipt.createdAt).label}</b>
+        </div>
+        <p className="note">{DELIVERY_NOTE} Đây là đơn demo nên sẽ không có hàng được giao.</p>
 
         <div className="receipt-actions">
           <button
