@@ -3,6 +3,7 @@ import { api } from '../../shared/api';
 import { money } from '../../shared/format';
 import { SHIPPING_FEE_NOTE } from '../../shared/delivery';
 import './PaymentPanel.css';
+import DemoQr from './DemoQr';
 
 export default function PaymentPanel({
   orderNumber,
@@ -46,20 +47,13 @@ export default function PaymentPanel({
       <p className="demo-payment-banner" role="alert">
         THANH TOÁN DEMO – KHÔNG CHUYỂN TIỀN
       </p>
-      <h2 id="transfer-title">Bước thanh toán mô phỏng</h2>
+      <h2 id="transfer-title">Thanh toán bằng QR</h2>
       <p>Đây là bước mô phỏng. Không quét mã, không chuyển tiền.</p>
       <strong className="transfer-amount">{money(amount)}</strong>
       <p className="note">
         Tiền sản phẩm (demo). {SHIPPING_FEE_NOTE} Không có khoản tiền nào được thu.
       </p>
-      <div
-        className="transfer-qr demo-qr-placeholder"
-        role="img"
-        aria-label="Ô giữ chỗ QR demo, không quét được"
-      >
-        <span>QR DEMO</span>
-        <small>Không phải mã thanh toán</small>
-      </div>
+      <DemoQr />
       <p>
         Mã đơn demo: <strong className="transfer-reference">{orderNumber}</strong>
       </p>

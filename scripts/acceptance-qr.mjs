@@ -62,7 +62,7 @@ try {
     .fill('Synthetic QA address, do not ship');
   await page.getByRole('checkbox').check();
   await page.locator('.btn-proceed-payment').click();
-  await page.getByRole('heading', { name: 'Bước thanh toán mô phỏng', exact: true }).waitFor();
+  await page.getByRole('heading', { name: 'Thanh toán bằng QR', exact: true }).waitFor();
   const orderNumber = (await page.locator('.success-order-number').innerText()).trim();
   assert.equal(await page.locator('.transfer-qr img').count(), 0);
   assert.equal(await page.locator('.transfer-reference').innerText(), orderNumber);
