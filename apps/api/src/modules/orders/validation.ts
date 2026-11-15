@@ -90,7 +90,7 @@ export function designSnapshot(input: unknown) {
     color,
     ...(dateOfBirth ? { dateOfBirth } : {}),
     ...(commemorativeDate ? { commemorativeDate } : {}),
-    ...(d.place === undefined ? {} : { place: text(d.place, 'địa điểm', 120, false) }),
+    ...(d.place === undefined ? {} : { place: text(d.place, 'nơi lưu giữ kỷ niệm', 120, false) }),
     ...(d.giftMessage === undefined || !text(d.giftMessage, 'lời nhắn', 120, false)
       ? {}
       : { giftMessage: text(d.giftMessage, 'lời nhắn', 120, false) }),

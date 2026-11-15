@@ -184,27 +184,29 @@ export default function OptionalFields({
               )}
             </div>
 
-            {/* Ô 2: Địa điểm (Place of issue) */}
+            {/* Ô 2: Nơi lưu giữ kỷ niệm — in vào dòng "Place of issue" có sẵn trên mẫu thẻ */}
             <div className="accordion-cell">
               <div className="cell-label-row">
                 <IconMapPin size={16} color="var(--brand)" />
-                <span className="cell-label">Địa điểm (Place of issue)</span>
+                <span className="cell-label">Nơi lưu giữ kỷ niệm (tùy chọn)</span>
               </div>
+              <span className="cell-hint">In trên thẻ ở dòng “Place of issue”</span>
               <input
                 className="cell-input"
                 maxLength={120}
                 value={draft.place}
                 onChange={e => handleTextChange('place', e.target.value)}
-                placeholder="Ví dụ: THE SIX, TORONTO"
+                placeholder="Ví dụ: HỒ GƯƠM, HÀ NỘI"
               />
             </div>
 
-            {/* Ô 3: Ngày kỷ niệm (Date of issue) */}
+            {/* Ô 3: Ngày kỷ niệm — dòng "Date of issue" trên mẫu thẻ */}
             <div className="accordion-cell">
               <div className="cell-label-row">
                 <IconCalendar size={16} color="var(--brand)" />
-                <span className="cell-label">Ngày kỷ niệm (Date of issue)</span>
+                <span className="cell-label">Ngày kỷ niệm</span>
               </div>
+              <span className="cell-hint">In trên thẻ ở dòng “Date of issue”</span>
               <input
                 className="cell-input cell-date-input"
                 type="date"
@@ -213,12 +215,13 @@ export default function OptionalFields({
               />
             </div>
 
-            {/* Ô 4: Ngày sinh (Date of birth) */}
+            {/* Ô 4: Ngày sinh — dòng "Date of birth" trên mẫu thẻ */}
             <div className="accordion-cell">
               <div className="cell-label-row">
                 <IconCalendar size={16} color="var(--brand)" />
-                <span className="cell-label">Ngày sinh (Date of birth)</span>
+                <span className="cell-label">Ngày sinh</span>
               </div>
+              <span className="cell-hint">In trên thẻ ở dòng “Date of birth”</span>
               <input
                 className="cell-input cell-date-input"
                 type="date"

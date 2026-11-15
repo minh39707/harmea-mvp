@@ -56,7 +56,7 @@ export async function previewPng(design: Design) {
     context.fillText(displayDate(design.dateOfBirth), 745, layout.line2);
   }
 
-  // Dòng 3: Place of issue
+  // Dòng 3: Place of issue (form: "Nơi lưu giữ kỷ niệm"; nhãn in sẵn trong ảnh mẫu)
   if (design.place) {
     const size = design.place.length > 26 ? 16 : design.place.length > 18 ? 19 : 22;
     context.font = `bold ${size}px "Courier New", Courier, monospace`;
