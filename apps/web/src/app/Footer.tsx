@@ -19,6 +19,7 @@ export default function Footer() {
         <Link to="/policies/privacy">Quyền riêng tư</Link>
         <Link to="/contact">Liên hệ</Link>
       </nav>
+      <p className="footer-student-project">Student project – E-Business, Hanoi University</p>
       <p className="footer-demo-notice" role="note">
         Website demo cho dự án môn học E-Business. Đây không phải cửa hàng thương mại thật: không
         bán hàng, không giao hàng và không thu tiền.
