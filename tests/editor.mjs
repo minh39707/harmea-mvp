@@ -460,3 +460,33 @@ test('full cart and deletion from another tab leave editor data and assets untou
   assert.equal(deletedStore.blobs.size, 0);
   assert.equal(deletedStore.cart.length, 0);
 });
+
+test('F3: signature pad scroll lock restores body style and scroll position', async () => {
+  const { lockScroll } = await import('../apps/web/src/shared/scroll-lock.ts');
+  const scrolls = [];
+  const win = {
+    document: {
+      body: { style: { overflow: '', position: '', top: '', left: '', right: '', width: '' } }
+    },
+    scrollY: 640,
+    scrollTo: (x, y) => scrolls.push([x, y])
+  };
+  const before = { ...win.document.body.style };
+  const unlock = lockScroll(win);
+  assert.equal(win.document.body.style.overflow, 'hidden');
+  assert.equal(win.document.body.style.position, 'fixed');
+  assert.equal(win.document.body.style.top, '-640px');
+  // Hai lớp khoá lồng nhau: mở lớp trong không được trả style sớm.
+  const inner = lockScroll(win);
+  inner();
+  assert.equal(win.document.body.style.position, 'fixed');
+  unlock();
+  unlock(); // gọi lặp (vd. Esc rồi unmount) không làm hỏng trạng thái
+  assert.deepEqual(win.document.body.style, before);
+  assert.deepEqual(scrolls, [[0, 640]]);
+  // Khoá lại sau khi đã mở vẫn hoạt động bình thường.
+  const again = lockScroll(win);
+  assert.equal(win.document.body.style.overflow, 'hidden');
+  again();
+  assert.equal(win.document.body.style.overflow, '');
+});
