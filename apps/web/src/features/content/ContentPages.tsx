@@ -116,9 +116,9 @@ function ShippingPage() {
   return (
     <>
       <p>
-        Đây là bản demo học phần, không tiếp nhận đơn thương mại và không giao sản phẩm. Phí
-        30.000 VND và khoảng ngày giao trên luồng checkout chỉ là dữ liệu mô phỏng để kiểm tra trải
-        nghiệm người dùng; không phải báo giá hoặc cam kết vận chuyển.
+        Đây là bản demo học phần, không tiếp nhận đơn thương mại và không giao sản phẩm. Phí 30.000
+        VND và khoảng ngày giao trên luồng checkout chỉ là dữ liệu mô phỏng để kiểm tra trải nghiệm
+        người dùng; không phải báo giá hoặc cam kết vận chuyển.
       </p>
       <p>
         Nếu dự án chuyển sang kinh doanh thật, nhóm phải xác nhận khu vực giao, đơn vị vận chuyển,
@@ -132,9 +132,7 @@ function ShippingPage() {
 function ReturnsPage() {
   return (
     <>
-      <p>
-        Bản demo không bán, sản xuất hoặc giao sản phẩm nên không phát sinh giao dịch đổi trả.
-      </p>
+      <p>Bản demo không bán, sản xuất hoặc giao sản phẩm nên không phát sinh giao dịch đổi trả.</p>
       <p>
         Trước khi mở bán thật, nhóm phải công bố điều kiện đổi trả, thời hạn yêu cầu, quy trình gửi
         sản phẩm và bên chịu chi phí. Nội dung hiện tại chỉ mô tả phạm vi của bản demo học phần.
