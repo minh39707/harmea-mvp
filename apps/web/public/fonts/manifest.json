@@ -1,0 +1,66 @@
+{
+  "downloaded": "2026-11-11",
+  "stylesheet": "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400..700&family=Playfair+Display:ital,wght@0,400..600;1,400..500&display=swap",
+  "files": [
+    {
+      "file": "dm-sans-normal-latin-ext.woff2",
+      "bytes": 18228,
+      "sha256": "a5d38fe99f930275684999b462c7123faa063d9e44e73b4b241723d884aa0f49",
+      "source": "https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu6-K6h9Q.woff2"
+    },
+    {
+      "file": "dm-sans-normal-latin.woff2",
+      "bytes": 36932,
+      "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+      "source": "https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu0-K4.woff2"
+    },
+    {
+      "file": "playfair-display-italic-cyrillic.woff2",
+      "bytes": 23304,
+      "sha256": "51b2dac698333379dc3a3486393fba787d17f1dcbcb50f46582ca759d53c25fc",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFkD-vYSZviVYUb_rj3ij__anPXDTnohkk72xU.woff2"
+    },
+    {
+      "file": "playfair-display-italic-vietnamese.woff2",
+      "bytes": 9568,
+      "sha256": "6b8bfd228577635a5f45bee13c8dd4a900eba6aeb36af1680838aea3cbd7e412",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFkD-vYSZviVYUb_rj3ij__anPXDTnojUk72xU.woff2"
+    },
+    {
+      "file": "playfair-display-italic-latin-ext.woff2",
+      "bytes": 23380,
+      "sha256": "b9dff4aec6d8ef27af595330c808c455fcc3ff46881642aa6028ed4e27a96f89",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFkD-vYSZviVYUb_rj3ij__anPXDTnojEk72xU.woff2"
+    },
+    {
+      "file": "playfair-display-italic-latin.woff2",
+      "bytes": 38804,
+      "sha256": "54af24bd0f911f0fd7399d5445ea2023ff501d6a69f2d728f1213072f977ab14",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFkD-vYSZviVYUb_rj3ij__anPXDTnogkk7.woff2"
+    },
+    {
+      "file": "playfair-display-normal-cyrillic.woff2",
+      "bytes": 21152,
+      "sha256": "c108681cba6a9820bff52f4a1a4a1d9edf356b347bd79b7c61e916028e8a8b54",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFiD-vYSZviVYUb_rj3ij__anPXDTjYgFE_.woff2"
+    },
+    {
+      "file": "playfair-display-normal-vietnamese.woff2",
+      "bytes": 9112,
+      "sha256": "ef6446229b59773e671021650ef3882cf35806dae723ce047de87c0a6633039a",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFiD-vYSZviVYUb_rj3ij__anPXDTPYgFE_.woff2"
+    },
+    {
+      "file": "playfair-display-normal-latin-ext.woff2",
+      "bytes": 21140,
+      "sha256": "42898ad49a6b23f32b109243e1df596edf831015ed685f429e4dafbb181d599d",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFiD-vYSZviVYUb_rj3ij__anPXDTLYgFE_.woff2"
+    },
+    {
+      "file": "playfair-display-normal-latin.woff2",
+      "bytes": 38404,
+      "sha256": "e0c764a8e9e1cce92163c55bac4b2ad6cd4cf8c696ce2289ab5c41565e65b7e2",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgA.woff2"
+    }
+  ]
+}

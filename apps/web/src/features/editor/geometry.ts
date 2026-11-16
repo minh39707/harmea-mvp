@@ -2,12 +2,13 @@ import type { Crop } from '../../shared/types.ts';
 
 export const template = {
   version: 'harmea-card-v1',
-  width: 570,
-  height: 900,
-  physical: { x: 15, y: 20, width: 540, height: 860 },
-  safe: { x: 40, y: 40, width: 490, height: 820 },
-  portrait: { x: 40, y: 265, width: 490, height: 320 }
+  width: 1024,
+  height: 650,
+  physical: { x: 20, y: 15, width: 984, height: 620 },
+  safe: { x: 50, y: 40, width: 924, height: 570 },
+  portrait: { x: 102, y: 116, width: 389, height: 388 }
 } as const;
+
 export function validCrop(c: Crop) {
   return (
     [c.x, c.y, c.width, c.height].every(Number.isFinite) &&
@@ -19,6 +20,7 @@ export function validCrop(c: Crop) {
     c.y + c.height <= 1
   );
 }
+
 export function centerCrop(width: number, height: number, zoom = 1): Crop {
   if (width <= 0 || height <= 0 || !Number.isFinite(width + height + zoom) || zoom < 1 || zoom > 3)
     throw Error('Kích thước ảnh không hợp lệ.');
@@ -28,10 +30,12 @@ export function centerCrop(width: number, height: number, zoom = 1): Crop {
     h = Math.min(1, image / frame) / zoom;
   return { x: (1 - w) / 2, y: (1 - h) / 2, width: w, height: h };
 }
+
 export function moveCrop(crop: Crop, axis: 'x' | 'y', fraction: number): Crop {
   const size = axis === 'x' ? crop.width : crop.height;
   return { ...crop, [axis]: Math.max(0, Math.min(1, fraction)) * (1 - size) };
 }
+
 export function zoomCrop(crop: Crop, width: number, height: number, zoom: number): Crop {
   const next = centerCrop(width, height, zoom);
   return {

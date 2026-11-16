@@ -1,7 +1,15 @@
 import { api, ApiError } from '../../shared/api.ts';
 import type { OrderStatus } from '../../shared/types.ts';
 import type { AdminDetail, StatusDraft } from './types.ts';
-import { adminId, assetPath, sessionResponse, pageResponse, detailResponse } from './validation.ts';
+import {
+  adminId,
+  assetPath,
+  pageResponse,
+  detailResponse,
+  productsResponse,
+  productResponse,
+  statsResponse
+} from './validation.ts';
 export const nextStatuses: Record<OrderStatus, OrderStatus[]> = {
   pending: ['confirmed', 'cancelled'],
   confirmed: ['producing', 'cancelled'],
@@ -15,26 +23,49 @@ const readOptions = (signal?: AbortSignal) => ({
     ? AbortSignal.any([signal, AbortSignal.timeout(15000)])
     : AbortSignal.timeout(15000)
 });
-export async function adminSession(signal?: AbortSignal) {
-  return sessionResponse(await api('/admin/session', undefined, readOptions(signal)));
-}
-export async function loginAdmin(username: string, password: string) {
-  return sessionResponse(
-    await api(
-      '/admin/session',
-      { username: username.trim(), password },
-      { signal: AbortSignal.timeout(15000) }
-    )
-  );
-}
-export async function logoutAdmin() {
-  await api('/admin/session', undefined, { method: 'DELETE', signal: AbortSignal.timeout(15000) });
-}
-export async function adminOrders(page: number, status: OrderStatus | '', signal?: AbortSignal) {
+export async function adminOrders(
+  page: number,
+  status: OrderStatus | '',
+  signal?: AbortSignal,
+  orderNumber = ''
+) {
   if (!Number.isInteger(page) || page < 1) throw Error('Trang không hợp lệ.');
   const query = new URLSearchParams({ page: String(page), pageSize: '20' });
   if (status) query.set('status', status);
+  if (orderNumber) query.set('orderNumber', orderNumber);
   return pageResponse(await api(`/admin/orders?${query}`, undefined, readOptions(signal)));
+}
+export async function adminProducts(signal?: AbortSignal) {
+  return productsResponse(await api('/admin/products', undefined, readOptions(signal)));
+}
+export async function updateAdminProduct(
+  id: string,
+  body: {
+    expectedVersion: number;
+    name?: string;
+    description?: string;
+    unitPriceVnd?: number;
+    isActive?: boolean;
+  }
+) {
+  return productResponse(
+    await api(`/admin/products/${adminId(id)}`, body, {
+      method: 'PATCH',
+      signal: AbortSignal.timeout(30000)
+    })
+  );
+}
+export async function adminStats(from: string, to: string, signal?: AbortSignal) {
+  const query = new URLSearchParams({ from, to });
+  return statsResponse(await api(`/admin/stats?${query}`, undefined, readOptions(signal)));
+}
+export function ordersCsvHref(status: OrderStatus | '', from: string, to: string) {
+  const query = new URLSearchParams();
+  if (status) query.set('status', status);
+  if (from) query.set('from', from);
+  if (to) query.set('to', to);
+  const suffix = query.size ? `?${query}` : '';
+  return `/api/admin/orders.csv${suffix}`;
 }
 export async function adminOrder(id: string, signal?: AbortSignal) {
   return detailResponse(await api(`/admin/orders/${adminId(id)}`, undefined, readOptions(signal)));
@@ -92,13 +123,7 @@ export async function privateAsset(
     throw new ApiError('Không tải được ảnh. Thử lại sau.', 0, 'NETWORK_ERROR');
   });
   if (!response.ok)
-    throw new ApiError(
-      response.status === 401
-        ? 'Phiên đã hết hạn. Vui lòng đăng nhập lại.'
-        : 'Không tải được tệp của đơn.',
-      response.status,
-      'ASSET_FAILED'
-    );
+    throw new ApiError('Không tải được tệp của đơn.', response.status, 'ASSET_FAILED');
   const type = response.headers.get('Content-Type')?.split(';')[0];
   if (!type || !(kind === 'preview' ? ['image/png'] : ['image/jpeg', 'image/png']).includes(type))
     throw Error('Định dạng ảnh phản hồi không hợp lệ.');

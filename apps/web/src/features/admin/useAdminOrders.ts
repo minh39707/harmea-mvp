@@ -5,9 +5,10 @@ import type { AdminPage, AdminDetail, StatusDraft } from './types';
 import type { AdminRoute } from './route';
 import { adminOrders, adminOrder, changeStatus, AdminInputError } from './client';
 
-export function useAdminOrders(route: AdminRoute, onUnauthorized: () => void) {
+export function useAdminOrders(route: AdminRoute) {
   const [page, setPage] = useState(1),
     [filter, setFilter] = useState<OrderStatus | ''>(''),
+    [orderNumber, setOrderNumber] = useState(''),
     [list, setList] = useState<AdminPage | null>(null),
     [detail, setDetail] = useState<AdminDetail | null>(null);
   const [busy, setBusy] = useState(false),
@@ -21,10 +22,6 @@ export function useAdminOrders(route: AdminRoute, onUnauthorized: () => void) {
     locked = useRef(false);
   const id = route.kind === 'detail' ? route.id : null;
   function fail(error: unknown) {
-    if (error instanceof ApiError && error.status === 401) {
-      onUnauthorized();
-      return;
-    }
     setError(error instanceof Error ? error.message : 'Không tải được dữ liệu quản trị.');
   }
   async function refresh() {
@@ -44,7 +41,7 @@ export function useAdminOrders(route: AdminRoute, onUnauthorized: () => void) {
           setRevision(n => n + 1);
         }
       } else {
-        const result = await adminOrders(page, filter, abort.signal);
+        const result = await adminOrders(page, filter, abort.signal, orderNumber);
         if (request === sequence.current) setList(result);
       }
     } catch (error) {
@@ -65,7 +62,7 @@ export function useAdminOrders(route: AdminRoute, onUnauthorized: () => void) {
       sequence.current++;
       controller.current?.abort();
     };
-  }, [id, page, filter]);
+  }, [id, page, filter, orderNumber]);
   async function update(draft: StatusDraft) {
     if (!detail || busy || saving || locked.current || reviewRequired) return;
     locked.current = true;
@@ -108,6 +105,8 @@ export function useAdminOrders(route: AdminRoute, onUnauthorized: () => void) {
     setPage,
     filter,
     setFilter,
+    orderNumber,
+    setOrderNumber,
     list,
     detail,
     busy,

@@ -1,52 +1,91 @@
 import { imageHeader } from './image-header';
 import { centerCrop } from './geometry';
+import { fitWithin, PHOTO_MAX_EDGE } from './photo-processing';
+
+const MAX_INPUT_BYTES = 15 * 1024 * 1024;
+const MAX_INPUT_PIXELS = 40_000_000;
+const THUMBNAIL_MAX_EDGE = 600;
+const THUMBNAIL_MAX_DATA_URL_LENGTH = 160_000;
+
+function canvasBlob(canvas: HTMLCanvasElement, quality: number) {
+  return new Promise<Blob>((resolve, reject) =>
+    canvas.toBlob(
+      blob => (blob ? resolve(blob) : reject(Error('Không nén được ảnh.'))),
+      'image/jpeg',
+      quality
+    )
+  );
+}
+
+function canvasContext(canvas: HTMLCanvasElement) {
+  const context = canvas.getContext('2d');
+  if (!context) throw Error('Không đọc được ảnh trong trình duyệt.');
+  return context;
+}
 
 export async function photo(file: File) {
-  if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > 5 * 1024 * 1024)
-    throw Error('Chọn ảnh JPG/PNG tối đa 5 MiB.');
+  if (!['image/jpeg', 'image/png'].includes(file.type) || file.size > MAX_INPUT_BYTES)
+    throw Error('Chọn ảnh JPG/PNG tối đa 15 MiB.');
   const header = imageHeader(new Uint8Array(await file.arrayBuffer()));
   if (header.type !== file.type) throw Error('Nội dung tệp không đúng định dạng JPG/PNG.');
-  const url = URL.createObjectURL(file);
+  if (typeof createImageBitmap !== 'function')
+    throw Error('Trình duyệt không hỗ trợ xử lý ảnh an toàn. Hãy cập nhật trình duyệt.');
+
+  let bitmap: ImageBitmap | undefined;
   try {
-    const image = new Image();
-    image.src = url;
-    await image.decode();
+    bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
     if (
-      !image.naturalWidth ||
-      !image.naturalHeight ||
-      image.naturalWidth > 8192 ||
-      image.naturalHeight > 8192 ||
-      image.naturalWidth * image.naturalHeight > 20000000
+      !bitmap.width ||
+      !bitmap.height ||
+      bitmap.width > 8192 ||
+      bitmap.height > 8192 ||
+      bitmap.width * bitmap.height > MAX_INPUT_PIXELS
     )
       throw Error('Ảnh vượt giới hạn kích thước.');
-    const canvas = document.createElement('canvas'),
-      scale = Math.min(1, 600 / Math.max(image.naturalWidth, image.naturalHeight));
-    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
-    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
-    const context = canvas.getContext('2d');
-    if (!context) throw Error('Không đọc được ảnh trong trình duyệt.');
+
+    const dimensions = fitWithin(bitmap.width, bitmap.height, PHOTO_MAX_EDGE);
+    const canvas = document.createElement('canvas');
+    canvas.width = dimensions.width;
+    canvas.height = dimensions.height;
+    const context = canvasContext(canvas);
     context.fillStyle = '#fff';
     context.fillRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-    let thumbnail = canvas.toDataURL('image/jpeg', 0.75),
-      quality = 0.65;
-    while (thumbnail.length > 160000 && quality >= 0.25) {
-      thumbnail = canvas.toDataURL('image/jpeg', quality);
-      quality -= 0.1;
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const compressed = await canvasBlob(canvas, 0.85);
+
+    const compressedBitmap = await createImageBitmap(compressed);
+    let thumbnail: string;
+    try {
+      const thumbDimensions = fitWithin(
+        compressedBitmap.width,
+        compressedBitmap.height,
+        THUMBNAIL_MAX_EDGE
+      );
+      const thumb = document.createElement('canvas');
+      thumb.width = thumbDimensions.width;
+      thumb.height = thumbDimensions.height;
+      canvasContext(thumb).drawImage(compressedBitmap, 0, 0, thumb.width, thumb.height);
+      thumbnail = thumb.toDataURL('image/jpeg', 0.75);
+      if (thumbnail.length > THUMBNAIL_MAX_DATA_URL_LENGTH)
+        throw Error('Ảnh quá phức tạp. Hãy chọn ảnh khác.');
+    } finally {
+      compressedBitmap.close();
     }
-    if (thumbnail.length > 160000) throw Error('Ảnh quá phức tạp. Hãy chọn ảnh khác.');
+
     return {
-      original: file,
+      original: compressed,
       thumbnail,
-      width: image.naturalWidth,
-      height: image.naturalHeight,
-      crop: centerCrop(image.naturalWidth, image.naturalHeight)
+      width: dimensions.width,
+      height: dimensions.height,
+      crop: centerCrop(dimensions.width, dimensions.height),
+      sourceBytes: file.size,
+      compressedBytes: compressed.size
     };
   } catch (error) {
     if (error instanceof DOMException)
       throw Error('Không đọc được ảnh. Chọn một tệp JPG/PNG hợp lệ.');
     throw error;
   } finally {
-    URL.revokeObjectURL(url);
+    bitmap?.close();
   }
 }

@@ -16,7 +16,12 @@ export function usePhotoAsset({
 }) {
   const original = useRef<{ thumbnail: string; blob: Blob } | null>(null),
     sequence = useRef(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false),
+    [photoStats, setPhotoStats] = useState<{
+      sourceBytes: number;
+      compressedBytes?: number;
+      failed?: boolean;
+    } | null>(null);
   useEffect(() => {
     sequence.current++;
     setLoading(false);
@@ -28,11 +33,13 @@ export function usePhotoAsset({
     if (!file) return;
     const request = ++sequence.current;
     setLoading(true);
+    setPhotoStats({ sourceBytes: file.size });
     setError('');
     try {
       const result = await readPhoto(file);
       if (request !== sequence.current) return;
       original.current = { thumbnail: result.thumbnail, blob: result.original };
+      setPhotoStats({ sourceBytes: result.sourceBytes, compressedBytes: result.compressedBytes });
       setDraft(d => ({
         ...d,
         photo: result.thumbnail,
@@ -42,8 +49,10 @@ export function usePhotoAsset({
       }));
       setGallery('preview');
     } catch (error) {
-      if (request === sequence.current)
+      if (request === sequence.current) {
+        setPhotoStats({ sourceBytes: file.size, failed: true });
         setError(error instanceof Error ? error.message : 'Không đọc được ảnh.');
+      }
     } finally {
       if (request === sequence.current) setLoading(false);
     }
@@ -55,6 +64,7 @@ export function usePhotoAsset({
       const assets = item.assetKey ? await loadAssets(item.assetKey) : null;
       if (request !== sequence.current) return false;
       original.current = assets ? { thumbnail: item.design.photo, blob: assets.photo } : null;
+      setPhotoStats(null);
       return true;
     } catch {
       if (request !== sequence.current) return false;
@@ -69,6 +79,7 @@ export function usePhotoAsset({
   }
   function clearPhoto() {
     original.current = null;
+    setPhotoStats(null);
     sequence.current++;
     setLoading(false);
     setDraft(d => ({
@@ -79,5 +90,5 @@ export function usePhotoAsset({
       crop: { x: 0, y: 0, width: 1, height: 1 }
     }));
   }
-  return { photo, restore, originalFor, clearPhoto, loading };
+  return { photo, restore, originalFor, clearPhoto, loading, photoStats };
 }

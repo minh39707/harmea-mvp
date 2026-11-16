@@ -15,6 +15,13 @@ import {
 import { orderDesign } from '../apps/web/src/features/editor/validate-design.ts';
 import { imageHeader } from '../apps/web/src/features/editor/image-header.ts';
 import { parseCart } from '../apps/web/src/features/cart/cart-storage.ts';
+import { persistCartItem } from '../apps/web/src/features/cart/persist-cart-item.ts';
+import { cleanOrphanAssetKeys } from '../apps/web/src/features/editor/orphan-assets.ts';
+import {
+  fitWithin,
+  hasLowPrintResolution,
+  cropPrintResolution
+} from '../apps/web/src/features/editor/photo-processing.ts';
 import { blankDesign } from '../apps/web/src/shared/types.ts';
 
 const design = {
@@ -29,9 +36,10 @@ const design = {
 };
 
 test('artwork, physical cut and safe area dimensions stay separate', () => {
-  assert.equal(template.width / template.height, 57 / 90);
-  assert.deepEqual(template.physical, { x: 15, y: 20, width: 540, height: 860 });
-  assert.deepEqual(template.safe, { x: 40, y: 40, width: 490, height: 820 });
+  assert.equal(template.width, 1024);
+  assert.equal(template.height, 650);
+  assert.deepEqual(template.physical, { x: 20, y: 15, width: 984, height: 620 });
+  assert.deepEqual(template.safe, { x: 50, y: 40, width: 924, height: 570 });
   const safe = template.safe,
     p = template.portrait;
   assert.ok(
@@ -104,8 +112,8 @@ test('SVG proof displays DOB, escapes text and cannot embed an external photo UR
     .toBuffer();
   assert.notDeepEqual(plain, guided);
   const meta = await sharp(plain).metadata();
-  assert.equal(meta.width, 570);
-  assert.equal(meta.height, 900);
+  assert.equal(meta.width, 1024);
+  assert.equal(meta.height, 650);
   assert.ok(plain.length < 2 * 1024 * 1024);
 });
 test('real image headers reject oversized pixel counts and mismatched/unknown formats before browser decode', async () => {
@@ -251,4 +259,276 @@ test('cart JSON round-trip keeps original asset references and migrates legacy m
   assert.equal(parsed[1].templateVersion, template.version);
   assert.deepEqual(parsed[1].design.crop, current.design.crop);
   assert.deepEqual(orderDesign(parsed[1].design), orderDesign(current.design));
+});
+
+test('photo sizing never enlarges and print warning follows the selected crop', () => {
+  assert.deepEqual(fitWithin(4000, 3000), { width: 2400, height: 1800 });
+  assert.deepEqual(fitWithin(800, 600), { width: 800, height: 600 });
+  assert.deepEqual(cropPrintResolution(1346, 2126, { x: 0, y: 0, width: 0.5, height: 0.5 }), {
+    width: 673,
+    height: 1063
+  });
+  assert.equal(hasLowPrintResolution(1346, 2126, { x: 0, y: 0, width: 0.5, height: 0.5 }), false);
+  assert.equal(hasLowPrintResolution(1346, 2126, { x: 0, y: 0, width: 0.49, height: 0.5 }), true);
+  assert.throws(() => fitWithin(0, 600));
+});
+
+function memoryCartStore(initial = []) {
+  const cart = [...initial];
+  const blobs = new Map();
+  const events = [];
+  let nextKey = 0;
+  let saveAssetFailure = false;
+  let saveCartFailures = 0;
+  const failedRemoveKeys = new Set();
+  return {
+    cart,
+    blobs,
+    events,
+    failNextAssetWrite() {
+      saveAssetFailure = true;
+    },
+    failCartWrites(count = 1) {
+      saveCartFailures = count;
+    },
+    failNextRemove(key) {
+      failedRemoveKeys.add(key);
+    },
+    loadCart() {
+      return [...cart];
+    },
+    saveCart(next) {
+      events.push('write-cart');
+      if (saveCartFailures > 0) {
+        saveCartFailures--;
+        throw Error('localStorage unavailable');
+      }
+      cart.splice(0, cart.length, ...next);
+    },
+    async saveAssets(value) {
+      events.push('write-blob');
+      if (saveAssetFailure) {
+        saveAssetFailure = false;
+        throw Error('IndexedDB unavailable');
+      }
+      const key = `asset-${++nextKey}`;
+      blobs.set(key, value);
+      return key;
+    },
+    async removeAssets(key) {
+      events.push(`remove:${key}`);
+      if (failedRemoveKeys.delete(key)) throw Error('transient IndexedDB failure');
+      blobs.delete(key);
+    }
+  };
+}
+
+const itemDraft = overrides => ({
+  productId: 'product-1',
+  templateVersion: template.version,
+  quantity: 1,
+  design: { ...design, photoWidth: 1200, photoHeight: 1800, ...overrides }
+});
+const editorAssets = () => ({
+  photo: new Blob(['photo'], { type: 'image/jpeg' }),
+  preview: new Blob(['preview'], { type: 'image/png' })
+});
+
+test('cart item save creates separate blobs; update changes only its selected item', async () => {
+  const store = memoryCartStore();
+  const sharedBlob = editorAssets();
+  const first = await persistCartItem(store, {
+    draft: itemDraft({ fullName: 'first' }),
+    assets: sharedBlob,
+    makeId: () => 'item-1'
+  });
+  const second = await persistCartItem(store, {
+    draft: itemDraft({ fullName: 'second' }),
+    assets: sharedBlob,
+    makeId: () => 'item-2'
+  });
+  assert.notEqual(first.item.assetKey, second.item.assetKey);
+  assert.notEqual(first.item.id, second.item.id);
+  assert.deepEqual(store.events.slice(0, 4), [
+    'write-blob',
+    'write-cart',
+    'write-blob',
+    'write-cart'
+  ]);
+  const edited = await persistCartItem(store, {
+    editing: first.item,
+    draft: itemDraft({ fullName: 'updated first' }),
+    assets: editorAssets()
+  });
+  assert.equal(edited.item.id, first.item.id);
+  assert.notEqual(edited.item.assetKey, first.item.assetKey);
+  assert.equal(store.cart.length, 2);
+  assert.equal(store.cart[0].design.fullName, 'updated first');
+  assert.equal(store.cart[1].design.fullName, 'second');
+  assert.equal(store.blobs.has(first.item.assetKey), false);
+  assert.equal(store.blobs.has(second.item.assetKey), true);
+  assert.deepEqual(store.events.slice(4), [
+    'write-blob',
+    'write-cart',
+    `remove:${first.item.assetKey}`
+  ]);
+});
+
+test('cart item persistence compensates storage failures without dangling metadata or blobs', async () => {
+  const store = memoryCartStore();
+  store.failNextAssetWrite();
+  await assert.rejects(
+    persistCartItem(store, { draft: itemDraft({}), assets: editorAssets() }),
+    /IndexedDB unavailable/
+  );
+  assert.equal(store.cart.length, 0);
+  assert.equal(store.blobs.size, 0);
+
+  store.failCartWrites();
+  await assert.rejects(
+    persistCartItem(store, { draft: itemDraft({}), assets: editorAssets() }),
+    /localStorage unavailable/
+  );
+  assert.equal(store.cart.length, 0);
+  assert.equal(store.blobs.size, 0);
+
+  const original = await persistCartItem(store, {
+    draft: itemDraft({ fullName: 'original' }),
+    assets: editorAssets(),
+    makeId: () => 'item-original'
+  });
+  store.failCartWrites();
+  store.failNextRemove('asset-3');
+  await assert.rejects(
+    persistCartItem(store, {
+      editing: original.item,
+      draft: itemDraft({ fullName: 'failed update' }),
+      assets: editorAssets()
+    }),
+    /localStorage unavailable/
+  );
+  assert.deepEqual(store.cart, [original.item]);
+  assert.deepEqual([...store.blobs.keys()], [original.item.assetKey]);
+
+  store.failNextRemove(original.item.assetKey);
+  await assert.rejects(
+    persistCartItem(store, {
+      editing: original.item,
+      draft: itemDraft({ fullName: 'failed cleanup' }),
+      assets: editorAssets()
+    }),
+    /transient IndexedDB failure/
+  );
+  assert.deepEqual(store.cart, [original.item]);
+  assert.deepEqual([...store.blobs.keys()], [original.item.assetKey]);
+});
+
+test('orphan cleanup removes only IndexedDB assets unreferenced by cart metadata', async () => {
+  const assets = new Set(['used-a', 'orphan-a', 'orphan-b']);
+  const removed = await cleanOrphanAssetKeys([...assets], ['used-a'], async key =>
+    assets.delete(key)
+  );
+  assert.deepEqual(removed, ['orphan-a', 'orphan-b']);
+  assert.deepEqual([...assets], ['used-a']);
+});
+
+test('full cart and deletion from another tab leave editor data and assets untouched', async () => {
+  const fullCart = Array.from({ length: 10 }, (_, index) => ({
+    id: `item-${index}`,
+    productId: 'product-1',
+    assetKey: `asset-${index}`,
+    quantity: 1,
+    design: { ...design, photoWidth: 1200, photoHeight: 1800 }
+  }));
+  const fullStore = memoryCartStore(fullCart);
+  await assert.rejects(
+    persistCartItem(fullStore, { draft: itemDraft({}), assets: editorAssets() }),
+    /đủ 10 thẻ/
+  );
+  assert.equal(fullStore.cart.length, 10);
+  assert.equal(fullStore.blobs.size, 0);
+
+  const deletedStore = memoryCartStore();
+  await assert.rejects(
+    persistCartItem(deletedStore, {
+      editing: { id: 'deleted', ...itemDraft({}), assetKey: 'missing-asset' },
+      draft: itemDraft({}),
+      assets: editorAssets()
+    }),
+    /đã bị xóa ở tab khác/
+  );
+  assert.equal(deletedStore.blobs.size, 0);
+  assert.equal(deletedStore.cart.length, 0);
+});
+
+test('F3: signature pad scroll lock restores body style and scroll position', async () => {
+  const { lockScroll } = await import('../apps/web/src/shared/scroll-lock.ts');
+  const scrolls = [];
+  const win = {
+    document: {
+      body: { style: { overflow: '', position: '', top: '', left: '', right: '', width: '' } }
+    },
+    scrollY: 640,
+    scrollTo: (x, y) => scrolls.push([x, y])
+  };
+  const before = { ...win.document.body.style };
+  const unlock = lockScroll(win);
+  assert.equal(win.document.body.style.overflow, 'hidden');
+  assert.equal(win.document.body.style.position, 'fixed');
+  assert.equal(win.document.body.style.top, '-640px');
+  // Hai lớp khoá lồng nhau: mở lớp trong không được trả style sớm.
+  const inner = lockScroll(win);
+  inner();
+  assert.equal(win.document.body.style.position, 'fixed');
+  unlock();
+  unlock(); // gọi lặp (vd. Esc rồi unmount) không làm hỏng trạng thái
+  assert.deepEqual(win.document.body.style, before);
+  assert.deepEqual(scrolls, [[0, 640]]);
+  // Khoá lại sau khi đã mở vẫn hoạt động bình thường.
+  const again = lockScroll(win);
+  assert.equal(win.document.body.style.overflow, 'hidden');
+  again();
+  assert.equal(win.document.body.style.overflow, '');
+});
+
+test('F4: estimateDelivery skips Sundays and uses Vietnam time', async () => {
+  const { estimateDelivery } = await import('../apps/web/src/shared/delivery.ts');
+  // Chủ nhật 15/11/2026: làm thẻ T2 16, giao 2–4 ngày → T4 18 – T6 20 (khớp ảnh minh chứng F4).
+  assert.equal(estimateDelivery('2026-11-15T03:00:00Z').label, 'Thứ Tư, 18/11 – Thứ Sáu, 20/11');
+  // Thứ 6, 20/11: làm thẻ T7 21, giao → T3 24 – T5 26.
+  assert.equal(estimateDelivery('2026-11-20T03:00:00Z').label, 'Thứ Ba, 24/11 – Thứ Năm, 26/11');
+  // Thứ 7, 21/11: làm thẻ T2 23 → T4 25 – T6 27.
+  assert.equal(estimateDelivery('2026-11-21T03:00:00Z').label, 'Thứ Tư, 25/11 – Thứ Sáu, 27/11');
+  // Chủ nhật, 22/11: giống thứ 7 vì Chủ nhật không tính.
+  assert.equal(estimateDelivery('2026-11-22T03:00:00Z').label, 'Thứ Tư, 25/11 – Thứ Sáu, 27/11');
+  // 20/11 18:00 UTC đã là 01:00 thứ 7, 21/11 ở Việt Nam.
+  assert.equal(estimateDelivery('2026-11-20T18:00:00Z').label, 'Thứ Tư, 25/11 – Thứ Sáu, 27/11');
+  // Khoảng giao không bao giờ rơi vào Chủ nhật.
+  for (let d = 0; d < 14; d++) {
+    const r = estimateDelivery(new Date(Date.UTC(2026, 10, 15 + d, 5)));
+    assert.notEqual(r.earliest.getUTCDay(), 0);
+    assert.notEqual(r.latest.getUTCDay(), 0);
+  }
+});
+
+test('F6: gift message is trimmed, limited to 200 chars and old carts stay readable', () => {
+  assert.equal(orderDesign({ ...design, giftMessage: '  Chúc mừng!  ' }).giftMessage, 'Chúc mừng!');
+  assert.ok(!('giftMessage' in orderDesign({ ...design, giftMessage: '   ' })));
+  assert.ok(!('giftMessage' in orderDesign({ ...design, giftMessage: undefined })));
+  assert.throws(() => orderDesign({ ...design, giftMessage: 'a'.repeat(201) }), /200/);
+  const { giftMessage, ...oldDesign } = { ...design, giftMessage: 'x' };
+  const [oldItem] = parseCart([{ id: 'a', productId: 'p', quantity: 1, design: { ...oldDesign } }]);
+  assert.equal(oldItem.design.giftMessage, '');
+  const [newItem] = parseCart([
+    { id: 'b', productId: 'p', quantity: 1, design: { ...design, giftMessage } }
+  ]);
+  assert.equal(newItem.design.giftMessage, 'x');
+});
+
+test('F8: keyboard inset ignores toolbar jitter and measures the keyboard', async () => {
+  const { keyboardInset } = await import('../apps/web/src/shared/useKeyboardInset.ts');
+  assert.equal(keyboardInset(844, 844, 0), 0);
+  assert.equal(keyboardInset(844, 790, 0), 0); // thanh địa chỉ co lại, không phải bàn phím
+  assert.equal(keyboardInset(844, 508, 0), 336); // bàn phím iPhone ~336px
+  assert.equal(keyboardInset(844, 508, 120), 216); // trang đã bị đẩy lên 120px
 });

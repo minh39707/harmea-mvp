@@ -1,4 +1,9 @@
 :root {
+  --brand: #132b4f;
+  --brand-hover: #0d1f3a;
+  --brand-light: #24456e;
+  --brand-soft: #edf2f8;
+  --brand-rgb: 19, 43, 79;
   --bg: #faf9f5;
   --surface: #ffffff;
   --text: #292c27;
@@ -8,7 +13,7 @@
   --accent-text: #795c2c;
   --danger: #9c302c;
   --danger-surface: #fff3f1;
-  --success: #3f6034;
+  --success: var(--brand);
   --soft: #f0f0e8;
   --focus: #795c2c;
   --transparent: transparent;

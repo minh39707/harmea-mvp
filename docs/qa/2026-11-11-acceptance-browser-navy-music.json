@@ -1,0 +1,162 @@
+{
+  "base": "http://127.0.0.1:3187",
+  "image": "harmea-web:navy-music",
+  "imageId": "sha256:1be1807108aeeaa7ee3954718934a158acf2542c0e81141f5528b17c472b52d2",
+  "checks": [
+    "chrome: four distinct cards, same synthetic EXIF6 image with two crops, three colors",
+    "chrome: dropdown restores card fields/photo/crop; new design resets draft without changing cart",
+    "chrome: reload preserves four crops, editing card two leaves others intact, second tab updates",
+    "chrome: zero selection cannot submit; checkout 3/4 retains fourth card and assets after reload; clipboard copy works",
+    "chrome: checkout to tracking UI with +84 phone",
+    "chrome: content, policy routes, 404, browser back/forward",
+    "msedge: four distinct cards, same synthetic EXIF6 image with two crops, three colors",
+    "msedge: dropdown restores card fields/photo/crop; new design resets draft without changing cart",
+    "msedge: reload preserves four crops, editing card two leaves others intact, second tab updates",
+    "msedge: zero selection cannot submit; checkout 3/4 retains fourth card and assets after reload; clipboard copy works",
+    "msedge: checkout to tracking UI with +84 phone",
+    "msedge: content, policy routes, 404, browser back/forward"
+  ],
+  "failures": [],
+  "browsers": [
+    {
+      "channel": "chrome",
+      "version": "157.0.8103.40",
+      "headless": true
+    },
+    {
+      "channel": "msedge",
+      "version": "157.0.4341.46",
+      "headless": true
+    }
+  ],
+  "layouts": [
+    {
+      "channel": "chrome",
+      "label": "home",
+      "width": 375,
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375
+    },
+    {
+      "channel": "chrome",
+      "label": "home",
+      "width": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768
+    },
+    {
+      "channel": "chrome",
+      "label": "home",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440
+    },
+    {
+      "channel": "chrome",
+      "label": "design",
+      "width": 375,
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375
+    },
+    {
+      "channel": "chrome",
+      "label": "design",
+      "width": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768
+    },
+    {
+      "channel": "chrome",
+      "label": "design",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440
+    },
+    {
+      "channel": "chrome",
+      "label": "cart",
+      "width": 375,
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375
+    },
+    {
+      "channel": "chrome",
+      "label": "cart",
+      "width": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768
+    },
+    {
+      "channel": "chrome",
+      "label": "cart",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440
+    },
+    {
+      "channel": "msedge",
+      "label": "home",
+      "width": 375,
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375
+    },
+    {
+      "channel": "msedge",
+      "label": "home",
+      "width": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768
+    },
+    {
+      "channel": "msedge",
+      "label": "home",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440
+    },
+    {
+      "channel": "msedge",
+      "label": "design",
+      "width": 375,
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375
+    },
+    {
+      "channel": "msedge",
+      "label": "design",
+      "width": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768
+    },
+    {
+      "channel": "msedge",
+      "label": "design",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440
+    },
+    {
+      "channel": "msedge",
+      "label": "cart",
+      "width": 375,
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375
+    },
+    {
+      "channel": "msedge",
+      "label": "cart",
+      "width": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768
+    },
+    {
+      "channel": "msedge",
+      "label": "cart",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440
+    }
+  ],
+  "externalRequests": [],
+  "checkedAt": "2026-11-11T16:14:51.094Z"
+}

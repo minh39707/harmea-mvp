@@ -1,8 +1,22 @@
 import type { Design } from '../../shared/types.ts';
 import { template, validCrop } from './geometry.ts';
-import { escapeXml, fittedText, displayDate } from './text-layout.ts';
+import { escapeXml, displayDate } from './text-layout.ts';
 
-const palettes: Record<string, string> = { cream: '#e8dfc8', blue: '#c2d3df', rose: '#e6c9c2' };
+export const TEMPLATE_IMAGES: Record<string, string> = {
+  cream: '/images/template-blank-cream.jpg',
+  blue: '/images/template-blank-blue.jpg',
+  rose: '/images/template-blank-rose.jpg'
+};
+
+export const LAYOUT_BY_COLOR: Record<
+  string,
+  { line1: number; line2: number; line3: number; line4: number; sigBoxY: number; sigY: number }
+> = {
+  cream: { line1: 162, line2: 200, line3: 238, line4: 276, sigBoxY: 494, sigY: 540 },
+  blue: { line1: 173, line2: 209, line3: 246, line4: 282, sigBoxY: 491, sigY: 537 },
+  rose: { line1: 171, line2: 208, line3: 245, line4: 282, sigBoxY: 494, sigY: 540 }
+};
+
 export function cardSvg(design: Design, guides = false) {
   const { width, height, safe, physical, portrait: p } = template;
   const c = validCrop(design.crop) ? design.crop : { x: 0, y: 0, width: 1, height: 1 };
@@ -13,28 +27,76 @@ export function cardSvg(design: Design, guides = false) {
   const hasPhoto =
     /^data:image\/(jpeg|png);base64,[A-Za-z0-9+/=]+$/.test(design.photo) &&
     design.photo.length <= 350000;
-  const label = (text: string, y: number) =>
-    `<text x="${safe.x}" y="${y}" font-size="11" font-family="Arial, sans-serif" letter-spacing="1.5">${text}</text>`;
+
+  const colorKey = design.color in TEMPLATE_IMAGES ? design.color : 'cream';
+  const bgImg = TEMPLATE_IMAGES[colorKey];
+  const layout = LAYOUT_BY_COLOR[colorKey] ?? LAYOUT_BY_COLOR.cream!;
+
+  // Font sizing to ensure text never overflows dotted lines
+  const nameFontSize = design.fullName.length > 26 ? 16 : design.fullName.length > 18 ? 19 : 22;
+  const placeFontSize = design.place.length > 26 ? 16 : design.place.length > 18 ? 19 : 22;
+
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-  <rect width="${width}" height="${height}" fill="${palettes[design.color] ?? palettes.cream}"/>
-  <g fill="#383d35">
-  <text x="40" y="70" font-family="Georgia, serif" font-size="25" letter-spacing="3">HARMÉA</text>
-  <text x="530" y="67" text-anchor="end" font-family="Arial, sans-serif" font-size="10">MEMORY PASS / 001</text>
-  <path d="M40 88H530" stroke="#746c59" stroke-width="1"/>
-  ${label('THIS SONG BELONGS TO', 116)}
-  ${fittedText(design.fullName || 'Your favorite person', 40, 150, 490, 3, 30, 18, 33, true)}
-  ${design.dateOfBirth ? `<text x="40" y="242" font-family="Arial, sans-serif" font-size="14">${escapeXml(displayDate(design.dateOfBirth))}</text>` : ''}
-  <rect x="${p.x}" y="${p.y}" width="${p.width}" height="${p.height}" fill="#f8f7ed"/>
-  ${hasPhoto ? `<svg x="${p.x}" y="${p.y}" width="${p.width}" height="${p.height}" viewBox="${c.x * iw} ${c.y * ih} ${c.width * iw} ${c.height * ih}" preserveAspectRatio="xMidYMid slice" overflow="hidden"><image href="${escapeXml(design.photo)}" width="${iw}" height="${ih}" preserveAspectRatio="${design.photoWidth && design.photoHeight ? 'none' : 'xMidYMid slice'}"/></svg>` : `<text x="285" y="440" text-anchor="middle" font-family="Georgia, serif" font-size="64" fill="#9e8965">h♪</text>`}
-  ${label('A PLACE TO REMEMBER', 615)}
-  ${fittedText(design.place || 'Somewhere with you', 40, 639, 490, 3, 18, 10, 19)}
-  ${label('A MOMENT TO KEEP', 694)}
-  ${fittedText(design.commemorativeDate ? displayDate(design.commemorativeDate) : 'A memory, forever.', 40, 720, 490, 1, 18, 13, 22)}
-  ${fittedText(design.signatureText || 'with love', 40, 762, 490, 2, 22, 12, 26, true)}
-  <path d="M40 815H530" stroke="#746c59" stroke-width="1"/>
-  <text x="40" y="840" font-family="Arial, sans-serif" font-size="10" letter-spacing="1">TAP INTO A MEMORY</text>
-  <text x="530" y="840" text-anchor="end" font-family="Arial, sans-serif" font-size="10">NFC MUSIC CARD</text>
-  </g>
-  ${guides ? `<g fill="none" stroke-width="1.5" stroke-dasharray="6 4"><rect x="${physical.x}" y="${physical.y}" width="${physical.width}" height="${physical.height}" stroke="#7b523a"/><rect x="${safe.x}" y="${safe.y}" width="${safe.width}" height="${safe.height}" stroke="#366a51"/></g>` : ''}
-  </svg>`;
+  <!-- 1. Background Blank Card Template (Kem, Xanh, Hồng) -->
+  <image href="${bgImg}" width="${width}" height="${height}" preserveAspectRatio="none"/>
+
+  <!-- 2. Khung ảnh người dùng (Photograph of Authorized traveler) -->
+  ${
+    hasPhoto
+      ? `<svg x="${p.x}" y="${p.y}" width="${p.width}" height="${p.height}" viewBox="${c.x * iw} ${c.y * ih} ${c.width * iw} ${c.height * ih}" preserveAspectRatio="xMidYMid slice" overflow="hidden">
+          <image href="${escapeXml(design.photo)}" width="${iw}" height="${ih}" preserveAspectRatio="${design.photoWidth && design.photoHeight ? 'none' : 'xMidYMid slice'}"/>
+        </svg>`
+      : `<g>
+          <rect x="${p.x}" y="${p.y}" width="${p.width}" height="${p.height}" fill="rgba(240, 240, 240, 0.75)" stroke="#ccc" stroke-dasharray="6 4"/>
+          <text x="${p.x + p.width / 2}" y="${p.y + p.height / 2 - 8}" text-anchor="middle" font-family="'Courier New', monospace" font-size="22" font-weight="bold" fill="#888888">Ảnh của bạn</text>
+          <text x="${p.x + p.width / 2}" y="${p.y + p.height / 2 + 20}" text-anchor="middle" font-family="'DM Sans', Arial, sans-serif" font-size="14" fill="#999999">(Chọn ảnh ở cột bên phải)</text>
+        </g>`
+  }
+
+  <!-- 3. Thông tin hiển thị nằm chính xác trên các đường chấm theo từng mẫu màu -->
+  <!-- Dòng 1: Issued to -->
+  ${
+    design.fullName
+      ? `<text x="735" y="${layout.line1}" text-anchor="middle" font-family="'Courier New', Courier, monospace" font-size="${nameFontSize}" font-weight="bold" fill="#151816" letter-spacing="1">${escapeXml(design.fullName)}</text>`
+      : ''
+  }
+
+  <!-- Dòng 2: Date of birth -->
+  ${
+    design.dateOfBirth
+      ? `<text x="745" y="${layout.line2}" text-anchor="middle" font-family="'Courier New', Courier, monospace" font-size="22" font-weight="bold" fill="#151816" letter-spacing="2">${escapeXml(displayDate(design.dateOfBirth))}</text>`
+      : ''
+  }
+
+  <!-- Dòng 3: Place of issue -->
+  ${
+    design.place
+      ? `<text x="745" y="${layout.line3}" text-anchor="middle" font-family="'Courier New', Courier, monospace" font-size="${placeFontSize}" font-weight="bold" fill="#151816" letter-spacing="1">${escapeXml(design.place)}</text>`
+      : ''
+  }
+
+  <!-- Dòng 4: Date of issue -->
+  ${
+    design.commemorativeDate
+      ? `<text x="745" y="${layout.line4}" text-anchor="middle" font-family="'Courier New', Courier, monospace" font-size="22" font-weight="bold" fill="#151816" letter-spacing="2">${escapeXml(displayDate(design.commemorativeDate))}</text>`
+      : ''
+  }
+
+  <!-- Dòng 5: Signature of Authorized traveler -->
+  ${
+    design.signatureData
+      ? `<image href="${design.signatureData}" x="550" y="${layout.sigBoxY}" width="220" height="46" preserveAspectRatio="xMidYMax meet"/>`
+      : ''
+  }
+
+  <!-- 4. Đường cắt & vùng an toàn nếu được bật -->
+  ${
+    guides
+      ? `<g fill="none" stroke-width="1.5" stroke-dasharray="6 4">
+          <rect x="${physical.x}" y="${physical.y}" width="${physical.width}" height="${physical.height}" stroke="#7b523a"/>
+          <rect x="${safe.x}" y="${safe.y}" width="${safe.width}" height="${safe.height}" stroke="#366a51"/>
+        </g>`
+      : ''
+  }
+</svg>`;
 }

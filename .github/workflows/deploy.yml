@@ -1,0 +1,129 @@
+name: Deploy production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    env:
+      DOCKER_BUILD_RECORD_UPLOAD: 'false'
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME }}
+    steps:
+      - name: Validate Docker Hub configuration
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [[ -z "$DOCKERHUB_USERNAME" || -z "$DOCKERHUB_TOKEN" ]]; then
+            echo '::error::Set DOCKERHUB_USERNAME (secret or repository variable) and DOCKERHUB_TOKEN.'
+            exit 1
+          fi
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24.22.2'
+      - uses: docker/setup-buildx-action@v4.4.1
+      - name: Build candidate without pushing
+        uses: docker/build-push-action@v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: harmea-web:main
+          cache-from: type=gha,scope=harmea-app
+          cache-to: type=gha,mode=max,scope=harmea-app
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+      - name: Smoke the exact image that will be pushed
+        run: bash scripts/docker-smoke.sh harmea-web:main
+      - uses: docker/login-action@v4.8.0
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push under SHA and main tags
+        id: push
+        run: |
+          repo="$DOCKERHUB_USERNAME/harmea-web"
+          for tag in "sha-${GITHUB_SHA:0:12}" main; do
+            docker tag harmea-web:main "$repo:$tag"
+            docker push --quiet "$repo:$tag"
+          done
+          ref=$(docker inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$repo:main" | grep "^$repo@" | head -n 1)
+          digest=${ref#*@}
+          if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo '::error::Could not read the pushed image digest.'
+            exit 1
+          fi
+          # Only the digest is exported: outputs that contain a secret (the username may be one) are dropped.
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME }}
+      SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+      SSH_USER: ${{ secrets.PROD_SSH_USER }}
+      SSH_PORT: ${{ vars.PROD_SSH_PORT || '22' }}
+      STACK_DIR: ${{ vars.PROD_STACK_DIR }}
+      DIGEST: ${{ needs.publish.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Prepare SSH identity
+        env:
+          SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.PROD_SSH_KNOWN_HOSTS }}
+        run: |
+          if [[ -z "$SSH_HOST" || -z "$SSH_USER" || -z "$SSH_KEY" || -z "$SSH_KNOWN_HOSTS" || -z "$STACK_DIR" ]]; then
+            echo '::error::Set PROD_SSH_HOST, PROD_SSH_USER, PROD_SSH_KEY, PROD_SSH_KNOWN_HOSTS secrets and PROD_STACK_DIR variable on the production environment.'
+            exit 1
+          fi
+          if [[ ! "$STACK_DIR" =~ ^/[A-Za-z0-9._/-]+$ || ! "$SSH_PORT" =~ ^[0-9]{1,5}$ || ! "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo '::error::PROD_STACK_DIR must be an absolute plain path, PROD_SSH_PORT a number, and the digest valid.'
+            exit 1
+          fi
+          install -d -m 700 "$RUNNER_TEMP/ssh"
+          printf '%s\n' "$SSH_KEY" > "$RUNNER_TEMP/ssh/id"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$RUNNER_TEMP/ssh/known_hosts"
+          chmod 600 "$RUNNER_TEMP/ssh/id" "$RUNNER_TEMP/ssh/known_hosts"
+      - name: Deploy over SSH
+        run: |
+          if [[ ! "$DOCKERHUB_USERNAME" =~ ^[a-z0-9][a-z0-9_-]{1,38}$ ]]; then
+            echo '::error::Invalid Docker Hub username.'
+            exit 1
+          fi
+          image="$DOCKERHUB_USERNAME/harmea-web@$DIGEST"
+          ssh -i "$RUNNER_TEMP/ssh/id" -p "$SSH_PORT" \
+            -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$RUNNER_TEMP/ssh/known_hosts" -o ConnectTimeout=20 \
+            "$SSH_USER@$SSH_HOST" "bash -s -- '$STACK_DIR' '$image'" < deploy/remote-deploy.sh
+      - name: Remove SSH identity
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/ssh"

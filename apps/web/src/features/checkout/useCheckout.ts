@@ -13,6 +13,7 @@ type CheckoutState = {
   setBusy: StateSetter<boolean>;
   setError: StateSetter<string>;
   setReceipt: StateSetter<Receipt | null>;
+  setTrackPhone: StateSetter<string>;
   setCart: StateSetter<Item[]>;
   setRecipient: StateSetter<Recipient>;
   setConfirmed: StateSetter<boolean>;
@@ -27,6 +28,7 @@ export function useCheckout({
   setBusy,
   setError,
   setReceipt,
+  setTrackPhone,
   setCart,
   setRecipient,
   setConfirmed,
@@ -58,7 +60,11 @@ export function useCheckout({
       for (const item of snapshot) prepared.push(await preparedItem(item));
       const result = await attempt.current!.submit(prepared, customer, confirmed);
       if (!result) return;
-      setReceipt(result.receipt);
+      setReceipt({
+        ...result.receipt,
+        giftMessages: snapshot.map(item => item.design.giftMessage?.trim() ?? '').filter(Boolean)
+      });
+      setTrackPhone(customer.phone);
       setCart(old =>
         old.filter(
           item =>
@@ -74,8 +80,7 @@ export function useCheckout({
       setRecipient({ name: '', phone: '', address: '', note: '' });
       setConfirmed(false);
       go('success');
-      if (result.storageWarning)
-        setError('Đơn đã lưu. Hãy sao chép liên kết; trình duyệt chưa xóa được mã gửi cũ.');
+      if (result.storageWarning) setError('Đơn đã lưu. Trình duyệt chưa xóa được mã gửi cũ.');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Chưa gửi được đơn. Dữ liệu vẫn còn.');
     } finally {

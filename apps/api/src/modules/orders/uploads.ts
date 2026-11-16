@@ -1,11 +1,35 @@
 import type { Request } from 'express';
-import { mkdir, writeFile, unlink } from 'node:fs/promises';
-import { resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import sharp from 'sharp';
+import type { Metadata, Sharp } from 'sharp';
 import { InputError } from '../../lib/errors.ts';
+import type { FileStorage } from '../../lib/storage/types.ts';
 
 export const requestLimit = 16 * 1024 * 1024;
+const maxInputPixels = 40_000_000;
+
+export function imageSettings(env: NodeJS.ProcessEnv = process.env) {
+  const setting = (name: string, fallback: number, min: number, max: number) => {
+    const raw = env[name];
+    if (raw === undefined || raw === '') return fallback;
+    const value = Number(raw);
+    if (!Number.isInteger(value) || value < min || value > max)
+      throw Error(`${name} must be an integer between ${min} and ${max}.`);
+    return value;
+  };
+  return {
+    maxEdge: setting('PHOTO_MAX_EDGE', 2400, 1, 8192),
+    jpegQuality: setting('PHOTO_JPEG_QUALITY', 82, 1, 100)
+  };
+}
+
+export type ExpectedPhotoSize = { width: number; height: number };
+
+export function orientedPhotoSize(width: number, height: number, orientation?: number) {
+  return orientation !== undefined && [5, 6, 7, 8].includes(orientation)
+    ? { width: height, height: width }
+    : { width, height };
+}
 export async function multipart(req: Request) {
   if (!req.is('multipart/form-data'))
     throw new InputError('Yêu cầu phải là multipart.', 'UNSUPPORTED_MEDIA_TYPE', 415);
@@ -55,7 +79,11 @@ export function validateParts(form: FormData, count: number) {
   )
     throw new InputError('Thiếu, thừa hoặc lặp phần multipart.', 'INVALID_REQUEST', 400);
 }
-export async function decodeFile(value: FormDataEntryValue | null, kind: 'photo' | 'preview') {
+export async function decodeFile(
+  value: FormDataEntryValue | null,
+  kind: 'photo' | 'preview',
+  expectedPhotoSize?: ExpectedPhotoSize
+) {
   if (typeof value === 'string' || !value) throw new InputError('Thiếu ảnh.');
   const limit = (kind === 'photo' ? 5 : 2) * 1024 * 1024;
   if (value.size > limit) throw new InputError('Tệp quá lớn.', 'FILE_TOO_LARGE', 413);
@@ -65,9 +93,11 @@ export async function decodeFile(value: FormDataEntryValue | null, kind: 'photo'
   )
     throw new InputError('Định dạng ảnh không hợp lệ.', 'UNSUPPORTED_MEDIA_TYPE', 415);
   const bytes = Buffer.from(await value.arrayBuffer());
+  let image: Sharp;
+  let meta: Metadata;
   try {
-    const image = sharp(bytes, { limitInputPixels: 20000000, failOn: 'warning' });
-    const meta = await image.metadata();
+    image = sharp(bytes, { limitInputPixels: maxInputPixels, failOn: 'warning' });
+    meta = await image.metadata();
     if (
       !meta.width ||
       !meta.height ||
@@ -79,8 +109,40 @@ export async function decodeFile(value: FormDataEntryValue | null, kind: 'photo'
     const format = meta.format === 'jpeg' ? 'image/jpeg' : meta.format === 'png' ? 'image/png' : '';
     if (format !== value.type) throw Error();
     await image.stats(); // Force full decode, not just metadata/header sniffing.
-    return { bytes, extension: meta.format === 'jpeg' ? 'jpg' : 'png' };
   } catch {
+    throw new InputError(
+      'Không giải mã được ảnh hoặc ảnh vượt giới hạn.',
+      'UNSUPPORTED_MEDIA_TYPE',
+      415
+    );
+  }
+  try {
+    if (kind === 'preview') {
+      const normalized = await image.png({ compressionLevel: 9 }).toBuffer();
+      return { bytes: normalized, extension: 'png' as const };
+    }
+
+    const oriented = orientedPhotoSize(meta.width!, meta.height!, meta.orientation);
+    if (
+      expectedPhotoSize &&
+      (oriented.width !== expectedPhotoSize.width || oriented.height !== expectedPhotoSize.height)
+    )
+      throw new InputError(
+        'Ảnh bị xoay khác với bản xem trước, hãy chọn lại ảnh',
+        'PHOTO_ORIENTATION_MISMATCH',
+        422
+      );
+    const { maxEdge, jpegQuality } = imageSettings();
+    const normalized = await image
+      .rotate()
+      .flatten({ background: '#ffffff' })
+      .toColourspace('srgb')
+      .resize(maxEdge, maxEdge, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: jpegQuality, mozjpeg: true })
+      .toBuffer();
+    return { bytes: normalized, extension: 'jpg' as const };
+  } catch (error) {
+    if (error instanceof InputError) throw error;
     throw new InputError(
       'Không giải mã được ảnh hoặc ảnh vượt giới hạn.',
       'UNSUPPORTED_MEDIA_TYPE',
@@ -89,16 +151,17 @@ export async function decodeFile(value: FormDataEntryValue | null, kind: 'photo'
   }
 }
 export async function saveAsset(
-  root: string,
+  storage: FileStorage,
   file: Awaited<ReturnType<typeof decodeFile>>,
   created: string[]
 ) {
-  await mkdir(root, { recursive: true });
   const key = `${randomUUID()}.${file.extension}`;
-  await writeFile(resolve(root, key), file.bytes, { flag: 'wx', mode: 0o600 });
+  await storage.put(key, file.bytes, file.extension === 'jpg' ? 'image/jpeg' : 'image/png');
   created.push(key);
   return key;
 }
-export async function cleanup(root: string, keys: string[]) {
-  await Promise.all(keys.map(key => unlink(resolve(root, key))));
+export async function cleanup(storage: FileStorage, keys: string[]) {
+  const results = await Promise.allSettled(keys.map(key => storage.delete(key)));
+  if (results.some(result => result.status === 'rejected'))
+    throw new Error('Could not remove all files from a failed order.');
 }

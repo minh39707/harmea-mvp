@@ -1,0 +1,85 @@
+name: Release Docker Hub
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Validate release configuration
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if [[ -z "$DOCKERHUB_USERNAME" || -z "$DOCKERHUB_TOKEN" ]]; then
+            echo '::error::Set DOCKERHUB_USERNAME (secret or repository variable) and DOCKERHUB_TOKEN (Read & Write access token).'
+            exit 1
+          fi
+          if [[ ! "$DOCKERHUB_USERNAME" =~ ^[a-z0-9][a-z0-9_-]{1,38}$ || ! "$RELEASE_TAG" =~ ^v[0-9]+(\.[0-9]+\.[0-9]+)?$ ]]; then
+            echo '::error::Use a valid Docker Hub username and a version tag such as v1 or v1.2.0.'
+            exit 1
+          fi
+          section=$(awk -v heading="## [$RELEASE_TAG]" '$0 == heading { found=1; next } found && /^## / { exit } found { print }' CHANGELOG.md)
+          if ! grep -Eq '^Có migration: (có|không)' <<< "$section"; then
+            echo '::error::Add a CHANGELOG section for this version with its migration note before releasing.'
+            exit 1
+          fi
+
+  verify:
+    needs: preflight
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      DOCKER_BUILD_RECORD_UPLOAD: 'false'
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24.22.2'
+      - uses: docker/setup-buildx-action@v4.4.1
+      - name: Build release candidate without pushing
+        uses: docker/build-push-action@v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: harmea-web:release
+          cache-from: type=gha,scope=harmea-app
+          cache-to: type=gha,mode=max,scope=harmea-app
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+      - name: Smoke the exact image that will be pushed
+        run: bash scripts/docker-smoke.sh harmea-web:release
+      - uses: docker/login-action@v4.8.0
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push the tested image under version, SHA and latest tags
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          for tag in "$RELEASE_TAG" "sha-${GITHUB_SHA:0:12}" latest; do
+            target="$DOCKERHUB_USERNAME/harmea-web:$tag"
+            docker tag harmea-web:release "$target"
+            docker push "$target"
+          done

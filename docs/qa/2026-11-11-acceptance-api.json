@@ -1,0 +1,212 @@
+{
+  "image": "hainam164/harmea-web:v1",
+  "digest": "sha256:eb683458f154e5209bf2a6a7100de8bbd7481fe5391079f24549a0b49c5fd035",
+  "imageBytes": 413396711,
+  "checks": [
+    {
+      "name": "security headers, no cookies, private files, missing assets, foreign Origin rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "20 sequential orders: distinct receipts, HTTP 201, bounded database connections",
+      "result": "PASS"
+    },
+    {
+      "name": "private original/preview decode, phone normalization and tracking response allowlist",
+      "result": "PASS"
+    },
+    {
+      "name": "status transition, stale version 409, history, cancellation requires private reason",
+      "result": "PASS"
+    },
+    {
+      "name": "admin search, pagination and stats match 20 orders including one cancellation",
+      "result": "PASS"
+    },
+    {
+      "name": "price snapshot retained, new price applied, inactive product blocks new order, product restored",
+      "result": "PASS"
+    },
+    {
+      "name": "CSV UTF-8 BOM and Vietnamese fixture retained; music URL omitted (Excel not tested)",
+      "result": "PASS"
+    },
+    {
+      "name": "five wrong lookups then correct phone gets 429 with Retry-After on released image",
+      "result": "PASS"
+    },
+    {
+      "name": "container logs omit synthetic phone, recipient, address, music URL and cancellation reason",
+      "result": "PASS"
+    }
+  ],
+  "failures": [
+    {
+      "path": "/",
+      "issue": "Missing Content-Security-Policy on released v1"
+    },
+    {
+      "path": "/design",
+      "issue": "Missing Content-Security-Policy on released v1"
+    },
+    {
+      "path": "/cart",
+      "issue": "Missing Content-Security-Policy on released v1"
+    },
+    {
+      "path": "/checkout",
+      "issue": "Missing Content-Security-Policy on released v1"
+    },
+    {
+      "path": "/track",
+      "issue": "Missing Content-Security-Policy on released v1"
+    },
+    {
+      "path": "/faq",
+      "issue": "Missing Content-Security-Policy on released v1"
+    },
+    {
+      "path": "/shipping",
+      "issue": "Missing Content-Security-Policy on released v1"
+    },
+    {
+      "path": "/returns",
+      "issue": "Missing Content-Security-Policy on released v1"
+    },
+    {
+      "path": "/privacy",
+      "issue": "Missing Content-Security-Policy on released v1"
+    }
+  ],
+  "resourceSamples": [
+    {
+      "label": "before 20 orders",
+      "stats": [
+        {
+          "BlockIO": "25.2MB / 0B",
+          "CPUPerc": "0.02%",
+          "Container": "harmea-h-20261111-app",
+          "ID": "ebd9cd3e6afa",
+          "MemPerc": "0.25%",
+          "MemUsage": "39.94MiB / 15.51GiB",
+          "Name": "harmea-h-20261111-app",
+          "NetIO": "12kB / 29.4kB",
+          "PIDs": "11"
+        },
+        {
+          "BlockIO": "122MB / 315MB",
+          "CPUPerc": "0.42%",
+          "Container": "harmea-h-20261111-db-1",
+          "ID": "b6baa750a9ff",
+          "MemPerc": "2.84%",
+          "MemUsage": "451MiB / 15.51GiB",
+          "Name": "harmea-h-20261111-db-1",
+          "NetIO": "21.5kB / 9.11kB",
+          "PIDs": "51"
+        }
+      ]
+    },
+    {
+      "label": "after 10 orders",
+      "stats": [
+        {
+          "BlockIO": "40.6MB / 0B",
+          "CPUPerc": "0.01%",
+          "Container": "harmea-h-20261111-app",
+          "ID": "ebd9cd3e6afa",
+          "MemPerc": "0.38%",
+          "MemUsage": "60.62MiB / 15.51GiB",
+          "Name": "harmea-h-20261111-app",
+          "NetIO": "190kB / 66.6kB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "122MB / 317MB",
+          "CPUPerc": "4.58%",
+          "Container": "harmea-h-20261111-db-1",
+          "ID": "b6baa750a9ff",
+          "MemPerc": "2.84%",
+          "MemUsage": "451.6MiB / 15.51GiB",
+          "Name": "harmea-h-20261111-db-1",
+          "NetIO": "51kB / 45.3kB",
+          "PIDs": "51"
+        }
+      ]
+    },
+    {
+      "label": "after 20 orders",
+      "stats": [
+        {
+          "BlockIO": "40.6MB / 0B",
+          "CPUPerc": "0.03%",
+          "Container": "harmea-h-20261111-app",
+          "ID": "ebd9cd3e6afa",
+          "MemPerc": "0.43%",
+          "MemUsage": "67.82MiB / 15.51GiB",
+          "Name": "harmea-h-20261111-app",
+          "NetIO": "368kB / 106kB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "122MB / 319MB",
+          "CPUPerc": "0.54%",
+          "Container": "harmea-h-20261111-db-1",
+          "ID": "b6baa750a9ff",
+          "MemPerc": "2.84%",
+          "MemUsage": "451.6MiB / 15.51GiB",
+          "Name": "harmea-h-20261111-db-1",
+          "NetIO": "81.7kB / 82.5kB",
+          "PIDs": "51"
+        }
+      ]
+    }
+  ],
+  "connectionsBefore": [
+    {
+      "COMMAND": "Query",
+      "count": 1
+    },
+    {
+      "COMMAND": "Sleep",
+      "count": 1
+    }
+  ],
+  "connectionsAfter": [
+    {
+      "COMMAND": "Sleep",
+      "count": 1
+    },
+    {
+      "COMMAND": "Query",
+      "count": 1
+    }
+  ],
+  "orders": {
+    "count": 20,
+    "durationMs": [
+      122,
+      94,
+      91,
+      104,
+      95,
+      94,
+      88,
+      90,
+      89,
+      91,
+      88,
+      89,
+      91,
+      85,
+      88,
+      90,
+      90,
+      87,
+      89,
+      86
+    ],
+    "inputPhotoBytes": 3517,
+    "inputPreviewBytes": 8855
+  },
+  "checkedAt": "2026-11-11T13:08:27.401Z"
+}

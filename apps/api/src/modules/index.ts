@@ -1,25 +1,26 @@
 import express from 'express';
 import type { Database } from '../db.ts';
 import { catalogRouter } from './catalog/router.ts';
-import { checkoutRouter } from './checkout/router.ts';
-import { trackingRouter } from './tracking/router.ts';
 import { ordersRouter } from './orders/router.ts';
 import { orderTrackingRouter } from './orders/tracking.ts';
-import { sessionRouter } from './admin/session.ts';
-export function apiRouter(db: Database, secret: string) {
+import { TrackingLookupLimiter } from './orders/lookup.ts';
+import { adminProductsRouter } from './admin/products.ts';
+import { adminStatsRouter } from './admin/stats.ts';
+import { adminOrdersCsvRouter } from './admin/export.ts';
+import type { FileStorage } from '../lib/storage/types.ts';
+export function apiRouter(
+  db: Database,
+  trackingLimiter: TrackingLookupLimiter | undefined,
+  storage: FileStorage
+) {
   const router = express.Router();
   router.use(
-    '/admin',
-    sessionRouter(db, {
-      username: process.env.ADMIN_USERNAME ?? 'admin',
-      passwordHash: process.env.ADMIN_PASSWORD_HASH ?? '',
-      secureCookie: (process.env.APP_ORIGIN ?? '').startsWith('https:')
-    })
+    ordersRouter(db, storage),
+    adminOrdersCsvRouter(db),
+    adminProductsRouter(db),
+    adminStatsRouter(db),
+    orderTrackingRouter(db, trackingLimiter)
   );
-  router.use(
-    ordersRouter(db, process.env.UPLOAD_DIR ?? 'storage/uploads'),
-    orderTrackingRouter(db)
-  );
-  router.use(catalogRouter(db), checkoutRouter(db, secret), trackingRouter(db, secret));
+  router.use(catalogRouter(db));
   return router;
 }

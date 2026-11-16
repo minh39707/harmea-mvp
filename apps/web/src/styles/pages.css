@@ -22,3 +22,97 @@
   gap: var(--space-6);
   align-items: start;
 }
+
+/* Thông báo dự án sinh viên / thanh toán demo (F1, F2). */
+.demo-alert {
+  margin: 0 0 var(--space-3);
+  padding: 12px var(--space-2);
+  border: 1px solid var(--danger);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--danger-surface);
+  color: var(--danger);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Ngày giao dự kiến (F4): giỏ hàng, checkout. */
+.delivery-estimate {
+  display: grid;
+  gap: 2px;
+  margin: var(--space-2) 0;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 14px;
+}
+
+.delivery-estimate-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.delivery-estimate small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* F8: thanh đặt đơn trên mobile, đặt ngay trên bàn phím khi bàn phím mở. */
+.mobile-action-bar {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .mobile-action-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--keyboard-inset, 0px);
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .keyboard-open .mobile-action-bar {
+    padding-bottom: 10px;
+  }
+
+  .mobile-action-total {
+    display: grid;
+    flex-shrink: 0;
+    line-height: 1.2;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .mobile-action-total strong {
+    color: var(--brand);
+    font-size: 15px;
+  }
+
+  .mobile-action-bar .button {
+    flex: 1;
+    min-height: 48px;
+    white-space: normal;
+  }
+
+  /* Chừa chỗ để thanh không che nội dung cuối trang và nút nhạc nền. */
+  body:has(.mobile-action-bar) {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+
+  body:has(.mobile-action-bar) .background-music {
+    bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  .keyboard-open body:has(.mobile-action-bar) .background-music {
+    display: none;
+  }
+}

@@ -1,42 +1,48 @@
 import type { Shop } from './useShop';
 import Bag from '../shared/ui/BagIcon';
+import { Link, matchRoute, usePathname } from '../shared/router';
 
-export default function Header({
-  go,
-  view,
-  count,
-  setTracking
-}: Pick<Shop, 'go' | 'view' | 'count' | 'setTracking'>) {
+export default function Header({ count, setTracking }: Pick<Shop, 'count' | 'setTracking'>) {
+  const pathname = usePathname();
+  const routeName = matchRoute(pathname)?.route.name;
   return (
     <header className="store-header">
       <div className="brand">
-        <button className="wordmark" onClick={() => go('product')} aria-label="Harméa — trang chủ">
-          harméa<span>♪</span>
-        </button>
+        <Link className="brand-btn" to="/" aria-label="Harméa — Trang chủ">
+          <img src="/images/brand-emblem.png" alt="" className="brand-emblem-icon" />
+          <span className="brand-text-logo">HARMÉA</span>
+        </Link>
         <span className="demo-badge">Demo</span>
       </div>
-      <nav aria-label="Điều hướng">
-        <button className={view === 'product' ? 'active' : ''} onClick={() => go('product')}>
-          Sản phẩm
-        </button>
-        <button
-          className={view === 'tracking' ? 'active' : ''}
-          onClick={() => {
-            setTracking(null);
-            go('tracking');
-          }}
+      <nav aria-label="Điều hướng chính">
+        <Link to="/" aria-current={routeName === 'home' ? 'page' : undefined}>
+          Trang chủ
+        </Link>
+        <Link
+          to="/design"
+          aria-current={
+            routeName === 'design' || routeName === 'product-alias' ? 'page' : undefined
+          }
+        >
+          Thiết kế
+        </Link>
+        <Link
+          to="/track"
+          aria-current={routeName === 'tracking' ? 'page' : undefined}
+          onClick={() => setTracking(null)}
         >
           Tra cứu đơn
-        </button>
+        </Link>
       </nav>
-      <button
+      <Link
         className="bag-button"
-        onClick={() => go('cart')}
+        to="/cart"
+        aria-current={routeName === 'cart' ? 'page' : undefined}
         aria-label={`Giỏ hàng, ${count} sản phẩm`}
       >
         <Bag />
         <b>{count}</b>
-      </button>
+      </Link>
     </header>
   );
 }

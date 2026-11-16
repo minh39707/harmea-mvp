@@ -1,18 +1,34 @@
 import { uuidPattern } from './validation.ts';
+import { matchRoute } from '../../shared/router.ts';
 export type AdminRoute =
-  { kind: 'login' } | { kind: 'list' } | { kind: 'detail'; id: string } | { kind: 'missing' };
+  | { kind: 'list' }
+  | { kind: 'detail'; id: string }
+  | { kind: 'products' }
+  | { kind: 'stats' }
+  | { kind: 'missing' };
 export function adminRoute(path: string): AdminRoute {
-  if (path === '/admin/login') return { kind: 'login' };
-  if (path === '/admin' || path === '/admin/orders') return { kind: 'list' };
-  const match = /^\/admin\/orders\/([^/]+)$/.exec(path);
-  return match && uuidPattern.test(match[1]!)
-    ? { kind: 'detail', id: match[1]! }
-    : { kind: 'missing' };
+  const match = matchRoute(path);
+  if (!match) return { kind: 'missing' };
+  switch (match.route.name) {
+    case 'admin':
+    case 'admin-orders':
+      return { kind: 'list' };
+    case 'admin-products':
+      return { kind: 'products' };
+    case 'admin-stats':
+      return { kind: 'stats' };
+    case 'admin-order': {
+      const id = match.params.id;
+      return id && uuidPattern.test(id) ? { kind: 'detail', id } : { kind: 'missing' };
+    }
+    default:
+      return { kind: 'missing' };
+  }
 }
 export function adminPath(route: AdminRoute) {
-  return route.kind === 'detail'
-    ? `/admin/orders/${route.id}`
-    : route.kind === 'list'
-      ? '/admin/orders'
-      : '/admin/login';
+  if (route.kind === 'detail') return `/admin/orders/${route.id}`;
+  if (route.kind === 'list') return '/admin/orders';
+  if (route.kind === 'products') return '/admin/products';
+  if (route.kind === 'stats') return '/admin/stats';
+  return '/admin';
 }

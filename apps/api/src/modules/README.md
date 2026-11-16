@@ -1,6 +1,6 @@
 # Nơi triển khai module nghiệp vụ
 
-Task A tạo các module `catalog`, `orders`, `tracking`, `admin` tại đây.
+Runtime hiện có `catalog`, `orders` (gồm lookup tracking và quản lý đơn) và `admin` (sản phẩm, thống kê, CSV).
+Không có module auth, me hoặc user. API admin được bảo vệ bởi `ADMIN_ENABLED` ở app root.
 Mỗi module chỉ cần router, service và repository khi có nhu cầu thực tế.
-Controller xử lý HTTP; service giữ quy tắc; repository dùng SQL có tham số.
-Đọc `../../../../tasks/A-api-data.md` và hợp đồng trước khi viết.
+Truy vấn dùng SQL có tham số qua adapter `../../db.ts`; hợp đồng chuẩn ở `contracts/openapi.json`.

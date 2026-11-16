@@ -34,10 +34,20 @@
   .store-header {
     gap: var(--space-1);
     padding-inline: var(--space-2);
-    flex-wrap: nowrap;
   }
   .brand {
     gap: 4px;
+  }
+  .store-header .brand-btn {
+    gap: 6px;
+  }
+  .store-header .brand-emblem-icon {
+    width: 26px;
+    height: 26px;
+  }
+  .store-header .brand-text-logo {
+    font-size: 15px;
+    letter-spacing: 0.14em;
   }
   .store-header .wordmark {
     font-size: var(--font-title);
@@ -56,7 +66,6 @@
     font-size: var(--font-sm);
     white-space: nowrap;
   }
-  .product-layout,
   .cart-layout,
   .checkout-layout,
   .faq,
@@ -64,7 +73,6 @@
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-3);
   }
-  .gallery,
   .order-summary {
     position: static;
   }
@@ -101,5 +109,31 @@
   }
   footer p {
     flex-basis: 60%;
+  }
+}
+
+/* Header trên điện thoại: dòng 1 logo + giỏ hàng, dòng 2 menu; chữ menu không gãy dòng. */
+@media (max-width: 600px) {
+  .store-header {
+    flex-wrap: wrap;
+    row-gap: 0;
+    padding-block: var(--space-1) 0;
+  }
+  .store-header .brand {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .store-header nav {
+    order: 3;
+    flex: 1 0 100%;
+    justify-content: space-between;
+    gap: var(--space-2);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .store-header nav a {
+    white-space: nowrap;
+    font-size: 14px;
+    padding-block: 10px;
   }
 }

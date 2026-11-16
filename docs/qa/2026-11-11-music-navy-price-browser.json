@@ -1,0 +1,16 @@
+{
+  "image": "harmea-web:navy-music",
+  "imageId": "sha256:1be1807108aeeaa7ee3954718934a158acf2542c0e81141f5528b17c472b52d2",
+  "checks": [
+    "chrome: no initial audio request; badge starts real MP3 at 35%; navy and API price 89000",
+    "chrome: tracking removes player; preference remembered; return/reload requires explicit click; off stays off",
+    "chrome: admin navigation unmounts playback; direct tracking has no player; no runtime errors",
+    "chrome: missing audio shows error; explicit retry recovers real playback",
+    "msedge: no initial audio request; badge starts real MP3 at 35%; navy and API price 89000",
+    "msedge: tracking removes player; preference remembered; return/reload requires explicit click; off stays off",
+    "msedge: admin navigation unmounts playback; direct tracking has no player; no runtime errors",
+    "msedge: missing audio shows error; explicit retry recovers real playback"
+  ],
+  "failures": [],
+  "checkedAt": "2026-11-11T16:14:22.931Z"
+}

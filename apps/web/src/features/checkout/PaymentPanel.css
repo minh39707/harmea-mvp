@@ -1,0 +1,88 @@
+.transfer-panel {
+  margin: 24px 0;
+  padding: 24px 16px;
+  border: 1px solid var(--brand);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.transfer-panel h2 {
+  margin-top: 0;
+}
+
+.transfer-amount {
+  display: block;
+  color: var(--brand);
+  font-size: 30px;
+}
+
+.transfer-qr {
+  display: block;
+  width: min(280px, 100%);
+  height: auto;
+  margin: 20px auto;
+  padding: 16px;
+  background: white;
+  box-sizing: border-box;
+}
+
+.demo-payment-banner {
+  margin: 0 0 var(--space-2);
+  padding: 12px;
+  border: 2px solid var(--danger);
+  border-radius: 8px;
+  background: var(--danger-surface);
+  color: var(--danger);
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.demo-qr {
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.demo-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.demo-qr-ribbon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 112%;
+  padding: 2.6cqi 1cqi;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  border-radius: 8px;
+  background: #c8161d;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-size: 6.4cqi;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.transfer-reference {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--brand);
+}
+
+.transfer-panel .button {
+  width: 100%;
+  white-space: normal;
+}
+
+.transfer-reported {
+  padding: 12px;
+  background: rgba(var(--brand-rgb), 0.08);
+  border-radius: 8px;
+}

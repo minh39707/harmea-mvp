@@ -1,5 +1,3 @@
-﻿import { mkdir, writeFile, readFile } from 'node:fs/promises';
-import { resolve, dirname } from 'node:path';
 import sharp from 'sharp';
 import { openDatabase } from '../apps/api/src/db.ts';
 import { createOrder } from '../apps/api/src/modules/orders/create.ts';
@@ -8,17 +6,12 @@ import { blankDesign } from '../apps/web/src/shared/types.ts';
 import { orderDesign } from '../apps/web/src/features/editor/validate-design.ts';
 import { cardSvg } from '../apps/web/src/features/editor/card-svg.ts';
 import { centerCrop } from '../apps/web/src/features/editor/geometry.ts';
+import { createFileStorage } from '../apps/api/src/lib/storage/index.ts';
 
-// Run with the API stopped: PGlite permits one process per data directory.
+// Run with the API stopped while preparing local demo fixtures.
 const db = await openDatabase();
-const linksPath = resolve(process.env.DEMO_LINKS_FILE ?? 'storage/demo-links.json');
+const storage = createFileStorage();
 try {
-  let links = {};
-  try {
-    links = JSON.parse(await readFile(linksPath, 'utf8'));
-  } catch (error) {
-    if (error.code !== 'ENOENT') throw error;
-  }
   const photo = await sharp({
     create: { width: 120, height: 80, channels: 3, background: '#8facb8' }
   })
@@ -30,7 +23,7 @@ try {
   ]) {
     const requestKey = `dddddddd-dddd-4ddd-8ddd-dddddddddd${suffix}`;
     const prior = (
-      await db.query('SELECT order_number,status FROM orders WHERE request_key=$1', [requestKey])
+      await db.query('SELECT id,order_number,status FROM orders WHERE request_key=?', [requestKey])
     ).rows[0];
     if (prior) {
       console.log(`Giữ nguyên: ${prior.order_number} (${prior.status}).`);
@@ -72,33 +65,28 @@ try {
     );
     form.set('photo_0', new Blob([photo], { type: 'image/jpeg' }), 'demo.jpg');
     form.set('preview_0', new Blob([preview], { type: 'image/png' }), 'demo.png');
-    const receipt = await createOrder(
-      db,
-      resolve(process.env.UPLOAD_DIR ?? 'storage/uploads'),
-      form
-    );
-    // Save the once-issued token before any status updates; never print it.
-    links[receipt.orderNumber] = {
-      path: `/track#${receipt.trackingToken}`,
-      musicUrlIsPlaceholder: true
-    };
-    await mkdir(dirname(linksPath), { recursive: true });
-    await writeFile(linksPath, JSON.stringify(links, null, 2) + '\n', { mode: 0o600 });
+    const receipt = await createOrder(db, storage, form);
     let version = 1;
     for (const status of states)
-      await updateStatus(db, String(receipt.id), {
-        expectedVersion: version++,
-        status,
-        ...(status === 'cancelled' ? { cancellationReason: 'Hủy đơn diễn tập hư cấu' } : {})
-      });
+      await updateStatus(
+        db,
+        String(receipt.id),
+        {
+          expectedVersion: version++,
+          status,
+          ...(status === 'cancelled' ? { cancellationReason: 'Hủy đơn diễn tập hư cấu' } : {})
+        },
+        'system'
+      );
     console.log(`Đã tạo: ${receipt.orderNumber} (${states.at(-1)}).`);
   }
-  console.log('Link bí mật chỉ lưu trong tệp riêng; URL nhạc là placeholder, chưa kiểm tra NFC.');
+  console.log('Tra cứu đơn demo tại /track bằng mã đơn và số điện thoại demo.');
 } catch {
   console.error(
     'Không chuẩn bị được demo. Dừng API, kiểm tra migration và cấu hình DB; đơn đã tồn tại được giữ nguyên, không tự chạy lại trạng thái.'
   );
   process.exitCode = 1;
 } finally {
+  storage.close?.();
   await db.close();
 }

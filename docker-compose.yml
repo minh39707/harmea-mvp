@@ -1,0 +1,60 @@
+services:
+  app:
+    image: ${APP_IMAGE:-harmea-web:local}
+    platform: linux/amd64
+    build:
+      context: .
+    container_name: app
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/storage
+    networks:
+      - web
+      - backend
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+  db:
+    image: mysql:8.4.13
+    env_file: .env
+    restart: unless-stopped
+    command:
+      - --innodb-buffer-pool-size=${MYSQL_BUFFER_POOL:-1G}
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-time-zone=+00:00
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', '127.0.0.1', '--silent']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - backend
+
+networks:
+  web:
+    external: true
+    name: web
+  backend:
+    internal: true
+
+volumes:
+  uploads:
+  mysql_data:

@@ -4,13 +4,11 @@ import PrivateAsset from './PrivateAsset';
 export default function OrderItem({
   item,
   orderId,
-  index,
-  onUnauthorized
+  index
 }: {
   item: AdminItem;
   orderId: string;
   index: number;
-  onUnauthorized: () => void;
 }) {
   const [original, setOriginal] = useState(false),
     d = item.designSnapshot;
@@ -27,7 +25,6 @@ export default function OrderItem({
             itemId={item.id}
             kind={original ? 'photo' : 'preview'}
             path={original ? item.assets.photo : item.assets.preview}
-            onUnauthorized={onUnauthorized}
           />
           <button className="button secondary" onClick={() => setOriginal(value => !value)}>
             {original ? 'Xem preview đã chốt' : 'Xem ảnh gốc'}
@@ -47,10 +44,12 @@ export default function OrderItem({
             <dd>{d.fullName}</dd>
             <dt>Ngày sinh</dt>
             <dd>{d.dateOfBirth || 'Không nhập'}</dd>
-            <dt>Địa điểm</dt>
+            <dt>Địa điểm (Place of issue)</dt>
             <dd>{d.place || 'Không nhập'}</dd>
             <dt>Ngày kỷ niệm</dt>
             <dd>{d.commemorativeDate || 'Không nhập'}</dd>
+            <dt>Lời nhắn (in trên thiệp giấy)</dt>
+            <dd>{d.giftMessage || 'Không nhập'}</dd>
             <dt>Chữ ký</dt>
             <dd>{d.signatureText || 'Không nhập'}</dd>
             <dt>Màu</dt>

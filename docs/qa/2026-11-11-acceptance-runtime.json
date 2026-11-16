@@ -1,0 +1,35 @@
+{
+  "architecture": "amd64",
+  "user": "node",
+  "imageSizeBytes": 413396711,
+  "dbPublishedPorts": {},
+  "dbNetworkCount": 1,
+  "dbNetworkInternal": true,
+  "productionAdminAbsent": [
+    {
+      "path": "/health",
+      "status": 200
+    },
+    {
+      "path": "/ready",
+      "status": 503
+    },
+    {
+      "path": "/admin",
+      "status": 404
+    },
+    {
+      "path": "/api/admin/orders",
+      "status": 404
+    },
+    {
+      "path": "/api/admin/products",
+      "status": 404
+    }
+  ],
+  "standaloneStop": {
+    "exitCode": 0,
+    "durationMs": 5921
+  },
+  "finalContainerLogCheck": "PASS"
+}

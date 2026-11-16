@@ -14,3 +14,10 @@
   background: var(--transparent);
   text-decoration: underline;
 }
+
+.toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--success);
+}

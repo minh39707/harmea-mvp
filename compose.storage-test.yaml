@@ -1,0 +1,15 @@
+# Isolated test service only; never merge this file into production Compose.
+services:
+  minio:
+    image: harmea-minio:test
+    build:
+      context: ./tests/minio
+    command: [server, /data, --address, ':9000']
+    environment:
+      # Public fixture credentials, valid only for this disposable local test service.
+      MINIO_ROOT_USER: harmea-test
+      MINIO_ROOT_PASSWORD: harmea-minio-test-only
+    ports:
+      - '127.0.0.1:${MINIO_TEST_PORT:-19000}:9000'
+    tmpfs:
+      - /data:mode=1777

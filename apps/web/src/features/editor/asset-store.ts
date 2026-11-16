@@ -1,4 +1,6 @@
 import type { EditorAssets } from '../../shared/types';
+import { cleanOrphanAssetKeys } from './orphan-assets.ts';
+import { withAssetStoreLock } from './asset-lock.ts';
 
 function openStore(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -51,4 +53,16 @@ export async function loadAssets(key: string): Promise<EditorAssets | null> {
 }
 export async function removeAssets(key: string) {
   await transaction('readwrite', store => store.delete(key));
+}
+
+export async function cleanOrphanAssets(getReferencedKeys: () => Iterable<string>) {
+  return withAssetStoreLock(async () => {
+    const keys = await transaction<IDBValidKey[]>('readonly', store => store.getAllKeys());
+    const orphans = await cleanOrphanAssetKeys(
+      keys.filter((key): key is string => typeof key === 'string'),
+      getReferencedKeys(),
+      removeAssets
+    );
+    return orphans.length;
+  });
 }

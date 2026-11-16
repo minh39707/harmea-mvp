@@ -1,0 +1,22 @@
+{
+  "checks": [
+    "Real checkout saves order and displays supplied QR, snapshot amount 89000 VND and order reference",
+    "Dropped response after commit shows error; retry succeeds with one durable report and unchanged order state/version",
+    "Admin displays persisted customer declaration after page navigation; phone/address absent from browser storage"
+  ],
+  "layouts": [
+    {
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440
+    }
+  ],
+  "errors": []
+}

@@ -51,14 +51,14 @@ export function checkoutAttempt(store: Store) {
       try {
         if (storageProblem)
           throw new CheckoutProblem(
-            'Không đọc được mã gửi trước trên trình duyệt. Liên hệ cửa hàng trước khi đặt lại.',
+            'Không đọc được mã gửi trước trên trình duyệt. Hãy tải lại trang và chỉ tiếp tục với dữ liệu demo.',
             'blocked'
           );
         const payload = orderInput(items, recipient, confirmed),
           fingerprint = await orderFingerprint(payload, items);
         if (pending && pending.fingerprint !== fingerprint)
           throw new CheckoutProblem(
-            'Yêu cầu trước chưa rõ kết quả. Giữ nguyên thiết kế và người nhận để thử lại, hoặc liên hệ cửa hàng; chưa thể gửi một yêu cầu khác.',
+            'Yêu cầu trước chưa rõ kết quả. Giữ nguyên thiết kế và dữ liệu demo để thử lại; chưa thể gửi một yêu cầu khác.',
             'blocked'
           );
         const hadPending = Boolean(pending);
@@ -68,7 +68,7 @@ export function checkoutAttempt(store: Store) {
         } catch {
           throw new CheckoutProblem(
             pending
-              ? 'Chưa gửi lại được vì trình duyệt không lưu được mã. Kết quả yêu cầu trước vẫn chưa rõ; liên hệ cửa hàng để kiểm tra.'
+              ? 'Chưa gửi lại được vì trình duyệt không lưu được mã. Giữ nguyên dữ liệu demo và thử lại sau.'
               : 'Không lưu được mã gửi trên trình duyệt. Lần gửi này chưa thực hiện. Kiểm tra quyền lưu và thử lại.',
             'input'
           );
@@ -90,9 +90,20 @@ export function checkoutAttempt(store: Store) {
             error.code === 'DUPLICATE_REQUEST'
           )
             throw new CheckoutProblem(
-              'Máy chủ đã nhận yêu cầu này nhưng không trả lại liên kết bí mật. Giữ mã yêu cầu và liên hệ cửa hàng để kiểm tra; không tạo thêm đơn cho cùng lần đặt này.',
+              'Đơn demo đã được ghi nhận. Tra cứu bằng mã đơn và số điện thoại demo; nếu chưa có mã, hãy tạo một đơn demo mới.',
               'duplicate'
             );
+          if (
+            error instanceof ApiError &&
+            error.status === 409 &&
+            error.code === 'PRODUCT_INACTIVE'
+          ) {
+            clear();
+            throw new CheckoutProblem(
+              'Tạm ngừng nhận đơn. Sản phẩm hiện không nhận đơn mới.',
+              'input'
+            );
+          }
           if (
             error instanceof ApiError &&
             error.status >= 400 &&
@@ -105,12 +116,12 @@ export function checkoutAttempt(store: Store) {
               throw error;
             }
             throw new CheckoutProblem(
-              'Lần thử lại bị từ chối nhưng kết quả yêu cầu trước vẫn chưa rõ. Giữ mã yêu cầu và liên hệ cửa hàng để kiểm tra.',
+              'Lần thử lại bị từ chối nhưng kết quả yêu cầu trước vẫn chưa rõ. Giữ mã yêu cầu để nhóm kỹ thuật đối chiếu.',
               'uncertain'
             );
           }
           throw new CheckoutProblem(
-            'Chưa xác định được đơn đã lưu hay chưa. Dữ liệu vẫn còn; thử gửi lại cùng nội dung hoặc liên hệ cửa hàng. Không tự tạo một yêu cầu mới.',
+            'Chưa xác định được đơn demo đã lưu hay chưa. Dữ liệu vẫn còn; hãy thử gửi lại cùng nội dung. Không tự tạo một yêu cầu mới.',
             'uncertain'
           );
         }

@@ -1,6 +1,7 @@
 import type { SqlConnection } from '../../db.ts';
 import { getItems, getHistory, getOrder } from './repository.ts';
 import { InputError } from '../../lib/errors.ts';
+import { SHIPPING_FEE_VND } from './shipping.ts';
 
 export function summary(r: Record<string, unknown>) {
   return {
@@ -10,7 +11,7 @@ export function summary(r: Record<string, unknown>) {
     status: r.status,
     quantity: r.quantity,
     subtotalVnd: r.subtotal_vnd,
-    shippingFeeVnd: null,
+    shippingFeeVnd: SHIPPING_FEE_VND,
     currency: r.currency,
     version: r.version,
     createdAt: r.created_at,
@@ -22,8 +23,12 @@ export async function detail(db: SqlConnection, orderId: string) {
   if (!r) throw new InputError('Không tìm thấy đơn.', 'ORDER_NOT_FOUND', 404);
   const items = (await getItems(db, orderId)).rows;
   const history = (await getHistory(db, orderId)).rows;
+  const paymentReport = (
+    await db.query('SELECT reported_at FROM order_payment_reports WHERE order_id=?', [orderId])
+  ).rows[0];
   return {
     ...summary(r),
+    customerPaymentReportedAt: paymentReport?.reported_at ?? null,
     productSnapshot: r.product_snapshot,
     recipient: r.recipient_snapshot,
     note: r.customer_note,

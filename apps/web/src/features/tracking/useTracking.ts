@@ -2,18 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import type { PublicTracking, StateSetter, View } from '../../shared/types';
 import { api } from '../../shared/api';
 import { trackingResponse } from '../checkout/responses';
-import { trackingToken } from './links';
 type TrackingState = {
   view: View;
   setError: StateSetter<string>;
   setTracking: StateSetter<PublicTracking | null>;
-  setTrackInput: StateSetter<string>;
 };
-export function useTracking({ view, setError, setTracking, setTrackInput }: TrackingState) {
+export function useTracking({ view, setError, setTracking }: TrackingState) {
   const [trackingBusy, setTrackingBusy] = useState(false);
   const sequence = useRef(0),
     controller = useRef<AbortController | null>(null);
-  async function lookup(value: string) {
+  async function lookup(orderNumber: string, phone: string) {
     const request = ++sequence.current;
     controller.current?.abort();
     const abort = new AbortController();
@@ -22,18 +20,16 @@ export function useTracking({ view, setError, setTracking, setTrackInput }: Trac
     setError('');
     setTracking(null);
     try {
-      const token = trackingToken(value);
       const result = trackingResponse(
         await api<unknown>(
           '/tracking/lookup',
-          { token },
+          { orderNumber, phone },
           { signal: AbortSignal.any([abort.signal, AbortSignal.timeout(15000)]) }
         )
       );
       if (request !== sequence.current || location.pathname !== '/track') return;
       setTracking(result);
-      setTrackInput(token);
-      history.replaceState(null, '', `/track#${token}`);
+      if (location.hash) history.replaceState(null, '', '/track');
     } catch (error) {
       if (request === sequence.current && !abort.signal.aborted && location.pathname === '/track')
         setError(error instanceof Error ? error.message : 'Không tra cứu được đơn.');
@@ -44,14 +40,7 @@ export function useTracking({ view, setError, setTracking, setTrackInput }: Trac
   useEffect(() => {
     setTrackingBusy(false);
     if (view === 'tracking') {
-      const load = () => {
-        if (location.pathname === '/track' && location.hash.length > 1)
-          void lookup(location.hash.slice(1));
-      };
-      load();
-      window.addEventListener('hashchange', load);
       return () => {
-        window.removeEventListener('hashchange', load);
         sequence.current++;
         controller.current?.abort();
       };

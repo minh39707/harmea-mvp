@@ -1,69 +1,138 @@
 import type { Shop } from '../../app/useShop';
-import { blankDesign as blank } from '../../shared/types';
+import { blankDesign as blank, GIFT_MESSAGE_NOTE } from '../../shared/types';
 import { statusLabels } from '../../shared/order-status';
 import { money } from '../../shared/format';
+import { DELIVERY_NOTE, SHIPPING_FEE_SUFFIX, estimateDelivery } from '../../shared/delivery';
+import { IconCheck, IconCopy, IconSearch } from '../../shared/ui/Icons';
+import './SuccessPage.css';
+import PaymentPanel from './PaymentPanel';
 
 export default function SuccessPage({
   receipt,
-  trackLink,
   setNotice,
   setError,
   setDraft,
+  setTrackOrderNumber,
+  trackPhone,
   go
-}: Pick<Shop, 'receipt' | 'trackLink' | 'setNotice' | 'setError' | 'error' | 'setDraft' | 'go'>) {
+}: Pick<
+  Shop,
+  | 'receipt'
+  | 'setNotice'
+  | 'setError'
+  | 'error'
+  | 'setDraft'
+  | 'setTrackOrderNumber'
+  | 'trackPhone'
+  | 'go'
+>) {
   if (!receipt) return null;
   return (
     <section className="success">
-      <h1>Đã nhận đơn</h1>
-      <p>
-        <strong>{receipt.orderNumber}</strong>
-      </p>
+      <div className="success-badge-circle">
+        <IconCheck size={32} strokeWidth={2.5} color="var(--brand)" />
+      </div>
+      <h1 className="success-title">Đã nhận đơn</h1>
+      <p className="success-subtitle">Hệ thống demo đã ghi nhận đơn thử nghiệm.</p>
+
       <div className="receipt-box">
-        <div>
-          <span>Trạng thái</span>
-          <b>{statusLabels[receipt.status]}</b>
+        <div className="receipt-order-header">
+          <span className="order-header-label">MÃ ĐƠN HÀNG CỦA BẠN</span>
+          <strong className="success-order-number">{receipt.orderNumber}</strong>
         </div>
-        <div>
-          <span>Tiền sản phẩm (demo)</span>
-          <b>{money(receipt.subtotalVnd)}</b>
+
+        <div className="receipt-row">
+          <span>Trạng thái:</span>
+          <b className="status-badge">Mô phỏng: {statusLabels[receipt.status]}</b>
         </div>
-        <div>
-          <span>Số lượng thẻ</span>
-          <b>{receipt.quantity}</b>
+        <div className="receipt-row">
+          <span>Tiền sản phẩm:</span>
+          <strong className="amount-highlight">{money(receipt.subtotalVnd)}</strong>
         </div>
-        <label>
-          Liên kết theo dõi riêng
-          <input readOnly value={trackLink} onFocus={e => e.target.select()} />
-        </label>
-        <button
-          className="button secondary"
-          onClick={async () => {
-            try {
-              await navigator.clipboard.writeText(trackLink);
-              setNotice('Đã sao chép liên kết theo dõi.');
-            } catch {
-              setError('Hãy chọn và sao chép liên kết trong ô phía trên.');
-            }
-          }}
-        >
-          Sao chép liên kết
-        </button>
-        <a className="button primary" href={trackLink}>
-          Xem đơn thử →
-        </a>
-        <p className="note">
-          Demo, không thu tiền. Lưu liên kết trước khi đóng trang. Người có liên kết có thể xem tiến
-          độ; thông tin người nhận và thiết kế không được hiển thị công khai.
+        <div className="receipt-row">
+          <span>Phí vận chuyển (demo):</span>
+          <b>
+            {money(receipt.shippingFeeVnd)} {SHIPPING_FEE_SUFFIX}
+          </b>
+        </div>
+        <div className="receipt-row">
+          <span>Tổng mô phỏng:</span>
+          <strong className="amount-highlight">
+            {money(receipt.subtotalVnd + receipt.shippingFeeVnd)}
+          </strong>
+        </div>
+        <div className="receipt-row">
+          <span>Số lượng thẻ NFC:</span>
+          <b>{receipt.quantity} thẻ</b>
+        </div>
+        <div className="receipt-row">
+          <span>Dự kiến giao (mô phỏng):</span>
+          <b>{estimateDelivery(receipt.createdAt).label}</b>
+        </div>
+        {receipt.giftMessages && receipt.giftMessages.length > 0 && (
+          <div className="receipt-gift-messages">
+            <span>Lời nhắn:</span>
+            <ul>
+              {receipt.giftMessages.map((m, i) => (
+                <li key={i}>“{m}”</li>
+              ))}
+            </ul>
+            <small>{GIFT_MESSAGE_NOTE}</small>
+          </div>
+        )}
+        <p className="note">{DELIVERY_NOTE} Đây là đơn demo nên sẽ không có hàng được giao.</p>
+
+        <div className="receipt-actions">
+          <button
+            type="button"
+            className="btn-copy-order"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(receipt.orderNumber);
+                setNotice('Đã sao chép mã đơn.');
+              } catch {
+                setError(`Hãy sao chép mã đơn ${receipt.orderNumber} để lưu lại.`);
+              }
+            }}
+          >
+            <IconCopy size={16} />
+            <span>Sao chép mã đơn</span>
+          </button>
+          <button
+            type="button"
+            className="btn-track-order"
+            onClick={() => {
+              setTrackOrderNumber(receipt.orderNumber);
+              go('tracking');
+            }}
+          >
+            <IconSearch size={16} />
+            <span>Tra cứu tiến độ ngay →</span>
+          </button>
+        </div>
+
+        <p className="note success-note">
+          Vui lòng lưu lại mã đơn hàng. Tra cứu tại mục <em>Tra cứu đơn</em> bằng mã đơn và số điện
+          thoại demo đã nhập.
         </p>
       </div>
+
+      <PaymentPanel
+        key={receipt.id}
+        orderNumber={receipt.orderNumber}
+        amount={receipt.subtotalVnd + receipt.shippingFeeVnd}
+        phone={trackPhone}
+      />
+
       <button
-        className="text-button"
+        type="button"
+        className="text-button btn-back-home"
         onClick={() => {
           setDraft({ ...blank });
           go('product');
         }}
       >
-        ← Về sản phẩm
+        ← Tiếp tục thiết kế thẻ mới
       </button>
     </section>
   );

@@ -1,166 +1,81 @@
-# Harméa MVP — yêu cầu và phạm vi
+# Yêu cầu Harméa MVP
 
-Ngày lập: 27/10/2026 · Mốc demo: 28/10/2026 · Nhân lực: 1 người.
+Cập nhật 11/11/2026 theo quyết định D2–D6 trong [roadmap](../tasks/00-ROADMAP.md). Tài khoản và đăng nhập đã bị loại khỏi phạm vi. R1 triển khai tra cứu bằng mã đơn + số điện thoại, và đặt admin sau gate tắt mặc định ở production.
 
-Đây là đặc tả để triển khai. Các chức năng bên dưới chưa được coi là đã làm hoặc đã kiểm thử chỉ vì tài liệu tồn tại. Xem README của dự án để biết trạng thái thực tế của khung mã nguồn.
+## Phạm vi sản phẩm
 
-## 1. Mục tiêu demo
+- Một sản phẩm/mẫu thẻ NFC Music Card; admin có thể chỉnh giá (1.000–10.000.000 VND), mô tả và trạng thái bán qua R3. Sản phẩm tắt hiển thị “Tạm ngừng nhận đơn”.
+- Giá sản phẩm theo yêu cầu mới ngày 11/11/2026: 89.000đ qua migration 007; đơn đã gửi giữ snapshot giá cũ.
+- Có giỏ hàng. Một đơn gồm 1–10 thiết kế; mỗi thiết kế đặt 1–10 bản. Giá do server lấy từ MySQL và lưu snapshot.
+- Khách không tạo tài khoản. Checkout nhận tên, số điện thoại và địa chỉ giao hàng; sau khi đặt đơn, khách lưu mã đơn.
+- Cập nhật 12/11/2026: hiển thị ảnh QR chuyển khoản người dùng cung cấp sau khi lưu đơn. Khách tự nhập số tiền/mã đơn và bấm “Tôi đã chuyển khoản”; server lưu lời xác nhận, admin xem để đối chiếu. Không tự động xác nhận đã nhận tiền, không đổi trạng thái sản xuất. Chưa có email, tự động sản xuất hoặc giao hàng.
+- Ảnh gốc và ảnh preview chỉ gửi server khi đặt hàng; ảnh đơn chỉ có thể tải qua API admin khi gate cho phép.
 
-Khách cá nhân hóa một thẻ Harméa, xem trước, gửi đơn và nhận liên kết theo dõi. Quản trị viên đăng nhập, nhận đúng thiết kế cùng thông tin nhận hàng, cập nhật tiến độ; khách thấy trạng thái mới. Đơn và tệp phải còn sau khi khởi động lại ứng dụng.
-
-**Không có thanh toán trong MVP.** Gửi đơn chỉ tạo yêu cầu đặt hàng; không có nghĩa là khách đã trả tiền hoặc cửa hàng đã chấp nhận đơn.
-
-## 2. Cơ sở sản phẩm và quyết định phạm vi
-
-Nguồn sản phẩm: [EBU Final — Product Description & USP](https://docs.google.com/document/d/1vIQdKgMkv1hKGRpBblwSZPTJAblv0cM0KJ3A50FuqwU/edit?tab=t.qk61u038y7hh), đã được đọc trong cuộc trao đổi ngày 27/10/2026.
-
-| Nội dung | Cơ sở / trạng thái |
-| --- | --- |
-| Harméa NFC Music Card là thẻ nhựa cá nhân hóa gắn NFC | Theo tài liệu sản phẩm |
-| Thẻ 54 × 86 mm, artwork 57 × 90 mm, vùng an toàn 49 × 82 mm | Theo tài liệu sản phẩm; cần đối chiếu nhà in trước khi sản xuất thật |
-| Nội dung gồm ảnh, tên, ngày sinh, địa điểm, ngày, chữ ký và URL bài hát/playlist | Theo tài liệu sản phẩm |
-| Chạm NFC mở liên kết, không bảo đảm tự phát nhạc | Theo tài liệu sản phẩm |
-| Nhóm đã thử ghi lại URL trên thẻ mẫu bằng NFC Tools | Kết quả được tài liệu ghi nhận; chưa kiểm thử phần cứng trong công việc này |
-| Nhóm khách 18–25 tuổi, giá trị cảm xúc, nhu cầu mua và mức sẵn sàng trả tiền | Giả thuyết trong tài liệu, chưa phải kết luận khảo sát |
-| Có đặt hàng và theo dõi đơn; chưa cần thanh toán | Người dùng đã xác nhận |
-| Một người thực hiện, demo ngày 28/10/2026 | Người dùng đã xác nhận |
-| React + TypeScript, Node.js/Express và PostgreSQL | Người dùng đã chấp nhận phương án mặc định |
-| Một sản phẩm, một mẫu cố định; mỗi đơn 1–10 thiết kế, mỗi thiết kế 1–10 bản | Quyết định giữ giỏ hàng 29/10/2026, thay phạm vi cũ |
-| Chữ ký là văn bản có kiểu chữ ký; chưa vẽ bằng chuột/cảm ứng | Đơn giản hóa đề xuất cho bản đầu |
-| Khách không đăng nhập; có giỏ hàng, không thanh toán | Đã chốt trong task E và hợp đồng 0.2.0 |
-
-Một đơn có 1–10 dòng thiết kế cùng sản phẩm/template hiện hành. Mỗi dòng 1–10 bản giống nhau và URL nhạc riêng, tổng 1–100 thẻ. Mỗi đơn có một người nhận và một tiến độ chung; không giao hàng/trạng thái riêng từng dòng. Khách thêm, sửa, xóa dòng trước khi gửi. Các tham số này có thể đổi sau demo nhưng phải đổi hợp đồng API và kiểm thử cùng lúc.
-
-Người dùng có thể chạy Docker. Khung dự án kèm Docker Compose PostgreSQL và cấu hình `DB_DRIVER=postgres`/`DATABASE_URL`. PGlite lưu đĩa là phương án local dự phòng, mặc định trong `.env.example` để kiểm tra nhanh khi Docker chưa sẵn sàng. Hai driver dùng chung SQL nhưng dữ liệu riêng; không suy ra đã nghiệm thu production hoặc nhiều phiên cùng ghi.
-
-## 3. Vai trò và quyền
+## Vai trò và dữ liệu truy cập
 
 | Vai trò | Được phép | Không được phép |
-| --- | --- | --- |
-| Khách chưa đăng nhập | Xem sản phẩm, cá nhân hóa, đặt đơn, tra cứu bằng liên kết riêng | Liệt kê đơn; xem ảnh, địa chỉ hoặc URL nhạc của người khác; đổi trạng thái đơn |
-| Người có liên kết theo dõi | Xem mã đơn, trạng thái, thời gian, tiến độ và thông tin vận chuyển được phép công khai | Xem thông tin người nhận, ảnh, thiết kế, URL nhạc hoặc ghi chú nội bộ |
-| Quản trị viên | Đăng nhập, xem danh sách/chi tiết đơn, xem và tải tệp của đơn, cập nhật tiến độ | Sửa âm thầm thiết kế hoặc giá đã chốt trong đơn |
+|---|---|---|
+| Khách | Xem sản phẩm, tùy chỉnh thiết kế, giữ giỏ trên thiết bị và đặt đơn | Liệt kê đơn, đọc snapshot hoặc ảnh riêng của đơn |
+| Người có mã đơn + SĐT người nhận | Xem trạng thái, thời gian, lịch sử trạng thái và mã vận đơn | Xem tên, SĐT, địa chỉ, thiết kế, ảnh, ghi chú hoặc URL nhạc |
+| Admin sau gate | Xem danh sách/chi tiết đơn, ảnh riêng, cập nhật trạng thái, quản lý sản phẩm, xem thống kê và xuất CSV | Sửa snapshot giá/thiết kế đã chốt trong đơn |
 
-Liên kết theo dõi là một bí mật truy cập. Bất kỳ ai có liên kết đều có thể thấy tiến độ công khai của đơn; nó không thay thế việc đăng nhập cho quyền quản trị.
+Ứng dụng không có bảng user/session, cookie phiên, trang đăng nhập hoặc API auth. Admin không có login bên trong app. `ADMIN_ENABLED` mặc định false trong production và true ở môi trường khác. Khi bật ở production, người vận hành phải bảo vệ `/admin*` và `/api/admin*` tại reverse proxy. Khi gate tắt, các đường dẫn này trả 404 chung.
 
-## 4. Yêu cầu P0 — phải có để demo
+## Yêu cầu chức năng
 
-Giới hạn trường, tên trường JSON, định dạng lỗi và đường dẫn API lấy từ `contracts/openapi.json`. Nếu phát hiện tài liệu này mâu thuẫn hợp đồng, dừng phần bị ảnh hưởng và sửa hai nơi trước khi triển khai tiếp.
+### FR-01 — Xem và tùy chỉnh sản phẩm
 
-### FR-01 — Xem sản phẩm
+- Khách xem một sản phẩm và mẫu hiện hành, tạo nhiều thiết kế trong giỏ, sửa từng dòng và điều chỉnh số bản.
+- Trình duyệt lưu trạng thái giỏ/ảnh theo quyết định D5. Không đưa Blob ảnh vào localStorage.
+- Giá cuối cùng luôn được tính từ sản phẩm trong DB, không nhận giá từ client.
 
-- Hiển thị một sản phẩm Harméa, giá VND, mô tả ngắn và cách NFC hoạt động.
-- Lấy giá từ backend; không dùng giá cố định trong frontend để tạo đơn.
-- Dữ liệu seed **50.000 VND chỉ là giá giả phục vụ demo**, không phải giá kinh doanh đã được xác nhận.
-- Nghiệm thu: tải trang thấy sản phẩm; tổng tiền sản phẩm thay đổi theo số lượng; nội dung không nói thẻ tự phát nhạc.
+### FR-02 — Đặt hàng không cần tài khoản
 
-### FR-02 — Cá nhân hóa một mẫu thẻ
+- Server xác thực sản phẩm, mẫu, người nhận, ảnh đã decode, giới hạn tài nguyên và nội dung thiết kế.
+- Server lưu snapshot người nhận/sản phẩm/thiết kế, dòng hàng và sự kiện trạng thái đầu trong cùng transaction.
+- `requestKey` giữ nguyên khi kết quả request chưa rõ để không tạo đơn trùng. Response thành công trả `orderNumber`, không trả token tra cứu.
+- Trang thành công hiển thị rõ mã đơn, cho sao chép, và hướng dẫn tra cứu tại `/track` bằng mã đơn + SĐT đã nhập.
 
-- Nhập các trường thiết kế theo hợp đồng; chọn ảnh và nhập URL nhạc.
-- Tên trường thống nhất: `fullName`, `dateOfBirth`, `place`, `commemorativeDate`, `signatureText`, `musicUrl`, `color` và `crop`. Tên, URL nhạc và crop bắt buộc; ngày sinh, ngày kỷ niệm, địa điểm và chữ ký tùy chọn. Màu cream/blue/rose dùng cùng mẫu. Ngày nếu có không gửi chuỗi rỗng và dùng `YYYY-MM-DD`; ngày sinh không được ở tương lai. Crop dùng tọa độ chuẩn hóa trong ảnh; không cho vùng crop vượt biên.
-- Dùng một template có mã và phiên bản xác định. Bản đầu có chữ ký dạng văn bản.
-- Kiểm tra ở frontend để hỗ trợ người dùng, đồng thời kiểm tra lại ở backend.
-- Nghiệm thu: sửa trường hoặc ảnh làm thay đổi phần xem trước; dữ liệu thiếu hoặc sai không tạo được đơn.
+### FR-03 — Tra cứu riêng tư bằng mã đơn + SĐT
 
-### FR-03 — Xem trước và xác nhận thiết kế
+- Chuẩn hóa số điện thoại bằng cùng một hàm lúc tạo đơn và tra cứu: bỏ khoảng trắng, dấu chấm, dấu gạch; `+84` hoặc `84` đầu chuỗi đổi thành `0`; kết quả phải khớp `^0[0-9]{9,10}$`.
+- DB lưu HMAC-SHA256 của SĐT chuẩn hóa với secret `LOOKUP_SECRET`; không lưu thêm SĐT thô ngoài snapshot người nhận phục vụ giao hàng.
+- `POST /api/tracking/lookup` nhận `{ orderNumber, phone }` trong body. Không đưa mã đơn/SĐT lên URL hoặc log.
+- So sánh hash bằng `timingSafeEqual`. Sai mã, sai SĐT hoặc định dạng mã không hợp lệ đều trả cùng lỗi 404.
+- Giới hạn 5 lần thử sai trên mỗi mã đơn và 20 lần thử sai trên mỗi IP trong 15 phút; vượt giới hạn trả 429 và `Retry-After`. Bộ đếm memory phù hợp một instance.
+- Public response chỉ gồm mã đơn, trạng thái, thời gian tạo/cập nhật, lịch sử trạng thái và mã vận đơn.
 
-- Khách xem bản xem trước và xác nhận trước khi gửi đơn.
-- Giữ bố cục theo tỷ lệ artwork 57:90 và đánh dấu vùng an toàn trong logic dựng mẫu; không thêm trình kéo thả tự do.
-- Lưu preview PNG, ảnh gốc và cấu hình thiết kế của đơn.
-- Nghiệm thu: quản trị viên mở được đúng preview của đơn và các dữ liệu nguồn tương ứng.
-- Preview là bằng chứng trực quan để đối chiếu, **chưa được cam kết là file in đạt chuẩn**. Không quảng cáo độ chính xác màu, DPI hoặc bleed khi chưa kiểm tra với nhà in. File preview do client gửi cũng cần được người xử lý đối chiếu với dữ liệu thiết kế trước khi sản xuất thật.
+### FR-04 — Admin sau gate
 
-### FR-04 — Nhập thông tin nhận hàng
+- `/admin` mở danh sách đơn trực tiếp khi gate bật; không có trang login, session hay logout.
+- API admin giữ danh sách, chi tiết, ảnh riêng, state machine và `expectedVersion`.
+- Menu admin có đơn hàng, sản phẩm và thống kê; tìm đơn bằng mã chính xác/tiền tố, tải CSV, chỉnh giá/mô tả/trạng thái sản phẩm và xem thống kê theo ngày Việt Nam.
+- Mỗi lần đổi giá ghi `product_price_history` cùng transaction với cập nhật sản phẩm. Version cũ trả 409; snapshot của đơn cũ không thay đổi.
+- Sản phẩm tắt vẫn hiển thị trạng thái ngừng nhận trên storefront; server từ chối tạo đơn với `PRODUCT_INACTIVE`.
+- Chuyển trạng thái và thêm event cùng transaction; actor được ghi là `admin`.
+- Gate bị tắt thì `/api/admin*` trả JSON 404 chung, `/admin*` trả trang 404. Production mặc định tắt; khi bật phải có reverse proxy bảo vệ trước.
+- Không phục vụ `storage/uploads` trực tiếp hoặc dùng link công khai cho ảnh.
 
-- Thu thập tên người nhận, số điện thoại, địa chỉ và ghi chú tùy chọn.
-- Hiển thị lại số lượng, giá và thông tin người nhận để khách kiểm tra.
-- Nghiệm thu: trường bắt buộc hoặc dữ liệu sai định dạng báo lỗi rõ; không làm mất các nội dung hợp lệ mà khách đã nhập khi sửa lỗi.
+### FR-05 — State machine
 
-### FR-05 — Tạo đơn và lưu thông tin đã chốt
+| Hiện tại | Trạng thái kế tiếp |
+|---|---|
+| `pending` | `confirmed`, `cancelled` |
+| `confirmed` | `producing`, `cancelled` |
+| `producing` | `shipping` |
+| `shipping` | `completed` |
+| `completed`, `cancelled` | Không có |
 
-- Gửi một request multipart gồm `payload` JSON có `items[]`, đúng một cặp `photo_i`/`preview_i` cho mỗi dòng i từ 0; không xây hệ thống bản nháp tải ảnh riêng trong P0.
-- Backend kiểm tra sản phẩm, template/phiên bản, số lượng và dữ liệu; tính tổng tiền sản phẩm bằng đơn giá phía server × số lượng, với số nguyên VND.
-- Gọi số tiền này là `subtotalVnd`, không gọi là tổng thanh toán cuối cùng. `shippingFeeVnd` là `null`; màn hình ghi rõ chưa bao gồm phí giao hàng và cửa hàng sẽ xác nhận ngoài hệ thống. Không biến phí chưa biết thành miễn phí.
-- Lưu thông tin sản phẩm, đơn giá, template, cấu hình, URL nhạc và địa chỉ tại thời điểm đặt. Đơn sau khi tạo không bị thay đổi bởi việc sửa danh mục.
-- Tạo đơn ở `pending`; trả mã đơn và token theo dõi sau khi lưu thành công.
-- Nghiệm thu: request hợp lệ tạo đúng một đơn; request không hợp lệ không để lại đơn thiếu dữ liệu hoặc tệp bị công khai.
+Hủy đơn cần lý do nội bộ. Chuyển trạng thái cần đúng `expectedVersion`; version cũ trả 409. Không ghi lý do hủy vào public response.
 
-### FR-06 — Hạn chế gửi trùng đơn
+## Yêu cầu phi chức năng
 
-- Frontend tạo `requestKey` UUID cho một lần gửi, giữ nguyên khóa khi retry cùng lần gửi và khóa nút trong lúc chờ.
-- Backend có ràng buộc duy nhất cho `requestKey`; request lặp trả `409`, không chèn thêm đơn.
-- Nghiệm thu: gửi cùng khóa hai lần chỉ có một dòng đơn trong database.
-- Giới hạn đã biết: đây chưa phải cơ chế phát lại đầy đủ response. Nếu request đầu đã lưu nhưng response bị mất, bản đầu hiển thị hướng dẫn liên hệ cửa hàng để kiểm tra; không giả vờ đã khôi phục được liên kết và không tự tạo đơn mới bằng khóa khác.
+- Stack: React/TypeScript/Vite, Express/TypeScript, MySQL 8.4 qua `mysql2`; không thêm ORM, framework hoặc router mới.
+- SQL có tham số, transaction qua adapter `apps/api/src/db.ts`; migration đã áp dụng không được sửa nội dung.
+- Không log SĐT, địa chỉ, body đặt hàng, URL nhạc, secret hoặc cookie. `LOOKUP_SECRET` production phải có ít nhất 32 byte; thiếu thì API từ chối khởi động.
+- Tệp phải được decode thật, có giới hạn loại ảnh/kích thước/độ phân giải/bộ nhớ. UI validation không thay backend.
+- Test nghiệp vụ tạo đơn, lookup, admin gate và state machine chạy trên MySQL thật ở DB thử riêng.
 
-### FR-07 — Theo dõi đơn bằng liên kết riêng
+## Ngoài phạm vi hiện tại
 
-- Backend sinh token ngẫu nhiên 32 byte; chỉ lưu SHA-256 của token trong database.
-- Link khách nhận có dạng `/track#token`; frontend lấy token từ fragment và gửi trong body đến API tra cứu. Không đặt token trong query string, URL API, log, analytics hoặc console.
-- Trang theo dõi chỉ hiển thị dữ liệu công khai được nêu ở mục quyền. Không có chức năng tìm đơn bằng mã tăng dần hoặc số điện thoại.
-- Nghiệm thu: token hợp lệ xem được tiến độ; token sai trả lỗi chung; response và trang không chứa PII, ảnh, thiết kế hoặc URL nhạc.
-
-### FR-08 — Đăng nhập quản trị và xem đơn
-
-- Một tài khoản quản trị được cấu hình cho demo, không có đăng ký công khai.
-- Mọi API quản trị và API tải tệp phải xác thực phía backend; ẩn nút trên frontend không đủ.
-- Danh sách hỗ trợ lọc trạng thái; chi tiết có dữ liệu nhận hàng, thiết kế, URL nhạc và lịch sử trạng thái.
-- Nghiệm thu: chưa đăng nhập bị từ chối khi gọi API trực tiếp; đăng nhập đúng mở được chi tiết và tệp; đăng xuất khiến phiên không còn dùng được.
-
-### FR-09 — Cập nhật tiến độ có kiểm soát
-
-- Chỉ cho phép các bước ở mục 5; ghi thời điểm và trạng thái trước/sau trong cùng transaction với việc cập nhật đơn.
-- Khi chuyển `cancelled`, quản trị viên phải nhập lý do. Nội dung nội bộ không được đưa nguyên văn vào API tra cứu công khai.
-- Có thể nhập mã vận đơn khi giao; không cần tích hợp hãng vận chuyển hoặc tự tra cứu trạng thái.
-- Nghiệm thu: gọi API bỏ qua bước hoặc sửa đơn đã hoàn tất bị từ chối; cập nhật hợp lệ xuất hiện trong lịch sử và trang theo dõi sau khi tải lại.
-
-### FR-10 — Xử lý tệp và duy trì dữ liệu
-
-- Ảnh gốc mỗi dòng: JPEG/PNG, tối đa 5 MiB. Preview mỗi dòng: PNG, tối đa 2 MiB. Tổng request ≤16 MiB, JSON ≤65.536 ký tự, tối đa hai upload đang xử lý mỗi tiến trình. Không nhận ảnh động/nhiều frame.
-- Backend kiểm tra nội dung tệp bằng giải mã ảnh, tối đa 20 megapixel và cạnh dài nhất 8192 pixel; không chỉ tin phần mở rộng hoặc MIME do trình duyệt gửi.
-- Tệp nằm ngoài thư mục public; tên lưu do server tạo. Không cho client điều khiển đường dẫn filesystem.
-- Lưu trên đĩa/database bền vững; dọn tệp tạm khi tạo đơn thất bại. Việc khởi động lại không xóa dữ liệu demo.
-- Nghiệm thu: tệp giả ảnh/quá giới hạn bị từ chối; truy cập trực tiếp đường dẫn tệp không đọc được; restart vẫn xem được đơn và preview qua tài khoản quản trị.
-
-## 5. Trạng thái và quy tắc chuyển
-
-| Từ | Được chuyển đến | Điều kiện nghiệp vụ |
-| --- | --- | --- |
-| `pending` — Chờ xác nhận | `confirmed`, `cancelled` | Quản trị viên kiểm tra nội dung; hủy cần lý do |
-| `confirmed` — Đã xác nhận | `producing`, `cancelled` | Bắt đầu sản xuất hoặc hủy trước sản xuất |
-| `producing` — Đang sản xuất | `shipping` | Đã hoàn thành và kiểm tra sản phẩm/NFC ngoài hệ thống |
-| `shipping` — Đang giao | `completed` | Quản trị viên ghi nhận giao thành công |
-| `completed` — Hoàn tất | Không có | Trạng thái cuối |
-| `cancelled` — Đã hủy | Không có | Trạng thái cuối |
-
-Không có trạng thái thanh toán. Không có thao tác quay lùi, mở lại đơn hoặc khách tự hủy trong P0. Website lưu ghi nhận của người quản trị; không tự chứng minh thẻ vật lý đã được in, ghi NFC hoặc giao thành công.
-
-## 6. Điều kiện chất lượng tối thiểu
-
-| Mã | Điều kiện | Cách chứng minh |
-| --- | --- | --- |
-| NFR-01 | Phân quyền ở backend | Gọi trực tiếp API quản trị/tệp khi chưa đăng nhập bị từ chối |
-| NFR-02 | Không lộ dữ liệu qua tracking | Kiểm tra JSON và trang công khai không chứa trường nhạy cảm |
-| NFR-03 | Ghi đơn và trạng thái nhất quán | Request lỗi không tạo đơn dở; status và history cập nhật cùng nhau |
-| NFR-04 | Dữ liệu bền vững | Tạo đơn, dừng và chạy lại ứng dụng, đọc lại đúng dữ liệu |
-| NFR-05 | Luồng chính dùng được trên điện thoại | Kiểm tra ở chiều rộng 390 px và desktop; không bị che nút gửi đơn |
-| NFR-06 | Bảo vệ bí mật và nội dung nhập | Không đưa mật khẩu/token vào Git hoặc log; escape text, từ chối URL sai giao thức; backend không tự tải URL nhạc |
-
-Mục tiêu của vòng này là một bản demo local có luồng hoàn chỉnh. Chưa có số đo tải đồng thời, cam kết uptime hoặc nghiệm thu bảo mật cho dịch vụ public.
-
-URL nhạc chỉ nhận HTTPS, không có thông tin đăng nhập hoặc cổng tùy chỉnh, và host thuộc allowlist trong OpenAPI. Kiểm tra hostname sau khi parse URL; không kiểm tra bằng cách tìm chuỗi `spotify`/`youtube` trong toàn bộ URL. Một URL hợp lệ về cú pháp không chứng minh nội dung nhạc còn tồn tại hoặc mọi điện thoại đều phát được.
-
-## 7. P1 — làm sau demo
-
-- Thanh toán, đặt cọc, hoàn tiền, COD và đối soát.
-- Tài khoản khách, lịch sử mua hàng, nhiều sản phẩm/mẫu hoặc trạng thái/giao hàng riêng từng dòng. Giỏ hàng cùng mẫu đã chuyển vào phạm vi hiện tại.
-- Nhiều mẫu/sản phẩm, mã giảm giá, kho hàng, phí giao hàng tự động.
-- Vẽ chữ ký, chỉnh ảnh chuyên sâu, kéo thả, đổi font tự do và lưu bản nháp.
-- Luồng cửa hàng gửi mẫu để khách duyệt nhiều vòng.
-- File in chuẩn, xuất PDF, kiểm tra độ phân giải và màu với nhà in.
-- Email/SMS, tích hợp vận chuyển, tự cập nhật giao hàng, giao thất bại/đổi trả.
-- Ghi NFC trong trình duyệt, đổi link qua website, đăng nhập nền tảng nhạc hoặc phát nhạc trên website.
-- Phân quyền nhiều nhân viên, báo cáo doanh thu và vận hành nhiều người dùng thực tế.
-
-## 8. Quy tắc khi phạm vi thay đổi
-
-Chỉ thêm chức năng sau khi vòng demo bắt buộc ở `04-acceptance-demo.md` chạy thành công. Nếu thiếu thời gian, giảm trang trí, số mẫu và hiệu ứng trước; không bỏ việc lưu dữ liệu, quyền quản trị hoặc tính đúng đắn của đơn. Phải ghi rõ phần còn giả lập và phần đã kiểm thử trong buổi demo.
+Đăng nhập/tài khoản, email, nhiều sản phẩm, thanh toán, S3, triển khai cloud và thay đổi cấu hình server không thuộc R1. Thanh toán VietQR và S3 chỉ thực hiện nếu người dùng hoặc người vận hành chọn task tùy chọn tương ứng.
