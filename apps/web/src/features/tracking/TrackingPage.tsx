@@ -18,11 +18,11 @@ const date = (value: string) =>
   new Date(value).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 
 const STEPS: Array<{ key: OrderStatus; label: string; icon: typeof IconCheck }> = [
-  { key: 'pending', label: 'Chờ xác nhận', icon: IconClock },
-  { key: 'confirmed', label: 'Đã xác nhận', icon: IconCheck },
-  { key: 'producing', label: 'Đang sản xuất', icon: IconSparkle },
-  { key: 'shipping', label: 'Đang giao', icon: IconTruck },
-  { key: 'completed', label: 'Hoàn thành', icon: IconPackage }
+  { key: 'pending', label: 'Chờ xác nhận demo', icon: IconClock },
+  { key: 'confirmed', label: 'Đã xác nhận demo', icon: IconCheck },
+  { key: 'producing', label: 'Mô phỏng sản xuất', icon: IconSparkle },
+  { key: 'shipping', label: 'Mô phỏng giao hàng', icon: IconTruck },
+  { key: 'completed', label: 'Hoàn tất mô phỏng', icon: IconPackage }
 ];
 
 function getStepIndex(status: OrderStatus): number {
@@ -61,8 +61,8 @@ export default function TrackingPage({
         </div>
         <h1 className="tracking-main-title">Tra Cứu Đơn Hàng Của Bạn</h1>
         <p className="tracking-subtitle">
-          Nhập mã đơn hàng và số điện thoại đã đăng ký để kiểm tra tiến độ in ấn, đóng gói và vận
-          chuyển thẻ Harméa.
+          Nhập mã đơn và số điện thoại demo để xem trạng thái mô phỏng. Không có sản xuất, giao hàng
+          hoặc hỗ trợ khách hàng thật.
         </p>
       </div>
 
@@ -102,7 +102,7 @@ export default function TrackingPage({
             <div className="tracking-field">
               <label htmlFor="track-phone-num" className="field-label-row">
                 <IconSmartphoneNfc size={16} color="var(--brand)" />
-                <span>Số điện thoại đặt hàng *</span>
+                <span>Số điện thoại demo *</span>
               </label>
               <input
                 id="track-phone-num"
@@ -112,8 +112,8 @@ export default function TrackingPage({
                 disabled={trackingBusy}
                 value={trackPhone}
                 onChange={e => setTrackPhone(e.target.value)}
-                placeholder="0912 345 678"
-                autoComplete="tel"
+                placeholder="0900 000 000"
+                autoComplete="off"
                 className="tracking-input"
               />
             </div>
@@ -135,12 +135,12 @@ export default function TrackingPage({
         <div className="tracking-guarantees">
           <div className="guarantee-item">
             <IconShield size={15} color="var(--brand)" />
-            <span>Bảo mật dữ liệu 100%</span>
+            <span>Chỉ dùng dữ liệu giả để thử nghiệm</span>
           </div>
           <span className="guarantee-divider">•</span>
           <div className="guarantee-item">
             <IconSparkle size={15} color="var(--brand)" />
-            <span>Cập nhật tiến độ tức thì</span>
+            <span>Trạng thái chỉ mang tính mô phỏng</span>
           </div>
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function TrackingPage({
 
             <div className={`status-pill status-${tracking.status}`}>
               <span className="status-dot"></span>
-              <span>{statusLabels[tracking.status]}</span>
+              <span>Mô phỏng: {statusLabels[tracking.status]}</span>
             </div>
           </div>
 
@@ -200,7 +200,7 @@ export default function TrackingPage({
           ) : (
             <div className="cancelled-alert-box">
               <strong>Đơn hàng đã được ghi nhận hủy</strong>
-              <p>Mọi thắc mắc vui lòng liên hệ trực tiếp cửa hàng để được hỗ trợ.</p>
+              <p>Đây là trạng thái mô phỏng; dự án không có kênh hỗ trợ khách hàng.</p>
             </div>
           )}
 
@@ -212,15 +212,15 @@ export default function TrackingPage({
             </div>
 
             <div className="info-cell">
-              <span className="cell-caption">MÃ VẬN ĐƠN BƯU CHÍNH</span>
+              <span className="cell-caption">MÃ VẬN ĐƠN MÔ PHỎNG</span>
               <strong className="cell-value highlight">
-                {tracking.trackingCode ? tracking.trackingCode : 'Đang chuẩn bị đóng gói'}
+                {tracking.trackingCode ? tracking.trackingCode : 'Chưa có mã mô phỏng'}
               </strong>
             </div>
 
             <div className="info-cell">
-              <span className="cell-caption">QUY CÁCH ĐÓNG GÓI</span>
-              <strong className="cell-value">Hộp quà Harméa + Khăn lau cao cấp</strong>
+              <span className="cell-caption">THÔNG TIN ĐÓNG GÓI</span>
+              <strong className="cell-value">Chỉ là dữ liệu minh họa trong bản demo</strong>
             </div>
           </div>
 
@@ -236,7 +236,9 @@ export default function TrackingPage({
                 <li key={i} className="timeline-item">
                   <div className="timeline-bullet" />
                   <div className="timeline-content">
-                    <strong className="timeline-status-name">{statusLabels[event.status]}</strong>
+                    <strong className="timeline-status-name">
+                      Mô phỏng: {statusLabels[event.status]}
+                    </strong>
                     <time className="timeline-timestamp" dateTime={event.occurredAt}>
                       {date(event.occurredAt)}
                     </time>
@@ -258,8 +260,8 @@ export default function TrackingPage({
               <span>{trackingBusy ? 'Đang làm mới…' : 'Làm mới tiến độ'}</span>
             </button>
             <p className="privacy-note">
-              Chỉ hiển thị tiến độ do cửa hàng ghi nhận; thông tin người nhận, ảnh và thiết kế được
-              giữ riêng tư an toàn.
+              Chỉ hiển thị trạng thái mô phỏng. Không nhập tên, số điện thoại, địa chỉ hoặc ảnh thật
+              vào bản demo.
             </p>
           </div>
         </div>
@@ -275,13 +277,10 @@ export default function TrackingPage({
             Mã đơn hàng có tiền tố <strong>HM-</strong> (ví dụ: HM-A1B2C3D4) được hiển thị trên màn
             hình sau khi bạn nhấn đặt thử thành công.
           </li>
+          <li>Số điện thoại demo phải trùng với dữ liệu giả đã nhập khi tạo đơn thử nghiệm.</li>
           <li>
-            Số điện thoại tra cứu phải trùng khớp với số điện thoại đã nhập khi tạo đơn hàng để bảo
-            mật thông tin.
-          </li>
-          <li>
-            Nếu lỡ đóng trình duyệt và quên mã đơn, bạn có thể liên hệ bộ phận hỗ trợ khách hàng qua
-            số điện thoại đặt đơn để được cấp lại.
+            Nếu đóng trình duyệt và quên mã đơn, hãy tạo một đơn demo mới. Dự án sinh viên này không
+            có quy trình khôi phục đơn hoặc bộ phận hỗ trợ khách hàng.
           </li>
         </ul>
       </div>

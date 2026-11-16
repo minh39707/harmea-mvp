@@ -209,10 +209,10 @@ for (const channel of ['chrome', 'msedge']) {
     await page.locator('.cart-item-card .item-select-checkbox-label').nth(3).click();
     await page.locator('.btn-checkout-primary').click();
     assert.equal(await page.locator('.summary-item-row').count(), 3);
-    await page.getByLabel('Họ tên người nhận *', { exact: true }).fill('Khách thử browser H');
-    await page.getByLabel('Số điện thoại liên hệ *', { exact: true }).fill('0900000000');
+    await page.getByLabel('Tên demo *', { exact: true }).fill('Khách thử browser H');
+    await page.getByLabel('Số điện thoại demo *', { exact: true }).fill('0900000000');
     await page
-      .getByLabel('Địa chỉ nhận hàng chi tiết *', { exact: true })
+      .getByLabel('Địa chỉ demo *', { exact: true })
       .fill('Địa chỉ giả browser H, không giao hàng');
     await page.getByRole('checkbox').check();
     await page.getByRole('button', { name: 'Đặt đơn demo →', exact: true }).click();
@@ -247,7 +247,7 @@ for (const channel of ['chrome', 'msedge']) {
       .getByRole('button', { name: /Tra cứu/, exact: false })
       .last()
       .click();
-    await page.getByText('Chờ xác nhận', { exact: true }).first().waitFor();
+    await page.getByText('Mô phỏng: Chờ xác nhận', { exact: true }).first().waitFor();
     check(`${channel}: checkout to tracking UI with +84 phone`);
     for (const path of [
       '/faq',

@@ -48,10 +48,9 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
           </h1>
 
           <p className="hero-desc">
-            Biến một bài hát ý nghĩa thành món quà hữu hình. Chỉ cần chạm nhẹ chiếc thẻ Harméa vào
-            điện thoại, giai điệu yêu thương từ <strong>Spotify</strong>, <strong>YouTube</strong>{' '}
-            hoặc <strong>SoundCloud</strong>
-            sẽ lập tức cất lời.
+            Biến một bài hát ý nghĩa thành món quà hữu hình. Theo ý tưởng sản phẩm, điện thoại có
+            NFC tương thích có thể hiển thị liên kết từ thẻ để người dùng xác nhận mở bằng{' '}
+            <strong>Spotify</strong>, <strong>YouTube</strong> hoặc <strong>SoundCloud</strong>.
           </p>
 
           <div className="hero-actions">
@@ -70,8 +69,8 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
                 <IconSmartphoneNfc size={18} />
               </div>
               <div className="trust-text">
-                <strong>Chạm NFC 1 giây</strong>
-                <span>Mở nhạc tức thì trên điện thoại</span>
+                <strong>Chạm thẻ NFC</strong>
+                <span>Hiển thị liên kết trên điện thoại tương thích</span>
               </div>
             </div>
 
@@ -90,8 +89,8 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
                 <IconShield size={18} />
               </div>
               <div className="trust-text">
-                <strong>Không cần sạc pin</strong>
-                <span>Chip NFC bền bỉ trọn đời</span>
+                <strong>NFC không dùng pin</strong>
+                <span>Loại chip và độ tương thích cần được kiểm tra thực tế</span>
               </div>
             </div>
           </div>
@@ -147,7 +146,7 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
               className="hero-floating-badge"
               onClick={() => void music.toggle()}
               aria-pressed={music.playing || music.loading}
-              aria-label={music.playing ? 'Tắt nhạc nền từ thẻ trải nghiệm' : 'Chạm là phát nhạc'}
+              aria-label={music.playing ? 'Tắt nhạc nền của website' : 'Bật nhạc nền của website'}
             >
               <span className="badge-music-icon">
                 <IconMusic size={16} />
@@ -158,9 +157,9 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
                     ? 'Đang tải nhạc…'
                     : music.playing
                       ? 'Đang phát • Bấm để tắt'
-                      : 'Chạm là phát nhạc'}
+                      : 'Bật nhạc nền'}
                 </strong>
-                <small>Tương thích iOS & Android</small>
+                <small>Âm thanh minh họa trên website</small>
               </span>
             </button>
           </div>
@@ -224,8 +223,8 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
             </div>
             <h3 className="step-heading">Tùy Biến Bức Ảnh & Lời Nhắn</h3>
             <p className="step-desc">
-              Tải lên hình ảnh kỷ niệm, điền tên thẻ, ngày sinh, ngày kỷ niệm và chữ ký riêng. Trình
-              chỉnh sửa cho phép xem trước mẫu in chuẩn xác.
+              Tải lên hình ảnh thử nghiệm, điền thông tin mẫu và xem trước thiết kế demo. Bản xem
+              trước chưa phải file in đã được kiểm chứng.
             </p>
           </div>
 
@@ -238,8 +237,8 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
             </div>
             <h3 className="step-heading">Chạm Nhẹ Để Lắng Nghe</h3>
             <p className="step-desc">
-              Khi nhận thẻ, chỉ cần đặt mặt sau điện thoại sát vào thẻ, đường dẫn bài hát sẽ tự động
-              mở lên mà không cần cài đặt thêm ứng dụng bên thứ ba.
+              Theo ý tưởng sản phẩm, điện thoại có NFC tương thích có thể hiển thị liên kết. Người
+              dùng vẫn cần xác nhận mở, và dịch vụ âm nhạc có thể yêu cầu ứng dụng hoặc đăng nhập.
             </p>
           </div>
         </div>
@@ -254,9 +253,7 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
         <div className="section-header">
           <span className="section-eyebrow">BỘ SƯU TẬP HARMÉA</span>
           <h2 className="section-title">Chọn Phong Cách Của Bạn</h2>
-          <p className="section-subtitle">
-            Ba gam màu trang nhã, hoàn thiện tỉ mỉ trên chất liệu cao cấp
-          </p>
+          <p className="section-subtitle">Ba gam màu dùng trong bản thiết kế demo</p>
         </div>
 
         <div className="collection-grid">
@@ -332,34 +329,36 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
             <div className="feature-icon">
               <IconCard size={24} />
             </div>
-            <h4>Chất Liệu Thẻ Bền Bỉ</h4>
+            <h4>Kích Thước Thiết Kế</h4>
             <p>
-              Kích thước chuẩn thẻ ATM (54 × 86mm), vừa vặn mọi ngăn ví hoặc mặt lưng ốp điện thoại.
+              Bản thiết kế dùng kích thước 54 × 86mm. Chất liệu và độ bền chưa được kiểm chứng bằng
+              mẫu sản xuất.
             </p>
           </div>
           <div className="feature-box">
             <div className="feature-icon">
               <IconChip size={24} />
             </div>
-            <h4>Chip NFC Độ Nhạy Cao</h4>
-            <p>
-              Phản hồi nhanh nhạy, không cần tải app chuyên dụng, hoạt động bền bỉ không cần pin
-              sạc.
-            </p>
+            <h4>Ý Tưởng Liên Kết NFC</h4>
+            <p>Chip NFC thụ động không dùng pin; loại chip và khả năng đọc cần được thử thực tế.</p>
           </div>
           <div className="feature-box">
             <div className="feature-icon">
               <IconSparkle size={24} />
             </div>
-            <h4>Công Nghệ In Sắc Nét</h4>
-            <p>Màu in trung thực, chống thấm nước nhẹ và hạn chế bay màu theo thời gian.</p>
+            <h4>Bản Xem Trước Thiết Kế</h4>
+            <p>
+              Màu sắc trên màn hình chỉ để mô phỏng; chất lượng in và độ bền chưa được xác nhận.
+            </p>
           </div>
           <div className="feature-box">
             <div className="feature-icon">
               <IconShield size={24} />
             </div>
-            <h4>An Toàn & Riêng Tư</h4>
-            <p>Mọi liên kết và thông tin cá nhân hóa được xử lý chuẩn mực, an tâm khi chia sẻ.</p>
+            <h4>Dữ Liệu Thử Nghiệm</h4>
+            <p>
+              Chỉ dùng dữ liệu và ảnh giả trong bản demo; xem trang Quyền riêng tư trước khi thử.
+            </p>
           </div>
         </div>
       </section>
@@ -430,8 +429,8 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
           <span className="cta-tag">TRẢI NGHIỆM NGAY HÔM NAY</span>
           <h2 className="cta-heading">Sẵn Sàng Gửi Gắm Giai Điệu Của Riêng Bạn?</h2>
           <p className="cta-sub">
-            Giá ưu đãi trải nghiệm demo: <strong>{priceDisplay}</strong> / thẻ. Không cần tài khoản
-            phức tạp, tạo thẻ và nghe thử trong 2 phút.
+            Giá mô phỏng: <strong>{priceDisplay}</strong> / thẻ. Không cần tài khoản; bạn có thể tạo
+            preview và thử luồng đặt đơn demo ngay trên website.
           </p>
           <div className="cta-actions">
             <button className="btn-cta-large" onClick={() => go('product')}>

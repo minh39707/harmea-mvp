@@ -89,7 +89,7 @@ function FaqPage() {
       <details>
         <summary>Tôi tra cứu đơn như thế nào?</summary>
         <p>
-          Nhập mã đơn và số điện thoại đã cung cấp khi đặt hàng tại trang{' '}
+          Nhập mã đơn và số điện thoại demo đã dùng khi tạo đơn tại trang{' '}
           <Link to="/track">tra cứu đơn</Link>.
         </p>
       </details>
@@ -152,14 +152,14 @@ function PrivacyPage() {
       </p>
       <h2>Dữ liệu gửi khi đặt hàng</h2>
       <p>
-        Khi gửi đơn, thông tin người nhận được gửi để xử lý đơn; ảnh đơn hàng được lưu trên máy chủ
-        để phục vụ sản xuất. Metadata ảnh như EXIF/GPS được loại bỏ trong quá trình xử lý. Bản demo
-        không có tài khoản khách hàng.
+        Khi gửi đơn demo, dữ liệu giả và ảnh thử nghiệm được lưu trên máy chủ để kiểm tra luồng kỹ
+        thuật; không dùng để sản xuất hoặc giao hàng. Metadata ảnh như EXIF/GPS được loại bỏ trong
+        quá trình xử lý. Không nhập thông tin cá nhân hoặc ảnh riêng tư thật.
       </p>
       <h2>Tra cứu đơn</h2>
       <p>
-        Tra cứu cần cả mã đơn và số điện thoại đã dùng khi đặt. Hệ thống không đặt thông tin này
-        trong đường dẫn trang; số điện thoại tra cứu được xử lý riêng ở máy chủ.
+        Tra cứu cần cả mã đơn và số điện thoại demo đã dùng khi tạo đơn. Hệ thống không đặt thông
+        tin này trong đường dẫn trang; số điện thoại demo được xử lý riêng ở máy chủ.
       </p>
       <h2>Giới hạn của bản demo</h2>
       <p>

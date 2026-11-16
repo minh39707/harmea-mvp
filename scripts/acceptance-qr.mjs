@@ -55,10 +55,10 @@ try {
   );
   await page.goto(base + '/cart');
   await page.locator('.btn-checkout-primary').click();
-  await page.getByLabel('Họ tên người nhận *', { exact: true }).fill('QR Browser QA');
-  await page.getByLabel('Số điện thoại liên hệ *', { exact: true }).fill('0900000000');
+  await page.getByLabel('Tên demo *', { exact: true }).fill('QR Browser QA');
+  await page.getByLabel('Số điện thoại demo *', { exact: true }).fill('0900000000');
   await page
-    .getByLabel('Địa chỉ nhận hàng chi tiết *', { exact: true })
+    .getByLabel('Địa chỉ demo *', { exact: true })
     .fill('Synthetic QA address, do not ship');
   await page.getByRole('checkbox').check();
   await page.locator('.btn-proceed-payment').click();

@@ -98,6 +98,11 @@ export default function CartPage({
         )}
       </div>
 
+      <p className="note" role="note">
+        Giỏ hàng mô phỏng cho dự án sinh viên. Không mua bán, sản xuất, giao hàng hoặc thu tiền; chỉ
+        sử dụng dữ liệu và ảnh giả để thử nghiệm.
+      </p>
+
       {!cart.length ? (
         <div className="cart-empty-state">
           <div className="empty-icon-box">
@@ -191,7 +196,7 @@ export default function CartPage({
                           {isSelected && <IconCheck size={13} strokeWidth={3} />}
                         </span>
                         <span className="item-select-label-text">
-                          {isSelected ? 'Đã chọn mua thẻ này' : 'Chọn thẻ này để mua'}
+                          {isSelected ? 'Đã chọn thẻ demo này' : 'Chọn thẻ này cho đơn demo'}
                         </span>
                       </label>
 
@@ -297,7 +302,7 @@ export default function CartPage({
                     {/* F4: ngày giao dự kiến của từng thẻ (theo ảnh minh chứng) */}
                     <div className="cart-item-delivery">
                       <IconTruck size={18} />
-                      <span className="cart-item-delivery-label">Ngày giao hàng dự kiến:</span>
+                      <span className="cart-item-delivery-label">Ngày giao mô phỏng:</span>
                       <IconCalendar size={16} />
                       <strong>{deliveryLabel}</strong>
                       <span
@@ -330,11 +335,11 @@ export default function CartPage({
 
           {/* Sticky Order Summary Sidebar */}
           <aside className="order-summary-card">
-            <h3 className="summary-title">Tóm tắt đơn hàng</h3>
+            <h3 className="summary-title">Tóm tắt đơn demo</h3>
 
             <div className="summary-rows">
               <div className="summary-row">
-                <span className="row-label">Thẻ chọn mua</span>
+                <span className="row-label">Thẻ đã chọn</span>
                 <span className="row-val">
                   <strong>{selectedCount}</strong> / {count} thẻ
                 </span>
@@ -348,7 +353,7 @@ export default function CartPage({
               {/* F5: phí vận chuyển đồng giá (theo ảnh minh chứng) */}
               <div className="summary-shipping-box">
                 <IconTruck size={18} />
-                <span>Phí vận chuyển</span>
+                <span>Phí vận chuyển (demo)</span>
                 <strong>
                   {money(SHIPPING_FEE_VND)} {SHIPPING_FEE_SUFFIX}
                 </strong>
@@ -362,7 +367,7 @@ export default function CartPage({
               <IconTruck size={24} />
               <div>
                 <span className="summary-delivery-label">
-                  Ngày giao hàng dự kiến
+                  Ngày giao mô phỏng
                   <span className="delivery-info" title={DELIVERY_NOTE} aria-label={DELIVERY_NOTE}>
                     <IconInfo size={15} />
                   </span>
@@ -372,7 +377,7 @@ export default function CartPage({
             </div>
 
             <div className="summary-total-row">
-              <span className="total-label">Tổng thanh toán:</span>
+              <span className="total-label">Tổng mô phỏng:</span>
               <strong className="total-val">{money(selectedTotal)}</strong>
             </div>
 
@@ -385,22 +390,22 @@ export default function CartPage({
               {product?.isActive === false
                 ? 'Tạm ngừng nhận đơn'
                 : selectedItems.length === 0
-                  ? 'Vui lòng chọn thẻ muốn mua'
-                  : `Tiến hành đặt hàng (${selectedCount} thẻ) →`}
+                  ? 'Vui lòng chọn thẻ cho đơn demo'
+                  : `Tiến hành đơn demo (${selectedCount} thẻ) →`}
             </button>
 
             <div className="summary-trust-badges">
               <div className="trust-badge-item">
                 <IconCheck size={14} />
-                <span>Thẻ NFC chuẩn NTAG kháng nước, độ bền cao</span>
+                <span>Khả năng tương thích, vật liệu và độ bền chưa được kiểm chứng</span>
               </div>
               <div className="trust-badge-item">
                 <IconCard size={14} />
-                <span>In sắc nét 2 mặt, cá nhân hóa theo yêu cầu</span>
+                <span>Preview hai mặt chỉ là bản mô phỏng trên màn hình</span>
               </div>
               <div className="trust-badge-item">
                 <IconShield size={14} />
-                <span>Kiểm tra preview trước khi sản xuất & giao hàng</span>
+                <span>Kiểm tra preview trước khi gửi đơn demo</span>
               </div>
             </div>
           </aside>

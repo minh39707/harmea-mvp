@@ -31,13 +31,13 @@ export const routeTable = [
     name: 'checkout',
     path: '/checkout',
     title: 'Thông tin đặt hàng — Harméa',
-    description: 'Gửi thông tin đặt hàng cho bản demo Harméa.'
+    description: 'Tạo đơn thử nghiệm bằng dữ liệu giả trong bản demo Harméa.'
   },
   {
     name: 'tracking',
     path: '/track',
     title: 'Tra cứu đơn hàng — Harméa',
-    description: 'Tra cứu tiến độ đơn hàng bằng mã đơn và số điện thoại.'
+    description: 'Tra cứu đơn demo bằng mã đơn và số điện thoại thử nghiệm.'
   },
   {
     name: 'about',
@@ -61,13 +61,13 @@ export const routeTable = [
     name: 'shipping-policy',
     path: '/policies/shipping',
     title: 'Chính sách giao hàng — Harméa',
-    description: 'Thông tin giao hàng đang chờ Harméa xác nhận.'
+    description: 'Phạm vi giao hàng mô phỏng của website demo Harméa.'
   },
   {
     name: 'returns-policy',
     path: '/policies/returns',
     title: 'Đổi trả — Harméa',
-    description: 'Thông tin đổi trả đang chờ Harméa xác nhận.'
+    description: 'Phạm vi đổi trả của website demo không bán hàng.'
   },
   {
     name: 'privacy-policy',
@@ -79,7 +79,7 @@ export const routeTable = [
     name: 'contact',
     path: '/contact',
     title: 'Liên hệ — Harméa',
-    description: 'Thông tin liên hệ chính thức đang chờ Harméa xác nhận.'
+    description: 'Kênh trao đổi dành cho dự án học phần Harméa.'
   },
   {
     name: 'admin',

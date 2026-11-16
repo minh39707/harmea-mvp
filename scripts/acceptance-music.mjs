@@ -35,7 +35,7 @@ for (const channel of ['chrome', 'msedge']) {
       await page.locator('.btn-hero-primary').evaluate(n => getComputedStyle(n).backgroundColor),
       'rgb(19, 43, 79)'
     );
-    await page.getByRole('button', { name: 'Chạm là phát nhạc', exact: true }).click();
+    await page.getByRole('button', { name: 'Bật nhạc nền của website', exact: true }).click();
     await page.waitForFunction(() => {
       const a = document.querySelector('audio');
       return a && !a.paused && a.currentTime > 0.2;
@@ -76,7 +76,7 @@ for (const channel of ['chrome', 'msedge']) {
       `${channel}: tracking removes player; preference remembered; return/reload requires explicit click; off stays off`
     );
 
-    await page.getByRole('button', { name: 'Chạm là phát nhạc', exact: true }).click();
+    await page.getByRole('button', { name: 'Bật nhạc nền của website', exact: true }).click();
     await page.waitForFunction(() => !document.querySelector('audio').paused);
     const beforeAdmin = await page.locator('audio').elementHandle();
     await page.evaluate(() => {
@@ -96,13 +96,13 @@ for (const channel of ['chrome', 'msedge']) {
     );
     await page.goto(base);
     await page.route('**/audio/nen.mp3', route => route.fulfill({ status: 404, body: '' }));
-    await page.getByRole('button', { name: 'Chạm là phát nhạc', exact: true }).click();
+    await page.getByRole('button', { name: 'Bật nhạc nền của website', exact: true }).click();
     await page
       .getByText('Chưa phát được nhạc. Bạn có thể bấm phát lại.', { exact: true })
       .waitFor();
     assert.equal(await page.locator('audio').evaluate(a => a.paused), true);
     await page.unroute('**/audio/nen.mp3');
-    await page.getByRole('button', { name: 'Chạm là phát nhạc', exact: true }).click();
+    await page.getByRole('button', { name: 'Bật nhạc nền của website', exact: true }).click();
     await page.waitForFunction(
       () =>
         document.querySelector('audio').currentTime > 0.2 && !document.querySelector('audio').paused

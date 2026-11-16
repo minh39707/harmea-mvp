@@ -65,49 +65,52 @@ export default function CheckoutPage({
         <fieldset className="checkout-fields" disabled={busy} onFocus={revealOnFocus}>
           <div className="step-card-header">
             <IconUser size={18} color="var(--brand)" />
-            <h3>Thông tin người nhận</h3>
+            <h3>Thông tin demo</h3>
           </div>
-          <p className="note">Kiểm tra thông tin để cửa hàng liên hệ và xử lý đơn.</p>
+          <p className="note">
+            Chỉ nhập dữ liệu giả để thử nghiệm. Không dùng tên, số điện thoại, địa chỉ hoặc ảnh cá
+            nhân thật; nhóm không liên hệ và không giao hàng.
+          </p>
           <div className="two-fields">
             <label>
-              Họ tên người nhận *
+              Tên demo *
               <input
                 required
                 maxLength={80}
-                autoComplete="name"
+                autoComplete="off"
                 enterKeyHint="next"
                 value={recipient.name}
                 onChange={e => setRecipient({ ...recipient, name: e.target.value })}
-                placeholder="Ví dụ: Nguyễn Văn An"
+                placeholder="Ví dụ: TEST DEMO"
               />
             </label>
             <label>
-              Số điện thoại liên hệ *
+              Số điện thoại demo *
               <input
                 required
                 type="tel"
                 inputMode="tel"
                 maxLength={32}
-                autoComplete="tel"
+                autoComplete="off"
                 enterKeyHint="next"
                 value={recipient.phone}
                 onChange={e => setRecipient({ ...recipient, phone: e.target.value })}
-                placeholder="Ví dụ: 0912 345 678"
+                placeholder="Ví dụ: 0900 000 000"
               />
             </label>
           </div>
           <label>
-            Địa chỉ nhận hàng chi tiết *
+            Địa chỉ demo *
             <textarea
               required
               minLength={10}
               maxLength={500}
-              autoComplete="street-address"
+              autoComplete="off"
               enterKeyHint="next"
               rows={3}
               value={recipient.address}
               onChange={e => setRecipient({ ...recipient, address: e.target.value })}
-              placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"
+              placeholder="Ví dụ: Địa chỉ thử nghiệm, Hà Nội"
             />
           </label>
           <label>
@@ -127,9 +130,7 @@ export default function CheckoutPage({
               checked={confirmed}
               onChange={e => setConfirmed(e.target.checked)}
             />
-            <span>
-              Tôi đã kiểm tra thiết kế và thông tin người nhận; đồng ý gửi đơn theo nội dung này.
-            </span>
+            <span>Tôi xác nhận đây là đơn demo và các thông tin đã nhập đều là dữ liệu giả.</span>
           </label>
           {pendingRequestKey && (
             <div className="note pending-box">
@@ -157,18 +158,18 @@ export default function CheckoutPage({
             <strong>{money(subtotal)}</strong>
           </div>
           <div className="sum">
-            <span>Phí vận chuyển</span>
+            <span>Phí vận chuyển (demo)</span>
             <strong>
               {money(SHIPPING_FEE_VND)} {SHIPPING_FEE_SUFFIX}
             </strong>
           </div>
           <div className="sum">
-            <span>Tổng thanh toán</span>
+            <span>Tổng mô phỏng</span>
             <strong>{money(subtotal + SHIPPING_FEE_VND)}</strong>
           </div>
-          <p className="note">Máy chủ sẽ kiểm tra lại giá khi tạo đơn.</p>
+          <p className="note">Máy chủ sẽ kiểm tra lại giá demo khi tạo đơn.</p>
           <div className="delivery-estimate" role="note">
-            <span className="delivery-estimate-label">Dự kiến giao</span>
+            <span className="delivery-estimate-label">Dự kiến giao (mô phỏng)</span>
             <strong>{estimateDelivery().label}</strong>
             <small>{DELIVERY_NOTE}</small>
           </div>
@@ -189,7 +190,7 @@ export default function CheckoutPage({
       {createPortal(
         <div className="mobile-action-bar">
           <div className="mobile-action-total">
-            <span>Tổng thanh toán</span>
+            <span>Tổng mô phỏng</span>
             <strong>{money(subtotal + SHIPPING_FEE_VND)}</strong>
           </div>
           <button

@@ -33,7 +33,7 @@ export default function SuccessPage({
         <IconCheck size={32} strokeWidth={2.5} color="var(--brand)" />
       </div>
       <h1 className="success-title">Đã nhận đơn</h1>
-      <p className="success-subtitle">Cửa hàng đã ghi nhận đơn của bạn.</p>
+      <p className="success-subtitle">Hệ thống demo đã ghi nhận đơn thử nghiệm.</p>
 
       <div className="receipt-box">
         <div className="receipt-order-header">
@@ -43,20 +43,20 @@ export default function SuccessPage({
 
         <div className="receipt-row">
           <span>Trạng thái:</span>
-          <b className="status-badge">{statusLabels[receipt.status]}</b>
+          <b className="status-badge">Mô phỏng: {statusLabels[receipt.status]}</b>
         </div>
         <div className="receipt-row">
           <span>Tiền sản phẩm:</span>
           <strong className="amount-highlight">{money(receipt.subtotalVnd)}</strong>
         </div>
         <div className="receipt-row">
-          <span>Phí vận chuyển:</span>
+          <span>Phí vận chuyển (demo):</span>
           <b>
             {money(receipt.shippingFeeVnd)} {SHIPPING_FEE_SUFFIX}
           </b>
         </div>
         <div className="receipt-row">
-          <span>Tổng thanh toán:</span>
+          <span>Tổng mô phỏng:</span>
           <strong className="amount-highlight">
             {money(receipt.subtotalVnd + receipt.shippingFeeVnd)}
           </strong>
@@ -66,7 +66,7 @@ export default function SuccessPage({
           <b>{receipt.quantity} thẻ</b>
         </div>
         <div className="receipt-row">
-          <span>Dự kiến giao:</span>
+          <span>Dự kiến giao (mô phỏng):</span>
           <b>{estimateDelivery(receipt.createdAt).label}</b>
         </div>
         {receipt.giftMessages && receipt.giftMessages.length > 0 && (
@@ -113,7 +113,7 @@ export default function SuccessPage({
 
         <p className="note success-note">
           Vui lòng lưu lại mã đơn hàng. Tra cứu tại mục <em>Tra cứu đơn</em> bằng mã đơn và số điện
-          thoại đã nhập.
+          thoại demo đã nhập.
         </p>
       </div>
 
