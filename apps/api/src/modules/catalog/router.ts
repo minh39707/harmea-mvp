@@ -19,7 +19,7 @@ export function catalogRouter(db: Database) {
       description: String(p.description ?? ''),
       isActive: Boolean(p.is_active),
       isDemoPrice: Boolean(p.is_demo),
-      image: '/images/card-sample.png',
+      image: '/images/template-blank-cream.jpg',
       cardSizeMm: { width: 54, height: 86 }
     });
   });

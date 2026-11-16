@@ -264,8 +264,8 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
           <div className="color-card-item cream">
             <div className="color-card-preview cream-bg">
               <img
-                src="/images/card-sample-cream.jpg"
-                alt="Mẫu thẻ Kem kỷ niệm"
+                src="/images/template-blank-cream.jpg"
+                alt="Mẫu thẻ trống màu Kem kỷ niệm"
                 className="home-color-sample-img"
               />
               <div className="mini-card-tag">CREAM CLASSIC</div>
@@ -283,8 +283,8 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
           <div className="color-card-item blue">
             <div className="color-card-preview blue-bg">
               <img
-                src="/images/card-sample-blue.jpg"
-                alt="Mẫu thẻ Xanh bình yên"
+                src="/images/template-blank-blue.jpg"
+                alt="Mẫu thẻ trống màu Xanh bình yên"
                 className="home-color-sample-img"
               />
               <div className="mini-card-tag">MIDNIGHT BLUE</div>
@@ -302,8 +302,8 @@ export default function HomePage({ go, setDraft, product, music }: HomeProps) {
           <div className="color-card-item rose">
             <div className="color-card-preview rose-bg">
               <img
-                src="/images/card-sample-rose.jpg"
-                alt="Mẫu thẻ Hồng dịu dàng"
+                src="/images/template-blank-rose.jpg"
+                alt="Mẫu thẻ trống màu Hồng dịu dàng"
                 className="home-color-sample-img"
               />
               <div className="mini-card-tag">ROSE SUNSET</div>
