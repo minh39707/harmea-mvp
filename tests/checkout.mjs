@@ -296,7 +296,7 @@ test('browser checkout coordinator against real Express, MySQL and image files',
         mode = 'normal';
         await assert.rejects(
           reloaded.submit(items(), recipient, true),
-          error => error.kind === 'duplicate' && /liên hệ/.test(error.message)
+          error => error.kind === 'duplicate' && /Đơn demo đã được ghi nhận/.test(error.message)
         );
         assert.equal(await count(), before + 1);
         assert.ok(requests.every(r => r.key === key));
